@@ -1,7 +1,5 @@
 import logging
 
-log_format = "[%(levelname)-5.5s]  %(message)s"
-
 
 class CustomFormatter(logging.Formatter):
 
@@ -10,6 +8,8 @@ class CustomFormatter(logging.Formatter):
     red = "\x1b[31;20m"
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
+
+    log_format = "[%(levelname)-5.5s]  %(message)s"
 
     FORMATS = {
         logging.DEBUG: grey + log_format + reset,

@@ -24,7 +24,7 @@ jobs:
         python-version: '3.10'
         cache: 'pip' # caching pip dependencies
     - run: pip install -r requirements.txt pyinstaller
-    - run: pyinstaller --onefile --distpath splinterlands-battle-stats src/main.py
+    - run: pyinstaller --onefile --distpath splinterlands-battle-stats main.py
     - run: cp "config.properties" "splinterlands-battle-stats/"
 
     - if: matrix.os == 'ubuntu-latest'

@@ -7,8 +7,22 @@ from src.configuration.custom_formatter import CustomFormatter
 
 config = configparser.RawConfigParser()
 config.read('config.properties')
-logPath = 'output'
-fileName = 'logging.txt'
+
+
+class Configuration(object):
+    instance = None
+    account_names = None
+    log_level = None
+    store_dir = 'store'
+
+    def __new__(cls):
+        """ creates a singleton object, if it is not created,
+        or else returns the previous singleton object"""
+        if cls.instance is None:
+            cls.instance = super(Configuration, cls).__new__(cls)
+            cls.log_level = config_logger()
+            cls.account_names = load_account_names()
+        return cls.instance
 
 
 def load_account_names():
@@ -19,17 +33,12 @@ def load_account_names():
 
     account_names = account_names_str.split(',')
     logging.info("Using account(s): " + ', '.join(account_names))
+    Configuration().account_names = account_names
     return account_names
 
 
 def config_logger():
     root_logger = logging.getLogger()
-
-    # File Logger enable code below
-    # log_formatter_plain = logging.Formatter(custom_formatter.log_format)
-    # file_handler = logging.FileHandler("{0}/{1}.log".format(logPath, fileName))
-    # file_handler.setFormatter(log_formatter_plain)
-    # root_logger.addHandler(file_handler)
 
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(CustomFormatter())
@@ -44,11 +53,3 @@ def config_logger():
     root_logger.setLevel(log_level)
     logging.info("Set log level: " + log_level)
     return log_level
-
-
-class Configuration:
-    def __init__(self):
-        self.log_level = config_logger()
-        self.account_names = load_account_names()
-
-
