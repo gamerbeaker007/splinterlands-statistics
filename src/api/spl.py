@@ -26,3 +26,14 @@ def get_player_collection_df(username):
     collection = http.get(address).json()["cards"]
     df = pd.DataFrame(sorted(collection, key=lambda card: card["card_detail_id"]))
     return df[['player', 'uid', 'card_detail_id', 'xp', 'gold', 'edition', 'level']].set_index('uid')
+
+
+def get_battle_history_df(account_name):
+    address = base_url + "battle/history?player=" + str(account_name)
+
+    result = http.get(address)
+    if result.status_code == 200:
+        return pd.DataFrame(result.json()['battles'])
+    else:
+        return None
+
