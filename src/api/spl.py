@@ -33,7 +33,7 @@ def get_battle_history_df(account_name):
 
     result = http.get(address)
     if result.status_code == 200:
-        return pd.DataFrame(result.json()['battles'])
+        return pd.DataFrame(result.json()['battles']).set_index('created_date')
     else:
         return None
 
