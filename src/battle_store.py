@@ -14,40 +14,45 @@ def get_uid_array(team):
     return uid_array
 
 
-def update_battle_store(team, match_type, match_format, winning):
+def update_battle_store(account, team, match_type, match_format, win):
+    empty = store.battle_df.empty
+    mask = (False)
     uid_arr = get_uid_array(team)
     for uid in uid_arr:
 
-        if match_type == 'Tournament':
-            mask = (store.battle_df['uid'] == uid) \
-                   & (store.battle_df['match_type'] == match_type)
-        else:
-            mask = (store.battle_df['uid'] == uid) \
-                   & (store.battle_df['match_type'] == match_type) \
-                   & (store.battle_df['format'] == match_format)
+        if not empty:
+            if match_type == 'Tournament':
+                mask = (store.battle_df['uid'] == uid) \
+                       & (store.battle_df['match_type'] == match_type)
+            else:
+                mask = (store.battle_df['uid'] == uid) \
+                       & (store.battle_df['match_type'] == match_type) \
+                       & (store.battle_df['format'] == match_format)
 
-        if mask.any():
+        if not empty and mask.any():
             # increase win or loss
-            if winning:
+            if win:
                 store.battle_df.loc[mask, 'win'] += 1
             else:
                 store.battle_df.loc[mask, 'loss'] += 1
         else:
             # add new row
             df = pd.DataFrame({'uid': uid,
+                               'account': account,
                                'match_type': match_type,
                                'format': match_format,
-                               'win': 1 if winning else 0,
-                               'loss': 1 if not winning else 0
+                               'win': 1 if win else 0,
+                               'loss': 1 if not win else 0
                                }, index=[0])
             store.battle_df = pd.concat([store.battle_df, df], ignore_index=True)
 
 
-def add_battle_log(created_date, mana_cap, team, match_type, match_format, ruleset, inactive, result):
+def add_battle_log(account, created_date, mana_cap, team, match_type, match_format, ruleset, inactive, result):
     uid_arr = get_uid_array(team)
     for uid in uid_arr:
             # add new row
             df = pd.DataFrame({'uid': uid,
+                               'account': account,
                                'created_date': created_date,
                                'match_type': match_type,
                                'format': match_format,
@@ -59,13 +64,52 @@ def add_battle_log(created_date, mana_cap, team, match_type, match_format, rules
             store.battle_big_df = pd.concat([store.battle_big_df, df], ignore_index=True)
 
 
+def log_battle_note(count):
+    limit = 50
+    if count == limit:
+        logging.info(str(limit) + 'or more battles to process consider running this program more often')
+        logging.info('SPL API limits ' + str(limit) + ' battle history')
+    else:
+        logging.info(str(count) + ' battles to process')
+
+
+def add_rating_log(account, created_date, rating):
+    df = pd.DataFrame({'created_date': created_date,
+                       'account': account,
+                       'rating': rating,
+                       }, index=[0])
+    store.rating_df = pd.concat([store.rating_df, df], ignore_index=True)
+
+
+def add_losing_battle_team(account, created_date, mana_cap, team, match_type, match_format, ruleset, inactive):
+    cards = list(team['monsters'])
+    cards.append(team['summoner'])
+    for card in cards:
+        # add new row
+        df = pd.DataFrame({'card_detail_id': card['card_detail_id'],
+                           'xp': card['xp'],
+                           'gold': card['gold'],
+                           'level': card['level'],
+                           'edition': card['edition'],
+                           'account': account,
+                           'created_date': created_date,
+                           'match_type': match_type,
+                           'format': match_format,
+                           'mana_cap': mana_cap,
+                           'ruleset': ruleset,
+                           'inactive': inactive,
+                           }, index=[0])
+        store.losing_big_df = pd.concat([store.losing_big_df, df], ignore_index=True)
+
 
 def process_battle(account):
     battle_history = spl.get_battle_history_df(account)
-    if not store.last_processed_df.loc[(store.last_processed_df.account == account)].empty:
+    if not store.last_processed_df.empty and not store.last_processed_df.loc[(store.last_processed_df.account == account)].empty:
         # filter out already processed
         last_processed_date = store.last_processed_df.loc[(store.last_processed_df.account == account)].last_processed.values[0]
         battle_history = battle_history.loc[(battle_history['created_date'] > last_processed_date)]
+
+    log_battle_note(len(battle_history.index))
 
     if not battle_history.empty:
         for index, row in battle_history.iterrows():
@@ -75,6 +119,10 @@ def process_battle(account):
             mana_cap = row['mana_cap']
             ruleset = row['ruleset']
             inactive = row['inactive']
+            if row['player_1'] == account:
+                final_rating = row['player_1_rating_final']
+            else:
+                final_rating = row['player_2_rating_final']
 
             battle_details = json.loads(row.details)
             if not ('type' in battle_details and battle_details['type'] == 'Surrender'):
@@ -87,28 +135,41 @@ def process_battle(account):
                     my_team = battle_details['team2']
                     opponent_team = battle_details['team1']
 
-                    add_battle_log(created_date,
-                                   mana_cap,
-                                   my_team,
-                                   match_type,
-                                   match_format,
-                                   ruleset,
-                                   inactive,
-                                   "win" if winner == account else "loss")
+                add_battle_log(account,
+                               created_date,
+                               mana_cap,
+                               my_team,
+                               match_type,
+                               match_format,
+                               ruleset,
+                               inactive,
+                               "win" if winner == account else "loss")
+                update_battle_store(account,
+                                    my_team,
+                                    match_type,
+                                    match_format,
+                                    True if winner == account else False)
+
+                add_rating_log(account, created_date, final_rating)
                 if winner == account:
                     logging.debug('Battle Won')
-                    update_battle_store(my_team, match_type, match_format, winning=True)
 
                 else:
                     logging.debug('Battle Lost')
-                    update_battle_store(my_team, match_type, match_format, winning=False)
-                    # add_losing_card_tracking(losing_battle_store, opponent_team, match_type, match_format)
+                    add_losing_battle_team(account,
+                                           created_date,
+                                           mana_cap,
+                                           opponent_team,
+                                           match_type,
+                                           match_format,
+                                           ruleset,
+                                           inactive)
             else:
                 logging.debug("Surrender match skip")
 
         # save last_process
         last_processed_date = battle_history.sort_values(by='created_date', ascending=False)['created_date'].iloc[0]
-        if store.last_processed_df.loc[(store.last_processed_df.account == account)].empty:
+        if store.last_processed_df.empty or store.last_processed_df.loc[(store.last_processed_df.account == account)].empty:
             # create
             new = pd.DataFrame({'account': [account], 'last_processed': [last_processed_date]}, index=[0])
             store.last_processed_df = pd.concat([store.last_processed_df, new], ignore_index=True)
