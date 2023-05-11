@@ -2,11 +2,12 @@ import json
 import logging
 import os
 
-from src import battle_store, collection_store
+from src import battle_store, collection_store, analyse
 from src.api import spl
 import pandas as pd
 
 from src.configuration import config, store
+from src.static.static_values_enum import MatchType
 
 
 def load_stores():
@@ -47,6 +48,11 @@ def main():
 
     collection_store.update_collection()
     battle_store.process_battles()
+
+    analyse.print_top_ten_losing(MatchType.CHALLENGE)
+    analyse.print_top_ten_losing(MatchType.TOURNAMENT)
+    analyse.print_top_ten_losing(MatchType.RANKED)
+    analyse.print_top_ten_losing()
 
     save_stores()
 

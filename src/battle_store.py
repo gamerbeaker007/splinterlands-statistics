@@ -47,7 +47,11 @@ def update_battle_store(account, team, match_type, match_format, win):
             store.battle_df = pd.concat([store.battle_df, df], ignore_index=True)
 
 
-def add_battle_log(account, created_date, mana_cap, team, match_type, match_format, ruleset, inactive, result):
+def add_battle_log(account, created_date, mana_cap, team, match_type, match_format, rulesets, inactive, result):
+    ruleset_split = ['None', 'None', 'None']
+    for idx, ruleset in enumerate(rulesets.split('|')):
+        ruleset_split[idx] = ruleset
+
     uid_arr = get_uid_array(team)
     for uid in uid_arr:
             # add new row
@@ -57,7 +61,9 @@ def add_battle_log(account, created_date, mana_cap, team, match_type, match_form
                                'match_type': match_type,
                                'format': match_format,
                                'mana_cap': mana_cap,
-                               'ruleset': ruleset,
+                               'ruleset1': ruleset_split[0],
+                               'ruleset2': ruleset_split[1],
+                               'ruleset3': ruleset_split[2],
                                'inactive': inactive,
                                'result': result,
                                }, index=[0])
@@ -81,9 +87,13 @@ def add_rating_log(account, created_date, rating):
     store.rating_df = pd.concat([store.rating_df, df], ignore_index=True)
 
 
-def add_losing_battle_team(account, created_date, mana_cap, team, match_type, match_format, ruleset, inactive):
+def add_losing_battle_team(account, created_date, mana_cap, team, match_type, match_format, rulesets, inactive):
     cards = list(team['monsters'])
     cards.append(team['summoner'])
+    ruleset_split = ['None', 'None', 'None']
+    for idx, ruleset in enumerate(rulesets.split('|')):
+        ruleset_split[idx] = ruleset
+
     for card in cards:
         # add new row
         df = pd.DataFrame({'card_detail_id': card['card_detail_id'],
@@ -96,7 +106,9 @@ def add_losing_battle_team(account, created_date, mana_cap, team, match_type, ma
                            'match_type': match_type,
                            'format': match_format,
                            'mana_cap': mana_cap,
-                           'ruleset': ruleset,
+                           'ruleset1': ruleset_split[0],
+                           'ruleset2': ruleset_split[1],
+                           'ruleset3': ruleset_split[2],
                            'inactive': inactive,
                            }, index=[0])
         store.losing_big_df = pd.concat([store.losing_big_df, df], ignore_index=True)
@@ -119,6 +131,7 @@ def process_battle(account):
             mana_cap = row['mana_cap']
             ruleset = row['ruleset']
             inactive = row['inactive']
+
             if row['player_1'] == account:
                 final_rating = row['player_1_rating_final']
             else:

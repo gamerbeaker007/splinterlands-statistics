@@ -18,7 +18,7 @@ http.mount("https://", adapter)
 
 def get_card_details():
     address = base_url + "cards/get_details"
-    return http.get(address).json()
+    return pd.DataFrame(http.get(address).json()).set_index('id')
 
 
 def get_player_collection_df(username):

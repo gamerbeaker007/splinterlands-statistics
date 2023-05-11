@@ -2,9 +2,13 @@ from enum import Enum
 
 
 class Format(Enum):
-    MODERN = "modern"
-    WILD = "wild"
+    MODERN = 'modern'
+    WILD = 'wild'
 
+class MatchType(Enum):
+    CHALLENGE = 'Challenge'
+    RANKED = 'Ranked'
+    TOURNAMENT = 'Tournament'
 
 class Leagues(Enum):
     NOVICE = 0
