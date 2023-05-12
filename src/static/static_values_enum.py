@@ -5,10 +5,17 @@ class Format(Enum):
     MODERN = 'modern'
     WILD = 'wild'
 
+
 class MatchType(Enum):
     CHALLENGE = 'Challenge'
     RANKED = 'Ranked'
     TOURNAMENT = 'Tournament'
+
+
+class CardType(Enum):
+    SUMMONER = 'Summoner'
+    MONSTER = 'Monster'
+
 
 class Leagues(Enum):
     NOVICE = 0
@@ -50,3 +57,5 @@ class Edition(Enum):
     soulbound = 10
 
 
+def get_list_of_enum(enum):
+    return list(map(lambda x: x.value, enum._member_map_.values()))

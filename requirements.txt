@@ -1,3 +1,6 @@
 requests==2.30.0
 urllib3==2.0.2
 pandas==2.0.1
+plotly==5.14.1
+dash==2.9.3
+dash_bootstrap_components==1.4.1
