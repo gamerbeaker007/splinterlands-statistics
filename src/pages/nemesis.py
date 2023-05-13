@@ -9,7 +9,7 @@ from src.configuration import config
 # Define the page layout
 layout = dbc.Container([
     dbc.Row([
-        html.Center(html.H1("Nemesis")),
+        html.Center(html.H1("Nemesis, ranked matches")),
         dbc.Col(dcc.Dropdown(options=config.account_names,
                              value=config.account_names[0],
                              id='dropdown-user-selection',
