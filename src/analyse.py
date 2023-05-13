@@ -38,3 +38,13 @@ def filter_battles(filter_account=None, filter_match_type=None, filter_type=None
     else:
         logging.info('No battles found at all')
     return temp_df
+
+
+def get_top_3_losing_account(account):
+    temp_df = store.losing_big_df.copy()
+    temp_df = temp_df.loc[(temp_df.account == account)][['battle_id', 'opponent']]
+    temp_df = temp_df.drop_duplicates(subset=['battle_id', 'opponent'])
+    temp_df = temp_df.groupby(['opponent'], as_index=False).count()
+    temp_df.sort_values('opponent', inplace=True)
+
+    return temp_df.head(3)

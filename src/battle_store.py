@@ -118,6 +118,7 @@ def add_losing_battle_team(account, team, battle):
     rulesets = battle['ruleset']
     inactive = battle['inactive']
     battle_id = battle['battle_queue_id_1']
+    opponent = battle['winner']
 
     cards = list(team['monsters'])
     cards.append(team['summoner'])
@@ -144,6 +145,7 @@ def add_losing_battle_team(account, team, battle):
                            'ruleset3': ruleset_split[2],
                            'inactive': inactive,
                            'battle_id': battle_id,
+                           'opponent': opponent,
                            }, index=[0])
         store.losing_big_df = pd.concat([store.losing_big_df, df], ignore_index=True)
 

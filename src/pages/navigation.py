@@ -1,15 +1,15 @@
 import logging
 
-from aio import ThemeSwitchAIO
 from dash import html, Output, Input, callback, dcc, State
 import dash_bootstrap_components as dbc
+from dash_bootstrap_templates import ThemeSwitchAIO
 
 from src import battle_store, collection_store
 from src.configuration import config
-from src.pages import main_page, page1, page2
+from src.pages import main_page, rating, nemesis
 from src.utils import store_util
 
-PLOTLY_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
+SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
 
 navbar = dbc.Navbar(
     dbc.Container(
@@ -18,7 +18,7 @@ navbar = dbc.Navbar(
                 # Use row and col to control vertical alignment of logo / brand
                 dbc.Row(
                     [
-                        dbc.Col(html.Img(src=PLOTLY_LOGO, height='30px')),
+                        dbc.Col(html.Img(src=SPL_LOGO, height='150px')),
                         dbc.Col(dbc.NavbarBrand('SPL Battle statistics', className='ms-2')),
                     ],
                     align='center',
@@ -31,14 +31,16 @@ navbar = dbc.Navbar(
                 dbc.NavbarSimple(
                     children=[
                         dbc.NavItem(dbc.NavLink('Home', href='/')),
-                        dbc.NavItem(dbc.NavLink('Page 1', href='/page1')),
-                        dbc.NavItem(dbc.NavLink('Page 2', href='/page2')),
+                        dbc.NavItem(dbc.NavLink('Rating', href='/rating')),
+                        dbc.NavItem(dbc.NavLink('Nemesis', href='/nemesis')),
                     ],
                     brand_href='/',
                 ),
             ),
             dbc.Col(
-                ThemeSwitchAIO(aio_id="theme", themes=[dbc.themes.MINTY, dbc.themes.CYBORG]),
+                ThemeSwitchAIO(aio_id="theme",
+                               themes=[dbc.themes.MINTY, dbc.themes.CYBORG],
+                               switch_props={'value': False}),
                 width='auto'),
             dbc.Col(
                 dbc.Button(
@@ -67,10 +69,10 @@ layout = html.Div([
 def display_page(pathname):
     if pathname == '/':
         return main_page.layout
-    if pathname == '/page1':
-        return page1.layout
-    if pathname == '/page2':
-        return page2.layout
+    if pathname == '/rating':
+        return rating.layout
+    if pathname == '/nemesis':
+        return nemesis.layout
     else:  # if redirected to unknown link
         return '404 Page Error! Please choose a link'
 

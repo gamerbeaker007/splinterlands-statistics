@@ -9,10 +9,11 @@ from src.static.static_values_enum import MatchType, CardType
 
 layout = dbc.Container([
     dbc.Row([
-        html.H1('Battle Statistics '),
+        html.H1('Statistics losing battles'),
+        html.P('Summoners and monster you lose most against'),
         dbc.Col(html.P('Filter on')),
         dbc.Col(dcc.Dropdown(options=['ALL'] + config.account_names,
-                             value='ALL',
+                             value=config.account_names[0],
                              id='dropdown-user-selection',
                              className='dbc'),
                 ),
