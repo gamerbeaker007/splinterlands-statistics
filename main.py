@@ -1,4 +1,5 @@
 import dash_bootstrap_components as dbc
+from dash_bootstrap_templates import load_figure_template
 from dash import Dash
 
 from src import battle_store, collection_store
@@ -14,12 +15,14 @@ def main():
     battle_store.process_battles()
     store_util.save_stores()
 
-
+    load_figure_template(["cyborg", "darkly"])
     app = Dash(__name__,
                external_stylesheets=[dbc.themes.DARKLY, dbc_css],
                meta_tags=[{"name": "viewport", "content": "width=device-width"}],
                suppress_callback_exceptions=True
                )
+
+
     app.layout = navigation.layout
 
     app.run_server(debug=True)
