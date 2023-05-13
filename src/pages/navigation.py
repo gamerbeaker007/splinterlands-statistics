@@ -1,9 +1,11 @@
 import logging
 
+from aio import ThemeSwitchAIO
 from dash import html, Output, Input, callback, dcc, State
 import dash_bootstrap_components as dbc
 
 from src import battle_store, collection_store
+from src.configuration import config
 from src.pages import main_page, page1, page2
 from src.utils import store_util
 
@@ -36,6 +38,9 @@ navbar = dbc.Navbar(
                 ),
             ),
             dbc.Col(
+                ThemeSwitchAIO(aio_id="theme", themes=[dbc.themes.MINTY, dbc.themes.CYBORG]),
+                width='auto'),
+            dbc.Col(
                 dbc.Button(
                     'Pull new data',
                     id='load-new-values',
@@ -43,8 +48,9 @@ navbar = dbc.Navbar(
                     className='ms-2', n_clicks=0
                 ),
                 width='auto',
-            ),html.Div(id='hidden-div', style={'display':'none'}),
-
+            ),
+            html.Div(id='hidden-div', style={'display': 'none'}),
+            html.Div(id='hidden-div1', style={'display': 'none'}),
 
         ]),
 )
@@ -70,7 +76,7 @@ def display_page(pathname):
 
 
 @callback(
-    Output('hidden-div', 'children'),
+    Output('hidden-div1', 'children'),
     Input('load-new-values', 'n_clicks'),
 )
 def update_output(n_clicks):
@@ -79,3 +85,11 @@ def update_output(n_clicks):
     battle_store.process_battles()
 
     store_util.save_stores()
+
+
+@callback(
+    Output('hidden-div', 'children'),
+    Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+)
+def generate_chart(toggle):
+    config.theme = 'minty' if toggle else 'cyborg'

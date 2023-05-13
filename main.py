@@ -15,9 +15,9 @@ def main():
     battle_store.process_battles()
     store_util.save_stores()
 
-    load_figure_template(["cyborg", "darkly"])
+    load_figure_template(["cyborg", "minty"])
     app = Dash(__name__,
-               external_stylesheets=[dbc.themes.DARKLY, dbc_css],
+               external_stylesheets=[dbc.themes.CYBORG, dbc_css],
                meta_tags=[{"name": "viewport", "content": "width=device-width"}],
                suppress_callback_exceptions=True
                )
