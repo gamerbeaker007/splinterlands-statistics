@@ -5,7 +5,7 @@ import pandas as pd
 
 from src.api import spl
 from src.configuration import config, store
-from src.static.static_values_enum import MatchType
+from src.static.static_values_enum import MatchType, Format
 
 
 def get_uid_array(team):
@@ -103,10 +103,16 @@ def add_rating_log(account, battle):
     else:
         final_rating = battle['player_2_rating_final']
 
+    # format = null when wild
+    if battle['format']:
+        match_format = battle['format']
+    else:
+        match_format = Format.WILD.value
+
     df = pd.DataFrame({'created_date': battle['created_date'],
                        'account': account,
                        'rating': final_rating,
-                       'format': battle['format'],
+                       'format': match_format,
                        }, index=[0])
     store.rating_df = pd.concat([store.rating_df, df], ignore_index=True)
 
