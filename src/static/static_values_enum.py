@@ -52,6 +52,7 @@ class Edition(Enum):
     reward = 3
     untamed = 4
     dice = 5
+    gladius = 6
     chaos = 7
     rift = 8
     soulbound = 10

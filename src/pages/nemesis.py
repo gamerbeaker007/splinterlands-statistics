@@ -5,6 +5,8 @@ from dash import html, dcc, Input, Output, callback
 
 from src import analyse
 from src.configuration import config
+from src.static import static_values_enum
+from src.static.static_values_enum import MatchType
 
 # Define the page layout
 layout = dbc.Container([
@@ -15,6 +17,10 @@ layout = dbc.Container([
                              id='dropdown-user-selection',
                              className='dbc'),
                 ),
+        dbc.Col(dcc.Dropdown(options=['ALL'] + static_values_enum.get_list_of_enum(MatchType),
+                             value='ALL',
+                             id='dropdown-match-type-selection',
+                             className='dbc')),
         html.Hr(),
         html.Br(),
         html.P('Your nemesis:'),
@@ -27,14 +33,15 @@ layout = dbc.Container([
 @callback(
     Output('nemesis', 'children'),
     Input('dropdown-user-selection', 'value'),
+    Input('dropdown-match-type-selection', 'value'),
 )
-def nemesis(account):
-    df = analyse.get_top_3_losing_account(account)
+def nemesis(account, filter_match_type):
+    df = analyse.get_top_3_losing_account(account, filter_match_type)
+    if not df.empty:
+        li = []
+        for index, row in df.iterrows():
+            li.append(html.Li(str(row.opponent) + " (" + str(row.battle_id) + ")"))
 
-    return html.Div(children=[
-        html.Ul(children=[
-            html.Li(str(df.iloc[0].opponent) + " (" + str(df.iloc[0].battle_id) + ")"),
-            html.Li(str(df.iloc[1].opponent) + " (" + str(df.iloc[1].battle_id) + ")"),
-            html.Li(str(df.iloc[2].opponent) + " (" + str(df.iloc[2].battle_id) + ")"),
-        ])
-    ])
+        return html.Div(children=[html.Ul(children=li)])
+    else:
+        return html.Div("NA")

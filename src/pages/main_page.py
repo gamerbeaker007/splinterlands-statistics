@@ -44,27 +44,30 @@ layout = dbc.Container([
 def update_table(filter_type, filter_user, filter_match_type):
     logging.info('Update table...')
 
-    # if ALL filter None :)
-    if filter_user == 'ALL':
-        filter_user = None
-    if filter_type == 'ALL':
-        filter_type = None
-    if filter_match_type == 'ALL':
-        filter_match_type = None
-
     df = analyse.get_losing_df(filter_account=filter_user, filter_match_type=filter_match_type, filter_type=filter_type)
+    if not df.empty:
+        df = df[['url', 'card_name', 'level', 'number_of_losses']]
+        return dash_table.DataTable(
+            # columns=[{"name": i, "id": i} for i in df.columns],
+            columns=[
+                {"id": "url", "name": "url", "presentation": "markdown"},
+                {"id": "card_name", "name": "card_name"},
+                {"id": "level", "name": "level"},
+                {"id": "number_of_losses", "name": "number_of_losses"},
 
-    return dash_table.DataTable(
-        columns=[{"name": i, "id": i} for i in df.columns],
-        data=df.to_dict("records"),
-        row_selectable=False,
-        row_deletable=False,
-        editable=False,
-        filter_action="native",
-        sort_action="native",
-        style_table={"overflowX": "auto"},
-        page_size=10,
-    ),
+            ],
+            data=df.to_dict("records"),
+            row_selectable=False,
+            row_deletable=False,
+            editable=False,
+            filter_action="native",
+            sort_action="native",
+            style_table={"overflowX": "auto"},
+            style_cell_conditional=[{"if": {"column_id": "url"}, "width": "200px"}, ],
+            page_size=10,
+        ),
+    else:
+        return dash_table.DataTable()
 
 
 @callback(
@@ -75,14 +78,6 @@ def update_table(filter_type, filter_user, filter_match_type):
 )
 def battle_count(filter_type, filter_user, filter_match_type):
     logging.info('Update battle count...')
-
-    # if ALL filter None :)
-    if filter_user == 'ALL':
-        filter_user = None
-    if filter_type == 'ALL':
-        filter_type = None
-    if filter_match_type == 'ALL':
-        filter_match_type = None
 
     bc = analyse.get_battles_df(filter_account=filter_user, filter_match_type=filter_match_type,
                                 filter_type=filter_type)
