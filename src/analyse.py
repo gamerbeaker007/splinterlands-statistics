@@ -1,19 +1,31 @@
 import logging
 
-from src.configuration import store, config
+import pandas as pd
+
+from src.configuration import store
+from src.static.static_values_enum import Edition
+
+
+def get_image_url_markdown(card_name, level, edition):
+    base_card_url = 'https://images.hive.blog/100x0/https://d36mxiodymuqjm.cloudfront.net/cards_by_level/'
+    edition_name = Edition(edition).name
+    markdown_prefix = "![" + str(card_name) + "]"
+    card_name = str(card_name).replace(" ", "%20")
+    card_url = str(base_card_url) + str(edition_name) + "/" + card_name + "_lv" + str(level) + ".png"
+    return str(markdown_prefix) + "(" + str(card_url) + ")"
 
 
 def get_losing_df(filter_account=None, filter_match_type=None, filter_type=None):
     temp_df = filter_battles(filter_account, filter_match_type, filter_type)
     if not temp_df.empty:
-        temp_df = temp_df.groupby(['card_detail_id', 'level', ], as_index=False).count()
-        # Keep columns
-        temp_df = temp_df[['card_detail_id', 'level', 'xp']]
-        temp_df.rename(columns={'xp': 'number_of_losses'}, inplace=True)
-        temp_df['name'] = temp_df.apply(
-            lambda row: (config.card_details_df.loc[row.card_detail_id]['name']), axis=1)
+        temp_df = temp_df.groupby(['card_detail_id', 'card_name', 'level', 'edition'], as_index=False)\
+            .agg(number_of_losses=pd.NamedAgg(column='xp', aggfunc='count'))
+        temp_df['url'] = temp_df.apply(lambda row: get_image_url_markdown(row['card_name'],
+                                                                          row['level'],
+                                                                          row['edition']), axis=1)
 
         temp_df.sort_values('number_of_losses', ascending=False, inplace=True)
+
     return temp_df
 
 

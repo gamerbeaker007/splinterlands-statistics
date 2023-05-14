@@ -15,9 +15,10 @@ def get_uid_array(team):
     return uid_array
 
 
-def update_battle_store_per_card(account, team, battle, win):
+def update_battle_store_card_specific(account, team, battle):
     match_type = battle['match_type']
     match_format = battle['format']
+    win = True if battle['winner'] == account else False
 
     empty = store.battle_df.empty
     mask = (False)
@@ -51,7 +52,7 @@ def update_battle_store_per_card(account, team, battle, win):
             store.battle_df = pd.concat([store.battle_df, df], ignore_index=True)
 
 
-def add_battle_log(account, team, battle):
+def add_battle_store_big_my(account, team, battle):
     match_type = battle['match_type']
     match_format = battle['format']
     created_date = battle['created_date']
@@ -129,7 +130,9 @@ def add_losing_battle_team(account, team, battle):
     for card in cards:
         # add new row
         card_id = card['card_detail_id']
+        card_name = config.card_details_df.loc[card_id]['name']
         df = pd.DataFrame({'card_detail_id': card_id,
+                           'card_name': card_name,
                            'card_type': config.card_details_df.loc[card_id]['type'],
                            'xp': card['xp'],
                            'gold': card['gold'],
@@ -181,13 +184,12 @@ def process_battle(account):
                     my_team = battle_details['team2']
                     opponent_team = battle_details['team1']
 
-                add_battle_log(account,
-                               my_team,
-                               battle)
-                update_battle_store_per_card(account,
-                                             my_team,
-                                             battle,
-                                             True if winner_name == account else False)
+                add_battle_store_big_my(account,
+                                        my_team,
+                                        battle)
+                update_battle_store_card_specific(account,
+                                                  my_team,
+                                                  battle)
 
                 # If a ranked match also log the rating
                 if match_type and match_type == MatchType.RANKED.value:
