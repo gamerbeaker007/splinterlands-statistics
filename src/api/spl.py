@@ -37,4 +37,3 @@ def get_battle_history_df(account_name):
         return pd.DataFrame(result.json()['battles'])
     else:
         return None
-

@@ -1,5 +1,9 @@
 from enum import Enum
 
+league_ratings_all = [0, 400, 700, 1000, 1300, 1600, 1900, 2200, 2500, 2800, 3100, 3400, 3700, 4200, 4700, 5100]
+league_ratings = [0, 100, 1000, 1900, 2800, 3700]
+league_colors = ['lightgray', 'brown', 'gray', 'yellow', 'purple', 'orange']
+
 
 class Format(Enum):
     MODERN = 'modern'
