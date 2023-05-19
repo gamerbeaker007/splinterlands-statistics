@@ -64,14 +64,23 @@ def add_battle_store_big_my(account, team, battle):
     result = "win" if winner == account else "loss"
 
 
+    cards = list(team['monsters'])
+    cards.append(team['summoner'])
     ruleset_split = ['None', 'None', 'None']
     for idx, ruleset in enumerate(rulesets.split('|')):
         ruleset_split[idx] = ruleset
 
-    uid_arr = get_uid_array(team)
-    for uid in uid_arr:
+    for card in cards:
         # add new row
-        df = pd.DataFrame({'uid': uid,
+        card_id = card['card_detail_id']
+        card_name = config.card_details_df.loc[card_id]['name']
+        df = pd.DataFrame({'card_detail_id': card_id,
+                           'card_name': card_name,
+                           'card_type': config.card_details_df.loc[card_id]['type'],
+                           'xp': card['xp'],
+                           'gold': card['gold'],
+                           'level': card['level'],
+                           'edition': card['edition'],
                            'account': account,
                            'created_date': created_date,
                            'match_type': match_type,

@@ -34,7 +34,7 @@ def update_modern_graph(account, toggle):
     theme = config.light_theme if toggle else config.dark_theme
 
     df = get_rating_df(account, Format.MODERN.value)
-    fig = px.line(df, x='created_date', y='rating', color='account', template=theme)
+    fig = px.scatter(df, x='created_date', y='rating', color='account', template=theme)
     return fig
 
 
@@ -47,7 +47,7 @@ def update_wild_graph(account, toggle):
     theme = config.light_theme if toggle else config.dark_theme
 
     df = get_rating_df(account, Format.WILD.value)
-    fig = px.line(df, x='created_date', y='rating', color='account', template=theme)
+    fig = px.scatter(df, x='created_date', y='rating', color='account', template=theme)
     return fig
 
 

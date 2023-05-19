@@ -6,7 +6,7 @@ from dash_bootstrap_templates import ThemeSwitchAIO
 
 from src import battle_store, collection_store
 from src.configuration import config
-from src.pages import main_page, rating, nemesis
+from src.pages import main_page, rating, nemesis, losing
 from src.utils import store_util
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
@@ -31,6 +31,7 @@ navbar = dbc.Navbar(
                 dbc.NavbarSimple(
                     children=[
                         dbc.NavItem(dbc.NavLink('Home', href='/')),
+                        dbc.NavItem(dbc.NavLink('Losing', href='/losing')),
                         dbc.NavItem(dbc.NavLink('Rating', href='/rating')),
                         dbc.NavItem(dbc.NavLink('Nemesis', href='/nemesis')),
                     ],
@@ -69,6 +70,8 @@ layout = html.Div([
 def display_page(pathname):
     if pathname == '/':
         return main_page.layout
+    if pathname == '/losing':
+        return losing.layout
     if pathname == '/rating':
         return rating.layout
     if pathname == '/nemesis':
