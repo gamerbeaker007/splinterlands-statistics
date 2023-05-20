@@ -25,6 +25,24 @@ def load_stores():
     if os.path.isfile(store.losing_big_file):
         store.losing_big_df = pd.read_csv(store.losing_big_file, index_col=0)
 
+    if os.path.isfile(store.season_dec_file):
+        store.season_dec_df = pd.read_csv(store.season_dec_file, index_col=0)
+
+    if os.path.isfile(store.season_merits_file):
+        store.season_merits_df = pd.read_csv(store.season_merits_file, index_col=0)
+
+    if os.path.isfile(store.season_unclaimed_sps_file):
+        store.season_unclaimed_sps_df = pd.read_csv(store.season_unclaimed_sps_file, index_col=0)
+
+    if os.path.isfile(store.season_sps_file):
+        store.season_sps_df = pd.read_csv(store.season_sps_file, index_col=0)
+
+    if os.path.isfile(store.season_vouchers_file):
+        store.season_vouchers_df = pd.read_csv(store.season_vouchers_file, index_col=0)
+
+    if os.path.isfile(store.season_credits_file):
+        store.season_credits_df = pd.read_csv(store.season_credits_file, index_col=0)
+
 
 def save_stores():
     store.last_processed_df.sort_index().to_csv(store.last_processed_file)
@@ -33,3 +51,9 @@ def save_stores():
     store.battle_big_df.sort_index().to_csv(store.battle_big_file)
     store.rating_df.sort_index().to_csv(store.rating_file)
     store.losing_big_df.sort_index().to_csv(store.losing_big_file)
+    store.season_dec_df.sort_index().to_csv(store.season_dec_file)
+    store.season_merits_df.sort_index().to_csv(store.season_merits_file)
+    store.season_unclaimed_sps_df.sort_index().to_csv(store.season_unclaimed_sps_file)
+    store.season_sps_df.sort_index().to_csv(store.season_sps_file)
+    store.season_vouchers_df.sort_index().to_csv(store.season_vouchers_file)
+    store.season_credits_df.sort_index().to_csv(store.season_credits_file)

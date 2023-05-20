@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import Dash
 from dash_bootstrap_templates import load_figure_template
 
-from src import battle_store, collection_store
+from src import battle_store, collection_store, balances_info
 from src.configuration import config
 from src.pages import navigation
 from src.static.static_values_enum import Edition
@@ -26,6 +26,7 @@ def get_image_url(card_name, level, edition, gold):
 
 def main():
     store_util.load_stores()
+    # balances_info.get_balances()
     collection_store.update_collection()
     battle_store.process_battles()
 

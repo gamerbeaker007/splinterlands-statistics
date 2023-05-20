@@ -85,11 +85,11 @@ def get_my_battles_df(filter_user):
         total_df['battles'] = total_df.win + total_df.loss
         total_df['win_ratio'] = total_df.win / total_df.battles
         total_df['win_percentage'] = total_df.win_ratio * 100
-
+        total_df = total_df.round(2)
         total_df['url'] = total_df.apply(lambda row: get_image_url_markdown(row['card_name'],
                                                                             row['level'],
                                                                             row['edition']), axis=1)
 
-        total_df.sort_values('win_percentage', ascending=False, inplace=True)
+        total_df.sort_values(['battles', 'win_percentage'], ascending=False, inplace=True)
 
     return total_df
