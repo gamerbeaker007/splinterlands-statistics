@@ -43,24 +43,19 @@ def get_balances_account(account_name):
 
 def process_season_balances(balance_df, store_copy, account_name, season_array):
     if not balance_df.empty:
-        season_end_times = config.season_end_dates_array
         for season_id in season_array:
-            end_date = [season_end_time['date'] for season_end_time in season_end_times if
-                        season_end_time["id"] == season_id][0]
-            start_date = [season_end_time['date'] for season_end_time in season_end_times if
-                          season_end_time["id"] == season_id - 1][0]
+            end_date = store.season_end_dates_df.loc[(store.season_end_dates_df.id == season_id)]['end_date'].values[0]
+            start_date = store.season_end_dates_df.loc[(store.season_end_dates_df.id == season_id -1)]['end_date'].values[0]
 
             balance_df.created_date = pd.to_datetime(balance_df.created_date)
             balance_df.amount = pd.to_numeric(balance_df.amount)
 
             for search_type in balance_df['type'].unique().tolist():
-                logging.info("Processing (" + str(account_name) + ") search_type: " + str(search_type))
+                logging.info("Processing (" + str(account_name) + ") type: " + str(search_type))
                 # when season rewards are found these always belong to a previous season (timeframe)
                 if search_type == 'season_rewards':
-                    end_date = [season_end_time['date'] for season_end_time in season_end_times if
-                                season_end_time["id"] == season_id + 1][0]
-                    start_date = [season_end_time['date'] for season_end_time in season_end_times if
-                                  season_end_time["id"] == season_id][0]
+                    end_date = store.season_end_dates_df.loc[(store.season_end_dates_df.id == season_id + 1)]['end_date'].values[0]
+                    start_date = store.season_end_dates_df.loc[(store.season_end_dates_df.id == season_id)]['end_date'].values[0]
 
                 balance_mask = (balance_df['created_date'] > start_date) & (balance_df['created_date'] <= end_date) & (
                         balance_df['type'] == search_type)
@@ -78,10 +73,11 @@ def determine_first_season_id_played(balance_history_dec_df):
     first_earned_date_str = balance_history_dec_df.created_date.sort_values().values[0]
     first_earned_date = parser.parse(first_earned_date_str)
 
-    season_end_times = config.season_end_dates_array
+    season_end_times = store.season_end_dates_df
     # determine which was the first season earning start
-    for season_end_time in season_end_times:
-        if first_earned_date <= season_end_time['date']:
+    for index, season_end_time in season_end_times.iterrows():
+        # for season_end_time in season_end_times:
+        if first_earned_date <= parser.parse(season_end_time['end_date']):
             return season_end_time['id']
 
 

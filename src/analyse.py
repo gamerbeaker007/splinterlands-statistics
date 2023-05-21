@@ -61,13 +61,15 @@ def filter_battles(df, filter_account=None, filter_match_type=None, filter_type=
 
 
 def get_top_3_losing_account(account, filter_match_type):
-    temp_df = filter_battles(store.losing_big_df, filter_account=account, filter_match_type=filter_match_type)
-    temp_df = temp_df[['battle_id', 'opponent']]
-    temp_df = temp_df.drop_duplicates(subset=['battle_id', 'opponent'])
-    temp_df = temp_df.groupby(['opponent'], as_index=False).count()
-    temp_df.sort_values('battle_id', ascending=False, inplace=True)
-
-    return temp_df.head(3)
+    if store.losing_big_df.empty:
+        return store.losing_big_df
+    else:
+        temp_df = filter_battles(store.losing_big_df, filter_account=account, filter_match_type=filter_match_type)
+        temp_df = temp_df[['battle_id', 'opponent']]
+        temp_df = temp_df.drop_duplicates(subset=['battle_id', 'opponent'])
+        temp_df = temp_df.groupby(['opponent'], as_index=False).count()
+        temp_df.sort_values('battle_id', ascending=False, inplace=True)
+        return temp_df.head(3)
 
 
 def get_my_battles_df(filter_user):

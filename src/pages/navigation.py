@@ -99,10 +99,3 @@ def update_output(n_clicks):
 
         store_util.save_stores()
 
-
-@app.callback(
-    Output('hidden-div', 'children'),
-    Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
-)
-def generate_chart(toggle):
-    config.theme = 'minty' if toggle else 'cyborg'

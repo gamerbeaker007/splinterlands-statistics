@@ -49,27 +49,19 @@ def get_current_season():
     return current_season
 
 
-def get_season_end_times():
-    season = get_current_season()
-    till_season_id = season['id']
-    logging.info("Retrieve season end dates for '" + str(till_season_id) + "' seasons")
-    # https://api.splinterlands.com/season?id=1
-    season_end_dates_array = []
-
-    for season in range(1, till_season_id + 1):
-        address = base_url + "season?id=" + str(season)
-        result = http.get(address)
-        if result.status_code == 200:
-            date = parser.parse(str(result.json()['ends']))
-            season_end_dates_array.append({'id': season, 'date': date})
-        else:
-            logging.error("Failed call: '" + str(address) + "'")
-            logging.error("Unable to determine season end date return code: " + str(result.status_code))
-            logging.error("This interrupts all other calculations, try re-execution.")
-            logging.error("Stopping program now ... ")
-            exit(1)
-
-    return season_end_dates_array
+def get_season_end_time(season_id):
+    address = base_url + "season?id=" + str(season_id)
+    result = http.get(address)
+    if result.status_code == 200:
+        date = parser.parse(str(result.json()['ends']))
+        result = pd.DataFrame({'id': season_id, 'end_date': date}, index=[0])
+    else:
+        logging.error("Failed call: '" + str(address) + "'")
+        logging.error("Unable to determine season end date return code: " + str(result.status_code))
+        logging.error("This interrupts all other calculations, try re-execution.")
+        logging.error("Stopping program now ... ")
+        exit(1)
+    return result
 
 
 def get_balance_history_for_token(username, token="DEC", from_date=None, unclaimed_sps=False):

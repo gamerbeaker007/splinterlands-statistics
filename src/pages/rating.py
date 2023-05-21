@@ -46,27 +46,33 @@ def create_rating_graph(df, theme):
 
 
 @app.callback(Output('modern-rating-graph', 'figure'),
-          Input('dropdown-user-selection', 'value'),
-          Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
-          )
+              Input('dropdown-user-selection', 'value'),
+              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              )
 def update_modern_graph(account, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
 
     df = get_rating_df(account, Format.MODERN.value)
-    return create_rating_graph(df, theme)
+    if df.empty:
+        return blank_fig(theme)
+    else:
+        return create_rating_graph(df, theme)
 
 
 @app.callback(Output('wild-rating-graph', 'figure'),
-          Input('dropdown-user-selection', 'value'),
-          Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
-          )
+              Input('dropdown-user-selection', 'value'),
+              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              )
 def update_wild_graph(account, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
 
     df = get_rating_df(account, Format.WILD.value)
-    return create_rating_graph(df, theme)
+    if df.empty:
+        return blank_fig(theme)
+    else:
+        return create_rating_graph(df, theme)
 
 
 def get_rating_df(account, match_format):
@@ -75,6 +81,18 @@ def get_rating_df(account, match_format):
     else:
         df = store.rating_df.loc[(store.rating_df.account == account)]
 
-    df = df.loc[(store.rating_df.format == match_format)].copy()
-    df.sort_values(by='created_date', inplace=True)
-    return df
+    if df.empty:
+        return df
+    else:
+        df = df.loc[(store.rating_df.format == match_format)].copy()
+        df.sort_values(by='created_date', inplace=True)
+        return df
+
+
+def blank_fig(theme):
+    fig = px.scatter()
+    fig.update_layout(template=theme)
+    fig.update_xaxes(showgrid=False, showticklabels=False, zeroline=False)
+    fig.update_yaxes(showgrid=False, showticklabels=False, zeroline=False)
+
+    return fig

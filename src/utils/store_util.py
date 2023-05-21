@@ -1,11 +1,31 @@
+import logging
 import os
 
 import pandas as pd
 
+from src.api import spl
 from src.configuration import store
 
 
+def update_season_end_dates():
+    if store.season_end_dates_df.empty:
+        from_season_id = 1
+    else:
+        from_season_id = store.season_end_dates_df.id.max() + 1
+
+    till_season_id = spl.get_current_season()['id']
+    logging.info("Update season end dates for '" + str(till_season_id) + "' seasons")
+    for season_id in range(from_season_id, till_season_id + 1):
+        logging.info("Update season end date for season: '" + str(season_id))
+
+        store.season_end_dates_df = pd.concat([store.season_end_dates_df, spl.get_season_end_time(season_id)])
+    save_stores()
+
+
 def load_stores():
+    if os.path.isfile(store.season_end_dates_file):
+        store.season_end_dates_df = pd.read_csv(store.season_end_dates_file, index_col=0)
+
     if os.path.isfile(store.accounts_file):
         store.accounts_df = pd.read_csv(store.accounts_file, index_col=0)
 
@@ -48,6 +68,7 @@ def load_stores():
 
 
 def save_stores():
+    store.season_end_dates_df.sort_index().to_csv(store.season_end_dates_file)
     store.accounts_df.sort_index().to_csv(store.accounts_file)
     store.last_processed_df.sort_index().to_csv(store.last_processed_file)
     store.battle_df.sort_index().to_csv(store.battle_file)
@@ -74,7 +95,7 @@ def get_first_account_name():
     if store.accounts_df.empty:
         return ""
     else:
-        return store.accounts_df.loc[0]
+        return store.accounts_df.loc[0].account_name
 
 
 def add_account(account_name):
