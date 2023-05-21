@@ -1,11 +1,10 @@
 import logging
 
-from dash import html, callback, Output, Input, dash_table, dcc, ctx
 import dash_bootstrap_components as dbc
-from src import analyse, balances_info
-from src.configuration import config
-from src.static import static_values_enum
-from src.static.static_values_enum import MatchType, CardType
+from dash import html, Output, Input, ctx
+
+from main import app
+from src import balances_info
 from src.utils import store_util
 
 layout = dbc.Container([
@@ -26,7 +25,7 @@ layout = dbc.Container([
 ])
 
 
-@callback(
+@app.callback(
     Output('hidden-div-balance', 'children'),
     Input('update-season-btn', 'n_clicks'),
 )

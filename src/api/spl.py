@@ -129,3 +129,12 @@ def get_balance_history_for_token_impl(username, token="DEC", offset=0, limit=10
         return response.json()
     else:
         return []
+
+
+def player_exist(account_name):
+    address = base_url + "players/details?name=" + str(account_name)
+    result = http.get(address)
+    if result.status_code == 200 and 'error' not in result.json():
+        return True
+    else:
+        return False

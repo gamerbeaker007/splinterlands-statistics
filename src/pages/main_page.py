@@ -1,17 +1,17 @@
 import dash_bootstrap_components as dbc
-import pandas as pd
-from dash import html, callback, Output, Input, dash_table, dcc
+from dash import html, Output, Input, dash_table, dcc
 
+from main import app
 from src import analyse
-from src.configuration import config
+from src.utils import store_util
 
 layout = dbc.Container([
     dbc.Row([
         html.H1('Statistics battles battles'),
         html.P('Summoners and monster you lose most against'),
         dbc.Col(html.P('Filter on')),
-        dbc.Col(dcc.Dropdown(config.account_names,
-                             value=config.account_names[0],
+        dbc.Col(dcc.Dropdown(store_util.get_account_names(),
+                             value=store_util.get_first_account_name(),
                              id='dropdown-user-selection',
                              className='dbc'),
                 ),
@@ -22,7 +22,7 @@ layout = dbc.Container([
 ])
 
 
-@callback(
+@app.callback(
     Output('main-table', 'children'),
     Input('dropdown-user-selection', 'value'),
 )

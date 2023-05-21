@@ -6,6 +6,7 @@ import pandas as pd
 from src.api import spl
 from src.configuration import config, store
 from src.static.static_values_enum import MatchType, Format
+from src.utils import store_util
 
 
 def get_uid_array(team):
@@ -242,7 +243,7 @@ def is_surrender(battle_details):
 
 def process_battles():
     logging.info("Start processing battles")
-    for account in config.account_names:
+    for account in store_util.get_account_names():
         logging.info("...processing: " + account)
         process_battle(account)
     logging.info("End processing battles")

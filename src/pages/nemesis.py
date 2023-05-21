@@ -1,19 +1,17 @@
-# Import necessary libraries
-
 import dash_bootstrap_components as dbc
-from dash import html, dcc, Input, Output, callback
+from dash import html, dcc, Input, Output
 
+from main import app
 from src import analyse
-from src.configuration import config
 from src.static import static_values_enum
 from src.static.static_values_enum import MatchType
+from src.utils import store_util
 
-# Define the page layout
 layout = dbc.Container([
     dbc.Row([
         html.Center(html.H1("Nemesis, ranked matches")),
-        dbc.Col(dcc.Dropdown(options=config.account_names,
-                             value=config.account_names[0],
+        dbc.Col(dcc.Dropdown(options=store_util.get_account_names(),
+                             value=store_util.get_first_account_name(),
                              id='dropdown-user-selection',
                              className='dbc'),
                 ),
@@ -30,7 +28,7 @@ layout = dbc.Container([
 ])
 
 
-@callback(
+@app.callback(
     Output('nemesis', 'children'),
     Input('dropdown-user-selection', 'value'),
     Input('dropdown-match-type-selection', 'value'),

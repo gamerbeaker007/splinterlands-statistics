@@ -1,19 +1,21 @@
 import logging
 
-from dash import html, callback, Output, Input, dash_table, dcc
 import dash_bootstrap_components as dbc
+from dash import html, Output, Input, dash_table, dcc
+
 from src import analyse
-from src.configuration import config
+from src.pages.main_dash import app
 from src.static import static_values_enum
 from src.static.static_values_enum import MatchType, CardType
+from src.utils import store_util
 
 layout = dbc.Container([
     dbc.Row([
         html.H1('Statistics losing battles'),
         html.P('Summoners and monster you lose most against'),
         dbc.Col(html.P('Filter on')),
-        dbc.Col(dcc.Dropdown(options=['ALL'] + config.account_names,
-                             value=config.account_names[0],
+        dbc.Col(dcc.Dropdown(options=['ALL'] + store_util.get_account_names(),
+                             value=store_util.get_first_account_name(),
                              id='dropdown-user-selection',
                              className='dbc'),
                 ),
@@ -35,7 +37,7 @@ layout = dbc.Container([
 ])
 
 
-@callback(
+@app.callback(
     Output('losing-table', 'children'),
     Input('dropdown-type-selection', 'value'),
     Input('dropdown-user-selection', 'value'),
@@ -70,7 +72,7 @@ def update_losing_table(filter_type, filter_user, filter_match_type):
         return dash_table.DataTable()
 
 
-@callback(
+@app.callback(
     Output('battle-count', 'children'),
     Input('dropdown-type-selection', 'value'),
     Input('dropdown-user-selection', 'value'),

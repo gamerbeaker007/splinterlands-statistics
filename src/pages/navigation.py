@@ -1,12 +1,13 @@
 import logging
 
-from dash import html, Output, Input, callback, dcc, State
 import dash_bootstrap_components as dbc
+from dash import html, Output, Input, dcc, ctx
 from dash_bootstrap_templates import ThemeSwitchAIO
 
+from main import app
 from src import battle_store, collection_store
 from src.configuration import config
-from src.pages import main_page, rating, nemesis, losing, balance
+from src.pages import main_page, rating, nemesis, losing, balance, config_page
 from src.utils import store_util
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
@@ -35,6 +36,7 @@ navbar = dbc.Navbar(
                         dbc.NavItem(dbc.NavLink('Rating', href='/rating')),
                         dbc.NavItem(dbc.NavLink('Nemesis', href='/nemesis')),
                         dbc.NavItem(dbc.NavLink('Balance', href='/balance')),
+                        dbc.NavItem(dbc.NavLink('Config', href='/config')),
                     ],
                     brand_href='/',
                 ),
@@ -66,7 +68,7 @@ layout = html.Div([
 ])
 
 
-@callback(Output('page-content', 'children'),
+@app.callback(Output('page-content', 'children'),
           [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == '/':
@@ -79,23 +81,26 @@ def display_page(pathname):
         return nemesis.layout
     if pathname == '/balance':
         return balance.layout
+    if pathname == '/config':
+        return config_page.layout
     else:  # if redirected to unknown link
         return '404 Page Error! Please choose a link'
 
 
-@callback(
+@app.callback(
     Output('hidden-div1', 'children'),
     Input('load-new-values', 'n_clicks'),
 )
 def update_output(n_clicks):
-    logging.info(n_clicks)
-    collection_store.update_collection()
-    battle_store.process_battles()
+    if "load-new-values" == ctx.triggered_id:
+        logging.info("Update battle button pressed")
+        collection_store.update_collection()
+        battle_store.process_battles()
 
-    store_util.save_stores()
+        store_util.save_stores()
 
 
-@callback(
+@app.callback(
     Output('hidden-div', 'children'),
     Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
 )

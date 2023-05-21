@@ -1,18 +1,19 @@
-# Import necessary libraries
 import dash_bootstrap_components as dbc
 import numpy as np
 import plotly.express as px
-from dash import html, dcc, Output, callback, Input
+from dash import html, dcc, Output, Input
 from dash_bootstrap_templates import ThemeSwitchAIO
 
+from main import app
 from src.configuration import config, store
 from src.static import static_values_enum
 from src.static.static_values_enum import Format, RatingLevel
+from src.utils import store_util
 
 # Define the page layout
 layout = dbc.Container([
     dbc.Row([
-        dbc.Col(dcc.Dropdown(options=['ALL'] + config.account_names,
+        dbc.Col(dcc.Dropdown(options=['ALL'] + store_util.get_account_names(),
                              value='ALL',
                              id='dropdown-user-selection',
                              className='dbc'),
@@ -44,7 +45,7 @@ def create_rating_graph(df, theme):
     return fig
 
 
-@callback(Output('modern-rating-graph', 'figure'),
+@app.callback(Output('modern-rating-graph', 'figure'),
           Input('dropdown-user-selection', 'value'),
           Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
           )
@@ -56,7 +57,7 @@ def update_modern_graph(account, toggle):
     return create_rating_graph(df, theme)
 
 
-@callback(Output('wild-rating-graph', 'figure'),
+@app.callback(Output('wild-rating-graph', 'figure'),
           Input('dropdown-user-selection', 'value'),
           Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
           )

@@ -36,39 +36,41 @@ def get_balances_account(account_name):
         store.season_credits_df = process_season_balances(credits_df, store.season_credits_df.copy(), account_name,
                                                           season_array)
 
+        logging.info("Get balances for account (" + str(account_name) + ") Done")
         # get all info
         store_util.save_stores()
 
 
 def process_season_balances(balance_df, store_copy, account_name, season_array):
-    season_end_times = config.season_end_dates_array
-    for season_id in season_array:
-        end_date = [season_end_time['date'] for season_end_time in season_end_times if
-                    season_end_time["id"] == season_id][0]
-        start_date = [season_end_time['date'] for season_end_time in season_end_times if
-                      season_end_time["id"] == season_id - 1][0]
+    if not balance_df.empty:
+        season_end_times = config.season_end_dates_array
+        for season_id in season_array:
+            end_date = [season_end_time['date'] for season_end_time in season_end_times if
+                        season_end_time["id"] == season_id][0]
+            start_date = [season_end_time['date'] for season_end_time in season_end_times if
+                          season_end_time["id"] == season_id - 1][0]
 
-        balance_df.created_date = pd.to_datetime(balance_df.created_date)
-        balance_df.amount = pd.to_numeric(balance_df.amount)
+            balance_df.created_date = pd.to_datetime(balance_df.created_date)
+            balance_df.amount = pd.to_numeric(balance_df.amount)
 
-        for search_type in balance_df['type'].unique().tolist():
-            logging.info("Processing (" + str(account_name) + ") search_type" + str(search_type))
-            # when season rewards are found these always belong to a previous season (timeframe)
-            if search_type == 'season_rewards':
-                end_date = [season_end_time['date'] for season_end_time in season_end_times if
-                            season_end_time["id"] == season_id + 1][0]
-                start_date = [season_end_time['date'] for season_end_time in season_end_times if
-                              season_end_time["id"] == season_id][0]
+            for search_type in balance_df['type'].unique().tolist():
+                logging.info("Processing (" + str(account_name) + ") search_type: " + str(search_type))
+                # when season rewards are found these always belong to a previous season (timeframe)
+                if search_type == 'season_rewards':
+                    end_date = [season_end_time['date'] for season_end_time in season_end_times if
+                                season_end_time["id"] == season_id + 1][0]
+                    start_date = [season_end_time['date'] for season_end_time in season_end_times if
+                                  season_end_time["id"] == season_id][0]
 
-            balance_mask = (balance_df['created_date'] > start_date) & (balance_df['created_date'] <= end_date) & (
-                    balance_df['type'] == search_type)
-            if 'season' not in store_copy.columns.tolist() or \
-                    store_copy.loc[(store_copy.season == season_id) & (store_copy.player == account_name)].empty:
-                store_copy = pd.concat([store_copy,
-                                        pd.DataFrame({'season': season_id,
-                                                      'player': account_name}, index=[0])])
+                balance_mask = (balance_df['created_date'] > start_date) & (balance_df['created_date'] <= end_date) & (
+                        balance_df['type'] == search_type)
+                if 'season' not in store_copy.columns.tolist() or \
+                        store_copy.loc[(store_copy.season == season_id) & (store_copy.player == account_name)].empty:
+                    store_copy = pd.concat([store_copy,
+                                            pd.DataFrame({'season': season_id,
+                                                          'player': account_name}, index=[0])], ignore_index=True)
 
-            store_copy.loc[(store_copy.season == season_id) & (store_copy.player == account_name), search_type] = balance_df.loc[balance_mask].amount.sum()
+                store_copy.loc[(store_copy.season == season_id) & (store_copy.player == account_name), search_type] = balance_df.loc[balance_mask].amount.sum()
     return store_copy
 
 
@@ -84,5 +86,5 @@ def determine_first_season_id_played(balance_history_dec_df):
 
 
 def get_balances():
-    for account in config.account_names:
+    for account in store_util.get_account_names():
         get_balances_account(account)

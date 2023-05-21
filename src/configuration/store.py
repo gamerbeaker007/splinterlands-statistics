@@ -4,6 +4,7 @@ import pandas as pd
 
 from src.configuration import config
 
+accounts_file = os.path.join(config.store_dir, 'accounts.csv')
 battle_big_file = os.path.join(config.store_dir, 'battles_big.csv')
 losing_big_file = os.path.join(config.store_dir, 'losing_big.csv')
 battle_file = os.path.join(config.store_dir, 'battles.csv')
@@ -17,6 +18,7 @@ season_sps_file = os.path.join(config.store_dir, 'season_sps.csv')
 season_vouchers_file = os.path.join(config.store_dir, 'season_vouchers.csv')
 season_credits_file = os.path.join(config.store_dir, 'season_credits.csv')
 
+accounts_df = pd.DataFrame()
 battle_df = pd.DataFrame()
 battle_big_df = pd.DataFrame()
 losing_big_df = pd.DataFrame()
@@ -29,3 +31,5 @@ season_sps_df = pd.DataFrame()
 season_unclaimed_sps_df = pd.DataFrame()
 season_vouchers_df = pd.DataFrame()
 season_credits_df = pd.DataFrame()
+
+
