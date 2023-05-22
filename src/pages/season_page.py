@@ -10,7 +10,7 @@ from main import app
 from src import season_balances_info, season_battle_info
 from src.configuration import config, store
 from src.static.static_values_enum import Leagues
-from src.utils import store_util
+from src.utils import store_util, chart_util
 
 layout = dbc.Container([
     dbc.Row([
@@ -33,11 +33,23 @@ layout = dbc.Container([
                 ),
     ]),
     dbc.Row([
+        dbc.Col(html.H1("Modern")),
+        dbc.Col(html.H1("Wild")),
+    ]),
+    dbc.Row([
         dbc.Col(
             dcc.Graph(id="modern-season-rating-graph"),
         ),
         dbc.Col(
             dcc.Graph(id="wild-season-rating-graph"),
+        ),
+    ]),
+    dbc.Row([
+        dbc.Col(
+            dcc.Graph(id="modern-season-battle-graph"),
+        ),
+        dbc.Col(
+            dcc.Graph(id="wild-season-battle-graph"),
         ),
     ]),
     dbc.Row([
@@ -69,9 +81,92 @@ def update_output(n_clicks):
 def update_modern_graph(account, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    season_df = store.season_modern_battle_info_df.loc[(store.season_modern_battle_info_df.player == account)].copy()
-    return plot_season_stats_rating(season_df, theme)
+    if store.season_modern_battle_info_df.empty:
+        return chart_util.blank_fig(theme)
+    else:
+        season_df = store.season_modern_battle_info_df.loc[
+            (store.season_modern_battle_info_df.player == account)].copy()
+        return plot_season_stats_rating(season_df, theme)
 
+@app.callback(Output('wild-season-battle-graph', 'figure'),
+              Input('dropdown-user-selection', 'value'),
+              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              )
+def update_wild_battle_graph(account, toggle):
+    # TODO check which order callbacks are done
+    theme = config.light_theme if toggle else config.dark_theme
+    if store.season_wild_battle_info_df.empty:
+        return chart_util.blank_fig(theme)
+    else:
+        season_df = store.season_wild_battle_info_df.loc[
+            (store.season_wild_battle_info_df.player == account)].copy()
+        return plot_season_stats_battle(season_df, theme)
+
+
+def plot_season_stats_battle(season_df, theme):
+    season_df = season_df.sort_values(by=['season'])
+    season_df = season_df.dropna(subset=['rating'])
+    season_df['win_pct'] = season_df.apply(lambda row: (row.wins / row.battles * 100), axis=1)
+
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    trace3 = go.Scatter(x=season_df.season,
+                        y=season_df.win_pct,
+                        mode='lines+markers',
+                        name='win percentage')
+    trace4 = go.Scatter(x=season_df.season,
+                        y=season_df.battles,
+                        mode='lines+markers',
+                        name='battles')
+    trace5 = go.Scatter(x=season_df.season,
+                        y=season_df.wins,
+                        mode='lines+markers',
+                        name='wins')
+    fig.add_trace(trace3, secondary_y=True)
+    fig.add_trace(trace4)
+    fig.add_trace(trace5)
+    fig.update_xaxes(showgrid=True, gridwidth=1)#, gridcolor=GRID_COLOR)
+    fig.update_yaxes(showgrid=True, gridwidth=1)#, gridcolor=GRID_COLOR)
+
+    fig.update_layout(
+        template=theme,
+        # paper_bgcolor=PAPER_BGCOLOR,
+        # plot_bgcolor=PLOT_BGCOLOR,
+        # font=TEXT_FONT,
+
+        xaxis=dict(
+            tickvals=season_df.season,
+        ),
+        yaxis1=dict(
+            # zerolinecolor=GRID_COLOR,
+            showgrid=False,
+            range=[0, season_df.battles.max() + 20],
+            title="battles",
+        ),
+        yaxis2=dict(
+            # zerolinecolor=GRID_COLOR,
+            showgrid=False,
+            overlaying='y',
+            side='right',
+            anchor='x2',
+            range=[0, 100],
+            title='win (%)'),
+    )
+    return fig
+
+
+@app.callback(Output('modern-season-battle-graph', 'figure'),
+              Input('dropdown-user-selection', 'value'),
+              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              )
+def update_modern_battle_graph(account, toggle):
+    # TODO check which order callbacks are done
+    theme = config.light_theme if toggle else config.dark_theme
+    if store.season_modern_battle_info_df.empty:
+        return chart_util.blank_fig(theme)
+    else:
+        season_df = store.season_modern_battle_info_df.loc[
+            (store.season_modern_battle_info_df.player == account)].copy()
+        return plot_season_stats_battle(season_df, theme)
 
 @app.callback(Output('wild-season-rating-graph', 'figure'),
               Input('dropdown-user-selection', 'value'),
@@ -80,8 +175,11 @@ def update_modern_graph(account, toggle):
 def update_wild_graph(account, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    season_df = store.season_wild_battle_info_df.loc[(store.season_wild_battle_info_df.player == account)].copy()
-    return plot_season_stats_rating(season_df, theme)
+    if store.season_wild_battle_info_df.empty:
+        return chart_util.blank_fig(theme)
+    else:
+        season_df = store.season_wild_battle_info_df.loc[(store.season_wild_battle_info_df.player == account)].copy()
+        return plot_season_stats_rating(season_df, theme)
 
 
 @app.callback(Output('total-balance-graph', 'figure'),
@@ -91,10 +189,19 @@ def update_wild_graph(account, toggle):
 def update_wild_graph(account, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    season_df_sps = store.season_sps_df.loc[(store.season_sps_df.player == account)].copy()
-    season_df_dec = store.season_dec_df.loc[(store.season_dec_df.player == account)].copy()
-    season_df_merits = store.season_merits_df.loc[(store.season_merits_df.player == account)].copy()
-    return plot_season_stats_earnings(season_df_sps, season_df_dec, season_df_merits, theme)
+    if store.season_sps_df.empty:
+        return chart_util.blank_fig(theme)
+    else:
+        season_df_sps = store.season_sps_df.loc[(store.season_sps_df.player == account)].copy()
+        season_df_dec = store.season_dec_df.loc[(store.season_dec_df.player == account)].copy()
+        season_df_merits = store.season_merits_df.loc[(store.season_merits_df.player == account)].copy()
+        season_df_unclaimed_sps = store.season_unclaimed_sps_df.loc[
+            (store.season_unclaimed_sps_df.player == account)].copy()
+        return plot_season_stats_earnings(season_df_sps,
+                                          season_df_dec,
+                                          season_df_merits,
+                                          season_df_unclaimed_sps,
+                                          theme)
 
 
 # PAPER_BGCOLOR = 'rgba(35,35,35,255)'
@@ -200,10 +307,16 @@ def check_data_consistency(season_df, columns):
     return season_df
 
 
-def plot_season_stats_earnings(season_df_sps, season_df_dec, season_df_merits, theme, skip_zeros=True):
-    season_df_sps = season_df_sps.sort_values(by=['season']).fillna(0)
-    season_df_dec = season_df_dec.sort_values(by=['season']).fillna(0)
-    season_df_merits = season_df_merits.sort_values(by=['season']).fillna(0)
+def plot_season_stats_earnings(season_df_sps,
+                               season_df_dec,
+                               season_df_merits,
+                               season_df_unclaimed_sps,
+                               theme,
+                               skip_zeros=True):
+    season_df_sps = season_df_sps.sort_values(by=['season_id']).fillna(0)
+    season_df_dec = season_df_dec.sort_values(by=['season_id']).fillna(0)
+    season_df_merits = season_df_merits.sort_values(by=['season_id']).fillna(0)
+    season_df_unclaimed_sps = season_df_unclaimed_sps.sort_values(by=['season_id']).fillna(0)
 
     # Data consistency
     columns_dec = [
@@ -220,12 +333,7 @@ def plot_season_stats_earnings(season_df_sps, season_df_dec, season_df_merits, t
         'wild_leaderboard_prizes',
         'market_fees',
         'market_list_fee']
-    columns_sps = [
-        'claim_staking_rewards',
-        'token_award',
-        'tournament_prize',
-        'token_transfer_multi',
-        'enter_tournament',
+    columns_unclaimed_sps = [
         'modern',
         'wild',
         'focus',
@@ -233,6 +341,12 @@ def plot_season_stats_earnings(season_df_sps, season_df_dec, season_df_merits, t
         'brawl',
         'land',
         'nightmare']
+    columns_sps = [
+        'claim_staking_rewards',
+        'token_award',
+        'tournament_prize',
+        'token_transfer_multi',
+        'enter_tournament']
     columns_merits = [
         'quest_rewards',
         'season_rewards',
@@ -241,6 +355,7 @@ def plot_season_stats_earnings(season_df_sps, season_df_dec, season_df_merits, t
     season_df_dec = check_data_consistency(season_df_dec, columns_dec)
     season_df_sps = check_data_consistency(season_df_sps, columns_sps)
     season_df_merits = check_data_consistency(season_df_merits, columns_merits)
+    season_df_unclaimed_sps = check_data_consistency(season_df_unclaimed_sps, columns_unclaimed_sps)
 
     dec_earned = season_df_dec.reward \
                  + season_df_dec.quest_rewards \
@@ -254,9 +369,15 @@ def plot_season_stats_earnings(season_df_sps, season_df_dec, season_df_merits, t
     dec_tournament = season_df_dec.tournament_prize + season_df_dec.enter_tournament
 
     sps_earned = season_df_sps.claim_staking_rewards + season_df_sps.token_award
-    sps_tournament = season_df_sps.tournament_prize + season_df_sps.token_transfer_multi + season_df_sps.enter_tournament
-    sps_battle_earning = season_df_sps.modern + season_df_sps.wild + season_df_sps.focus + season_df_sps.season + season_df_sps.brawl
-    sps_rewards = season_df_sps.land + season_df_sps.nightmare
+    sps_tournament = season_df_sps.tournament_prize + \
+                     season_df_sps.token_transfer_multi + \
+                     season_df_sps.enter_tournament
+    sps_battle_earning = season_df_unclaimed_sps.modern + \
+                         season_df_unclaimed_sps.wild + \
+                         season_df_unclaimed_sps.focus + \
+                         season_df_unclaimed_sps.season + \
+                         season_df_unclaimed_sps.brawl
+    sps_rewards = season_df_unclaimed_sps.land + season_df_unclaimed_sps.nightmare
 
     sps_total = sps_earned + sps_tournament + sps_battle_earning + sps_rewards
     dec_total = dec_earned + dec_rental_earned + dec_rental_payed + dec_tournament + dec_market_fees
@@ -271,18 +392,18 @@ def plot_season_stats_earnings(season_df_sps, season_df_dec, season_df_merits, t
     # trace5 = go.Scatter(x=season_df.season, y=dec_rental_payed, mode='lines+markers',  name='dec rental (cost-refund)')
     # trace6 = go.Scatter(x=season_df.season, y=dec_tournament, mode='lines+markers',  name='dec tournament (prize-entry)')
 
-    trace7 = go.Scatter(x=season_df_dec.season,
+    trace7 = go.Scatter(x=season_df_dec.season_id,
                         y=dec_total,
                         mode='lines+markers',
                         name='DEC total (earnings - payments)',
                         line=dict(color='royalblue'))
 
-    trace8 = go.Scatter(x=season_df_merits.season,
+    trace8 = go.Scatter(x=season_df_merits.season_id,
                         y=merits_total,
                         mode='lines+markers',
                         name='MERITS  total (earnings)',
                         line=dict(color='red', width=2))
-    trace9 = go.Scatter(x=season_df_sps.season,
+    trace9 = go.Scatter(x=season_df_sps.season_id,
                         y=sps_total,
                         mode='lines+markers',
                         name='SPS total (earnings - payments)',
@@ -328,7 +449,7 @@ def plot_season_stats_earnings(season_df_sps, season_df_dec, season_df_merits, t
     fig.update_layout(
         template=theme,
         height=1200,  # px
-    # paper_bgcolor=PAPER_BGCOLOR,
+        # paper_bgcolor=PAPER_BGCOLOR,
         # plot_bgcolor=PLOT_BGCOLOR,
         # font=TEXT_FONT,
 
@@ -348,7 +469,7 @@ def plot_season_stats_earnings(season_df_sps, season_df_dec, season_df_merits, t
             showgrid=True,
             gridwidth=1,
             # gridcolor=GRID_COLOR,
-            tickvals=season_df_dec.season,
+            tickvals=season_df_dec.season_id,
         ),
         yaxis=dict(
             # zerolinecolor=GRID_COLOR,
@@ -361,7 +482,7 @@ def plot_season_stats_earnings(season_df_sps, season_df_dec, season_df_merits, t
             showgrid=True,
             gridwidth=1,
             # gridcolor=GRID_COLOR,
-            tickvals=season_df_sps.season,
+            tickvals=season_df_sps.season_id,
         ),
         yaxis2=dict(
             # zerolinecolor=GRID_COLOR,
@@ -374,7 +495,7 @@ def plot_season_stats_earnings(season_df_sps, season_df_dec, season_df_merits, t
             showgrid=True,
             gridwidth=1,
             # gridcolor=GRID_COLOR,
-            tickvals=season_df_merits.season,
+            tickvals=season_df_merits.season_id,
         ),
         yaxis3=dict(
             # zerolinecolor=GRID_COLOR,

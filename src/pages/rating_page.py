@@ -8,7 +8,7 @@ from main import app
 from src.configuration import config, store
 from src.static import static_values_enum
 from src.static.static_values_enum import Format, RatingLevel
-from src.utils import store_util
+from src.utils import store_util, chart_util
 
 # Define the page layout
 layout = dbc.Container([
@@ -55,7 +55,7 @@ def update_modern_graph(account, toggle):
 
     df = get_rating_df(account, Format.MODERN.value)
     if df.empty:
-        return blank_fig(theme)
+        return chart_util.blank_fig(theme)
     else:
         return create_rating_graph(df, theme)
 
@@ -70,7 +70,7 @@ def update_wild_graph(account, toggle):
 
     df = get_rating_df(account, Format.WILD.value)
     if df.empty:
-        return blank_fig(theme)
+        return chart_util.blank_fig(theme)
     else:
         return create_rating_graph(df, theme)
 
@@ -87,12 +87,3 @@ def get_rating_df(account, match_format):
         df = df.loc[(store.rating_df.format == match_format)].copy()
         df.sort_values(by='created_date', inplace=True)
         return df
-
-
-def blank_fig(theme):
-    fig = px.scatter()
-    fig.update_layout(template=theme)
-    fig.update_xaxes(showgrid=False, showticklabels=False, zeroline=False)
-    fig.update_yaxes(showgrid=False, showticklabels=False, zeroline=False)
-
-    return fig

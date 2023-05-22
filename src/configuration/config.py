@@ -3,7 +3,7 @@ import os
 from src.api import spl
 from src.configuration import config_reader
 
-DEBUG_FILES = True
+DEBUG_FILES = False
 log_level = config_reader.config_logger()
 store_dir = os.path.join(os.getcwd(), 'store')
 card_details_df = spl.get_card_details()
