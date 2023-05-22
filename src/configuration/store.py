@@ -2,7 +2,6 @@ import os
 
 import pandas as pd
 
-import main
 from src.configuration import config
 
 prefix_file = ""
