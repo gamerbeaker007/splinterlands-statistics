@@ -130,3 +130,16 @@ def player_exist(account_name):
         return True
     else:
         return False
+
+
+def get_leaderboard_with_player_season(username, season, mode):
+    address = base_url + \
+              "players/leaderboard_with_player?season=" + str(season) + \
+              "&format=" + str(mode.value) + \
+              "&username=" + str(username)
+
+    result = http.get(address)
+    if result.status_code == 200:
+        return result.json()['player']
+    else:
+        return None

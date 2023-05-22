@@ -14,7 +14,7 @@ def update_season_end_dates():
         from_season_id = store.season_end_dates_df.id.max() + 1
 
     till_season_id = spl.get_current_season()['id']
-    logging.info("Update season end dates for '" + str(till_season_id) + "' seasons")
+    # logging.info("Update season end dates for '" + str(till_season_id) + "' seasons")
     for season_id in range(from_season_id, till_season_id + 1):
         logging.info("Update season end date for season: '" + str(season_id))
 
@@ -30,7 +30,7 @@ def load_stores():
         store.accounts_df = pd.read_csv(store.accounts_file, index_col=0)
 
     if os.path.isfile(store.collection_file):
-        store.collection_df = pd.read_csv(store.collection_file, index_col=[0]).sort_index()
+        store.collection_df = pd.read_csv(store.collection_file, index_col=[0])
 
     if os.path.isfile(store.battle_file):
         store.battle_df = pd.read_csv(store.battle_file, index_col=0)
@@ -66,6 +66,12 @@ def load_stores():
     if os.path.isfile(store.season_credits_file):
         store.season_credits_df = pd.read_csv(store.season_credits_file, index_col=0)
 
+    if os.path.isfile(store.season_modern_battle_info_file):
+        store.season_wild_battle_info_df = pd.read_csv(store.season_modern_battle_info_file, index_col=0)
+
+    if os.path.isfile(store.season_wild_battle_info_file):
+        store.season_modern_battle_info_df = pd.read_csv(store.season_wild_battle_info_file, index_col=0)
+
 
 def save_stores():
     store.season_end_dates_df.sort_index().to_csv(store.season_end_dates_file)
@@ -82,6 +88,8 @@ def save_stores():
     store.season_sps_df.sort_index().to_csv(store.season_sps_file)
     store.season_vouchers_df.sort_index().to_csv(store.season_vouchers_file)
     store.season_credits_df.sort_index().to_csv(store.season_credits_file)
+    store.season_modern_battle_info_df.sort_index().to_csv(store.season_modern_battle_info_file)
+    store.season_wild_battle_info_df.sort_index().to_csv(store.season_wild_battle_info_file)
 
 
 def get_account_names():

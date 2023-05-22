@@ -9,14 +9,14 @@ from src.configuration import store, config
 from src.utils import store_util
 
 
-def get_balances_account(account_name):
+def update_balances_store(account_name):
     current_season_data = config.current_season
 
     if not (store.season_sps_df.empty or store.season_sps_df.loc[store.season_sps_df.player == account_name].empty):
         start_from_season = store.season_sps_df.loc[store.season_sps_df.player == account_name].season.max() + 1
 
         if start_from_season == current_season_data['id']:
-            logging.info("No new season to process for account (" + str(account_name) + ")")
+            logging.info("No new season balances to process for: " + str(account_name))
             return
 
         season_array = np.arange(start_from_season, current_season_data['id'])
@@ -42,7 +42,6 @@ def get_balances_account(account_name):
                                                                      from_date=start_date,
                                                                      token="VOUCHER"))
 
-        pass
     else:
         dec_df = pd.DataFrame(spl.get_balance_history_for_token(account_name,token="DEC"))
         unclaimed_sps_df = pd.DataFrame(spl.get_balance_history_for_token(account_name,
@@ -73,14 +72,8 @@ def get_balances_account(account_name):
         logging.info("Start processing CREDITS")
         store.season_credits_df = process_season_balances(credits_df, store.season_credits_df.copy(), account_name,
                                                           season_array)
-
     logging.info("Get balances for account (" + str(account_name) + ") Done")
     store_util.save_stores()
-
-
-def get_start_end_time_season(season_id):
-    return store.season_end_dates_df.loc[(store.season_end_dates_df.id == season_id - 1)]['end_date'].values[0],\
-        store.season_end_dates_df.loc[(store.season_end_dates_df.id == season_id)]['end_date'].values[0]
 
 
 def process_season_rewards(balance_df, store_copy, account_name, season_id, search_type, positive_only):
@@ -162,7 +155,11 @@ def determine_first_season_id_played(balance_history_dec_df):
         if first_earned_date <= parser.parse(season_end_time['end_date']):
             return season_end_time['id']
 
+def get_start_end_time_season(season_id):
+    return store.season_end_dates_df.loc[(store.season_end_dates_df.id == season_id - 1)]['end_date'].values[0],\
+        store.season_end_dates_df.loc[(store.season_end_dates_df.id == season_id)]['end_date'].values[0]
 
-def get_balances():
+
+def update_season_balances_store():
     for account in store_util.get_account_names():
-        get_balances_account(account)
+        update_balances_store(account)

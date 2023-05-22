@@ -6,7 +6,7 @@ from dash_bootstrap_templates import ThemeSwitchAIO
 
 from main import app
 from src import battle_store, collection_store
-from src.pages import main_page, rating_page, nemesis_page, losing_page, balance_page, config_page
+from src.pages import main_page, rating_page, nemesis_page, losing_page, season_page, config_page
 from src.utils import store_util
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
@@ -79,7 +79,7 @@ def display_page(pathname):
     if pathname == '/nemesis':
         return nemesis_page.layout
     if pathname == '/balance':
-        return balance_page.layout
+        return season_page.layout
     if pathname == '/config':
         return config_page.layout
     else:  # if redirected to unknown link
