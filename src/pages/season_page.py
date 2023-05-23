@@ -132,7 +132,13 @@ def plot_season_stats_battle(season_df, theme):
         # paper_bgcolor=PAPER_BGCOLOR,
         # plot_bgcolor=PLOT_BGCOLOR,
         # font=TEXT_FONT,
-
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
         xaxis=dict(
             tickvals=season_df.season,
         ),
@@ -186,7 +192,7 @@ def update_wild_graph(account, toggle):
               Input('dropdown-user-selection', 'value'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
-def update_wild_graph(account, toggle):
+def update_earnings_graph(account, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
     if store.season_sps_df.empty:
@@ -257,7 +263,13 @@ def plot_season_stats_rating(season_df, theme):
         # paper_bgcolor=PAPER_BGCOLOR,
         # plot_bgcolor=PLOT_BGCOLOR,
         # font=TEXT_FONT,
-
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
         xaxis=dict(
             # zerolinecolor=GRID_COLOR,
             tickvals=season_df.season,
