@@ -8,7 +8,7 @@ from src.utils import store_util
 layout = dbc.Container([
     dbc.Row([
         html.H1('Statistics battles battles'),
-        html.P('Summoners and monster you lose most against'),
+        html.P('Your battle  statistics of your summoners and monster'),
         dbc.Col(html.P('Filter on')),
         dbc.Col(dcc.Dropdown(store_util.get_account_names(),
                              value=store_util.get_first_account_name(),
