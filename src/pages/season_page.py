@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 from aio import ThemeSwitchAIO
 from dash import html, Output, Input, ctx, dcc
 from plotly.subplots import make_subplots
+import plotly.express as px
+
 
 from main import app
 from src import season_balances_info, season_battle_info
@@ -55,6 +57,28 @@ layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             dcc.Graph(id="total-balance-graph"),
+        ),
+    ]),
+    dbc.Row([
+        html.H1("Detailed per token"),
+        html.P("Select token"),
+        html.P("Tip: Double click on the legend to view one or all"),
+    ]),
+    dbc.Row([
+        dbc.Col(dcc.Dropdown(options=["SPS", "SPS UNCLAIMED", "DEC", "MERITS", "VOUCHERS"],
+                             value="SPS",
+                             id='dropdown-token-selection',
+                             className='dbc'),
+                ),
+        dbc.Col(dcc.RadioItems(options=["Skip Zeros", "Keep Zeros"],
+                             value="Skip Zeros",
+                             id='dropdown-skip-zero-selection',
+                             className='dbc'),
+                ),
+    ]),
+    dbc.Row([
+        dbc.Col(
+            dcc.Graph(id="total-all-balance-graph"),
         ),
     ]),
 
@@ -210,15 +234,44 @@ def update_earnings_graph(account, toggle):
                                           theme)
 
 
-# PAPER_BGCOLOR = 'rgba(35,35,35,255)'
-# PLOT_BGCOLOR = 'rgba(35,35,35,255)'
-# GRID_COLOR = 'rgba(170,170,170,255)'
-#
-# TEXT_FONT = dict(
-#     family="sans serif",
-#     size=14,
-#     color=GRID_COLOR,
-# )
+@app.callback(Output('total-all-balance-graph', 'figure'),
+              Input('dropdown-user-selection', 'value'),
+              Input('dropdown-token-selection', 'value'),
+              Input('dropdown-skip-zero-selection', 'value'),
+              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              )
+def update_earnings_graph(account, token, skip_zero, toggle):
+    if skip_zero == "Skip Zeros":
+        skip_zero = True
+    else:
+        skip_zero = False
+
+    # TODO check which order callbacks are done
+    theme = config.light_theme if toggle else config.dark_theme
+    if store.season_sps_df.empty:
+        return chart_util.blank_fig(theme)
+    else:
+        if token == "SPS":
+            season_df = store.season_sps_df.loc[(store.season_sps_df.player == account)].copy()
+        elif token == "MERITS":
+            season_df = store.season_merits_df.loc[(store.season_merits_df.player == account)].copy()
+        elif token == "SPS UNCLAIMED":
+            season_df = store.season_unclaimed_sps_df.loc[
+                (store.season_unclaimed_sps_df.player == account)].copy()
+        elif token == "VOUCHERS":
+            season_df = store.season_vouchers_df.loc[(store.season_vouchers_df.player == account)].copy()
+        elif token == "DEC":
+            season_df = store.season_dec_df.loc[(store.season_dec_df.player == account)].copy()
+        else:
+            return chart_util.blank_fig(theme)
+
+        season_df = season_df.sort_values(by=['season_id']).fillna(0)
+        season_df.drop(columns=['player'], inplace=True)
+
+        return plot_season_stats_earnings_all(season_df,
+                                              token,
+                                              theme,
+                                              skip_zero)
 
 
 def plot_season_stats_rating(season_df, theme):
@@ -260,9 +313,6 @@ def plot_season_stats_rating(season_df, theme):
 
     fig.update_layout(
         template=theme,
-        # paper_bgcolor=PAPER_BGCOLOR,
-        # plot_bgcolor=PLOT_BGCOLOR,
-        # font=TEXT_FONT,
         legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -271,15 +321,12 @@ def plot_season_stats_rating(season_df, theme):
             x=1
         ),
         xaxis=dict(
-            # zerolinecolor=GRID_COLOR,
             tickvals=season_df.season,
         ),
 
         yaxis2=dict(
-            # zerolinecolor=GRID_COLOR,
             showgrid=True,
             title="rating",
-            # gridcolor=GRID_COLOR,
             gridwidth=1,
             nticks=25,
             range=[0, season_df.rating.max() * 1.05]
@@ -317,6 +364,32 @@ def check_data_consistency(season_df, columns):
         if column not in season_df:
             season_df[column] = season_df.get(column, 0)
     return season_df
+
+
+def plot_season_stats_earnings_all(season_df,
+                                   title,
+                                   theme,
+                                   skip_zero=True):
+    if skip_zero:
+        for column in season_df.columns.tolist():
+            if season_df[column].sum() <= 0:
+                season_df.drop(columns=[column], inplace=True)
+
+    fig = px.line(season_df,
+                  x='season_id',
+                  y=season_df.columns,
+                  title=title)
+
+    fig.update_layout(
+        template=theme,
+        xaxis=dict(
+            showgrid=True,
+            gridwidth=1,
+            tickvals=season_df.season_id,
+        ),
+
+    )
+    return fig
 
 
 def plot_season_stats_earnings(season_df_sps,
@@ -461,9 +534,6 @@ def plot_season_stats_earnings(season_df_sps,
     fig.update_layout(
         template=theme,
         height=1200,  # px
-        # paper_bgcolor=PAPER_BGCOLOR,
-        # plot_bgcolor=PLOT_BGCOLOR,
-        # font=TEXT_FONT,
 
         legend=dict(
             x=0,
@@ -480,12 +550,9 @@ def plot_season_stats_earnings(season_df_sps,
         xaxis=dict(
             showgrid=True,
             gridwidth=1,
-            # gridcolor=GRID_COLOR,
             tickvals=season_df_dec.season_id,
         ),
         yaxis=dict(
-            # zerolinecolor=GRID_COLOR,
-            # gridcolor=GRID_COLOR,
             title=titles[0],
             side="right",
         ),
@@ -493,12 +560,9 @@ def plot_season_stats_earnings(season_df_sps,
         xaxis2=dict(
             showgrid=True,
             gridwidth=1,
-            # gridcolor=GRID_COLOR,
             tickvals=season_df_sps.season_id,
         ),
         yaxis2=dict(
-            # zerolinecolor=GRID_COLOR,
-            # gridcolor=GRID_COLOR,
             title=titles[1],
             side="right"
         ),
@@ -506,12 +570,9 @@ def plot_season_stats_earnings(season_df_sps,
         xaxis3=dict(
             showgrid=True,
             gridwidth=1,
-            # gridcolor=GRID_COLOR,
             tickvals=season_df_merits.season_id,
         ),
         yaxis3=dict(
-            # zerolinecolor=GRID_COLOR,
-            # gridcolor=GRID_COLOR,
             title=titles[2],
             side="right"
         ),
