@@ -23,9 +23,9 @@ def get_season_battles(account_name, store_df, mode):
 
     if len(season_array) > 0:
         for season_id in season_array:
-            logging.info("Gathering (" + str(account_name) + ") "
+            logging.info("Gathering (" + str(account_name) + ", "
                          + str(mode.value) +
-                         " battle info for season :" + str(season_id))
+                         ") battle info for season :" + str(season_id))
             result = spl.get_leaderboard_with_player_season(account_name, season_id, mode)
             if 'rank' in result:
                 store_df = pd.concat([store_df,
@@ -37,6 +37,11 @@ def get_season_battles(account_name, store_df, mode):
                                      ignore_index=True)
     else:
         logging.info("No new season battle info found for: " + str(account_name))
+
+    logging.info("Gathering '" + str(account_name) + ", "
+                 + str(mode.value) +
+                 ") battle info done..")
+
     return store_df
 
 
