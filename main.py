@@ -8,19 +8,19 @@ store_util.update_season_end_dates()
 
 
 def migrate_data():
-    if (not store.battle_big_df.empty) and ('color' not in store.battle_big_df.columns.to_list()):
-        store.battle_big_df['color'] = store.battle_big_df.apply(
+    if (not store.battle_big.empty) and ('color' not in store.battle_big.columns.to_list()):
+        store.battle_big['color'] = store.battle_big.apply(
             lambda row: config.card_details_df.loc[row.card_detail_id]['color'], axis=1)
-        store.battle_big_df['secondary_color'] = store.battle_big_df.apply(
+        store.battle_big['secondary_color'] = store.battle_big.apply(
             lambda row: config.card_details_df.loc[row.card_detail_id]['secondary_color'], axis=1)
-        store.battle_big_df = store.battle_big_df[['card_detail_id', 'card_name', 'card_type', 'color', 'secondary_color', 'xp', 'gold', 'level', 'edition', 'account', 'created_date', 'match_type', 'format', 'mana_cap', 'ruleset1', 'ruleset2', 'ruleset3', 'inactive', 'battle_id', 'winner', 'result']]
+        store.battle_big = store.battle_big[['card_detail_id', 'card_name', 'card_type', 'color', 'secondary_color', 'xp', 'gold', 'level', 'edition', 'account', 'created_date', 'match_type', 'format', 'mana_cap', 'ruleset1', 'ruleset2', 'ruleset3', 'inactive', 'battle_id', 'winner', 'result']]
 
-    if (not store.losing_big_df.empty) and ('color' not in store.losing_big_df.columns.to_list()):
-        store.losing_big_df['color'] = store.losing_big_df.apply(
+    if (not store.losing_big.empty) and ('color' not in store.losing_big.columns.to_list()):
+        store.losing_big['color'] = store.losing_big.apply(
             lambda row: config.card_details_df.loc[row.card_detail_id]['color'], axis=1)
-        store.losing_big_df['secondary_color'] = store.losing_big_df.apply(
+        store.losing_big['secondary_color'] = store.losing_big.apply(
             lambda row: config.card_details_df.loc[row.card_detail_id]['secondary_color'], axis=1)
-        store.losing_big_df = store.losing_big_df[['card_detail_id', 'card_name', 'card_type', 'color', 'secondary_color', 'xp', 'gold', 'level', 'edition', 'account', 'created_date',
+        store.losing_big = store.losing_big[['card_detail_id', 'card_name', 'card_type', 'color', 'secondary_color', 'xp', 'gold', 'level', 'edition', 'account', 'created_date',
          'match_type', 'format', 'mana_cap', 'ruleset1', 'ruleset2', 'ruleset3', 'inactive', 'battle_id', 'opponent']]
     store_util.save_stores()
 

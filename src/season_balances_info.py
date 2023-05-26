@@ -10,10 +10,11 @@ from src.utils import store_util
 
 
 def update_balances_store(account_name):
+
     current_season_data = config.current_season
 
-    if not (store.season_sps_df.empty or store.season_sps_df.loc[store.season_sps_df.player == account_name].empty):
-        start_from_season = store.season_sps_df.loc[store.season_sps_df.player == account_name].season_id.max() + 1
+    if not (store.season_sps.empty or store.season_sps.loc[store.season_sps.player == account_name].empty):
+        start_from_season = store.season_sps.loc[store.season_sps.player == account_name].season_id.max() + 1
 
         if start_from_season == current_season_data['id']:
             logging.info("No new season balances to process for: " + str(account_name))
@@ -57,21 +58,21 @@ def update_balances_store(account_name):
 
     if len(season_array) > 0:
         logging.info("Start processing DEC")
-        store.season_dec_df = process_season_balances(dec_df, store.season_dec_df.copy(), account_name, season_array)
+        store.season_dec = process_season_balances(dec_df, store.season_dec.copy(), account_name, season_array)
         logging.info("Start processing UNCLAIMED SPS")
-        store.season_unclaimed_sps_df = process_season_balances(unclaimed_sps_df, store.season_unclaimed_sps_df.copy(),
-                                                                account_name, season_array, unclaimed_sps=True)
+        store.season_unclaimed_sps = process_season_balances(unclaimed_sps_df, store.season_unclaimed_sps.copy(),
+                                                             account_name, season_array, unclaimed_sps=True)
         logging.info("Start processing SPS")
-        store.season_sps_df = process_season_balances(sps_df, store.season_sps_df.copy(), account_name, season_array)
+        store.season_sps = process_season_balances(sps_df, store.season_sps.copy(), account_name, season_array)
         logging.info("Start processing MERITS")
-        store.season_merits_df = process_season_balances(merits_df, store.season_merits_df.copy(), account_name,
-                                                         season_array)
+        store.season_merits = process_season_balances(merits_df, store.season_merits.copy(), account_name,
+                                                      season_array)
         logging.info("Start processing VOUCHERS")
-        store.season_vouchers_df = process_season_balances(vouchers_df, store.season_vouchers_df.copy(), account_name,
-                                                           season_array)
+        store.season_vouchers = process_season_balances(vouchers_df, store.season_vouchers.copy(), account_name,
+                                                        season_array)
         logging.info("Start processing CREDITS")
-        store.season_credits_df = process_season_balances(credits_df, store.season_credits_df.copy(), account_name,
-                                                          season_array)
+        store.season_credits = process_season_balances(credits_df, store.season_credits.copy(), account_name,
+                                                       season_array)
     logging.info("Get balances for account (" + str(account_name) + ") Done")
     store_util.save_stores()
 
@@ -152,7 +153,7 @@ def determine_first_season_id_played(balance_history_dec_df):
     first_earned_date_str = balance_history_dec_df.created_date.sort_values().values[0]
     first_earned_date = parser.parse(first_earned_date_str)
 
-    season_end_times = store.season_end_dates_df
+    season_end_times = store.season_end_dates
     # determine which was the first season earning start
     for index, season_end_time in season_end_times.iterrows():
         # for season_end_time in season_end_times:
@@ -161,8 +162,8 @@ def determine_first_season_id_played(balance_history_dec_df):
 
 
 def get_start_end_time_season(season_id):
-    return store.season_end_dates_df.loc[(store.season_end_dates_df.id == season_id - 1)]['end_date'].values[0],\
-        store.season_end_dates_df.loc[(store.season_end_dates_df.id == season_id)]['end_date'].values[0]
+    return store.season_end_dates.loc[(store.season_end_dates.id == season_id - 1)]['end_date'].values[0],\
+        store.season_end_dates.loc[(store.season_end_dates.id == season_id)]['end_date'].values[0]
 
 
 def update_season_balances_store():

@@ -1,7 +1,6 @@
 import dash_bootstrap_components as dbc
 from dash import Dash
 from dash_bootstrap_templates import load_figure_template
-
 from src.configuration import config
 
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"

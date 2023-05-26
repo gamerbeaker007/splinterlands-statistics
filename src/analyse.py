@@ -16,7 +16,7 @@ def get_image_url_markdown(card_name, level, edition):
 
 
 def get_losing_df(filter_account=None, filter_match_type=None, filter_type=None):
-    temp_df = filter_battles(store.losing_big_df, filter_account, filter_match_type, filter_type)
+    temp_df = filter_battles(store.losing_big, filter_account, filter_match_type, filter_type)
     if not temp_df.empty:
         temp_df = temp_df.groupby(['card_detail_id', 'card_name', 'level', 'edition'], as_index=False) \
             .agg(number_of_losses=pd.NamedAgg(column='xp', aggfunc='count'))
@@ -30,7 +30,7 @@ def get_losing_df(filter_account=None, filter_match_type=None, filter_type=None)
 
 
 def get_losing_battles_count(filter_account=None, filter_match_type=None, filter_type=None):
-    temp_df = filter_battles(store.losing_big_df, filter_account, filter_match_type, filter_type)
+    temp_df = filter_battles(store.losing_big, filter_account, filter_match_type, filter_type)
     if not temp_df.empty:
         return temp_df.battle_id.unique().size
     return 'NA'
@@ -61,10 +61,10 @@ def filter_battles(df, filter_account=None, filter_match_type=None, filter_type=
 
 
 def get_top_3_losing_account(account, filter_match_type):
-    if store.losing_big_df.empty:
-        return store.losing_big_df
+    if store.losing_big.empty:
+        return store.losing_big
     else:
-        temp_df = filter_battles(store.losing_big_df, filter_account=account, filter_match_type=filter_match_type)
+        temp_df = filter_battles(store.losing_big, filter_account=account, filter_match_type=filter_match_type)
         temp_df = temp_df[['battle_id', 'opponent']]
         temp_df = temp_df.drop_duplicates(subset=['battle_id', 'opponent'])
         temp_df = temp_df.groupby(['opponent'], as_index=False).count()
@@ -73,7 +73,7 @@ def get_top_3_losing_account(account, filter_match_type):
 
 
 def get_my_battles_df(filter_user):
-    temp_df = filter_battles(store.battle_big_df, filter_account=filter_user)
+    temp_df = filter_battles(store.battle_big, filter_account=filter_user)
 
     total_df = pd.DataFrame()
     if not temp_df.empty:

@@ -4,188 +4,165 @@ import os
 import pandas as pd
 
 from src.api import spl
-from src.configuration import store
+from src.configuration import store, config
 
 
 def update_season_end_dates():
-    if store.season_end_dates_df.empty:
+    if store.season_end_dates.empty:
         from_season_id = 1
     else:
-        from_season_id = store.season_end_dates_df.id.max() + 1
+        from_season_id = store.season_end_dates.id.max() + 1
 
     till_season_id = spl.get_current_season()['id']
     # logging.info("Update season end dates for '" + str(till_season_id) + "' seasons")
     for season_id in range(from_season_id, till_season_id + 1):
         logging.info("Update season end date for season: '" + str(season_id))
 
-        store.season_end_dates_df = pd.concat([store.season_end_dates_df, spl.get_season_end_time(season_id)])
+        store.season_end_dates = pd.concat([store.season_end_dates,
+                                            spl.get_season_end_time(season_id)],
+                                           ignore_index=True)
     save_stores()
 
 
+def get_store_names():
+    stores_arr = []
+    for store_name, _store in store.__dict__.items():
+        if isinstance(_store, pd.DataFrame):
+            stores_arr.append(store_name)
+    return stores_arr
+
+
+def get_store_file(name):
+    return os.path.join(config.store_dir, str(config.file_prefix + name + config.file_extension))
+
+
+# def get_store(name):
+#     for store_name, store in stores.__dict__.items():
+#         if store_name == name:
+#             return store_name, store
+#     return None
+
 def load_stores():
-    if os.path.isfile(store.season_end_dates_file):
-        store.season_end_dates_df = pd.read_csv(store.season_end_dates_file, index_col=0)
-
-    if os.path.isfile(store.accounts_file):
-        store.accounts_df = pd.read_csv(store.accounts_file, index_col=0)
-
-    if os.path.isfile(store.collection_file):
-        store.collection_df = pd.read_csv(store.collection_file, index_col=[0])
-
-    if os.path.isfile(store.battle_file):
-        store.battle_df = pd.read_csv(store.battle_file, index_col=0)
-        store.battle_df = store.battle_df.where(store.battle_df.notnull(), None)
-
-    if os.path.isfile(store.last_processed_file):
-        store.last_processed_df = pd.read_csv(store.last_processed_file, index_col=0)
-
-    if os.path.isfile(store.battle_big_file):
-        store.battle_big_df = pd.read_csv(store.battle_big_file, index_col=0)
-
-    if os.path.isfile(store.rating_file):
-        store.rating_df = pd.read_csv(store.rating_file, index_col=0)
-
-    if os.path.isfile(store.losing_big_file):
-        store.losing_big_df = pd.read_csv(store.losing_big_file, index_col=0)
-
-    if os.path.isfile(store.season_dec_file):
-        store.season_dec_df = pd.read_csv(store.season_dec_file, index_col=0)
-
-    if os.path.isfile(store.season_merits_file):
-        store.season_merits_df = pd.read_csv(store.season_merits_file, index_col=0)
-
-    if os.path.isfile(store.season_unclaimed_sps_file):
-        store.season_unclaimed_sps_df = pd.read_csv(store.season_unclaimed_sps_file, index_col=0)
-
-    if os.path.isfile(store.season_sps_file):
-        store.season_sps_df = pd.read_csv(store.season_sps_file, index_col=0)
-
-    if os.path.isfile(store.season_vouchers_file):
-        store.season_vouchers_df = pd.read_csv(store.season_vouchers_file, index_col=0)
-
-    if os.path.isfile(store.season_credits_file):
-        store.season_credits_df = pd.read_csv(store.season_credits_file, index_col=0)
-
-    if os.path.isfile(store.season_modern_battle_info_file):
-        store.season_wild_battle_info_df = pd.read_csv(store.season_modern_battle_info_file, index_col=0)
-
-    if os.path.isfile(store.season_wild_battle_info_file):
-        store.season_modern_battle_info_df = pd.read_csv(store.season_wild_battle_info_file, index_col=0)
+    for store_name in get_store_names():
+        store_file = get_store_file(store_name)
+        if os.path.isfile(store_file):
+            store.__dict__[store_name] = pd.read_csv(store_file, index_col=0)
 
 
 def save_stores():
-    store.season_end_dates_df.sort_index().to_csv(store.season_end_dates_file)
-    store.accounts_df.sort_index().to_csv(store.accounts_file)
-    store.last_processed_df.sort_index().to_csv(store.last_processed_file)
-    store.battle_df.sort_index().to_csv(store.battle_file)
-    store.collection_df.sort_index().to_csv(store.collection_file)
-    store.battle_big_df.sort_index().to_csv(store.battle_big_file)
-    store.rating_df.sort_index().to_csv(store.rating_file)
-    store.losing_big_df.sort_index().to_csv(store.losing_big_file)
-    store.season_dec_df.sort_index().to_csv(store.season_dec_file)
-    store.season_merits_df.sort_index().to_csv(store.season_merits_file)
-    store.season_unclaimed_sps_df.sort_index().to_csv(store.season_unclaimed_sps_file)
-    store.season_sps_df.sort_index().to_csv(store.season_sps_file)
-    store.season_vouchers_df.sort_index().to_csv(store.season_vouchers_file)
-    store.season_credits_df.sort_index().to_csv(store.season_credits_file)
-    store.season_modern_battle_info_df.sort_index().to_csv(store.season_modern_battle_info_file)
-    store.season_wild_battle_info_df.sort_index().to_csv(store.season_wild_battle_info_file)
+    for store_name in get_store_names():
+        store_file = get_store_file(store_name)
+        store.__dict__[store_name].sort_index().to_csv(store_file)
 
 
 def get_account_names():
-    if store.accounts_df.empty:
+    if store.accounts.empty:
         return list()
     else:
-        return store.accounts_df.account_name.tolist()
+        return store.accounts.account_name.tolist()
 
 
 def get_first_account_name():
-    if store.accounts_df.empty:
+    if store.accounts.empty:
         return ""
     else:
-        return store.accounts_df.loc[0].account_name
+        return store.accounts.values[0][0]
 
 
 def add_account(account_name):
     new_account = pd.DataFrame({'account_name': account_name}, index=[0])
-    if store.accounts_df.empty:
-        store.accounts_df = pd.concat([store.accounts_df, new_account], ignore_index=True)
+    if store.accounts.empty:
+        store.accounts = pd.concat([store.accounts, new_account], ignore_index=True)
     else:
-        if store.accounts_df.loc[(store.accounts_df.account_name == account_name)].empty:
-            store.accounts_df = pd.concat([store.accounts_df, new_account], ignore_index=True)
+        if store.accounts.loc[(store.accounts.account_name == account_name)].empty:
+            store.accounts = pd.concat([store.accounts, new_account], ignore_index=True)
     save_stores()
-    return store.accounts_df.account_name.tolist()
+    return store.accounts.account_name.tolist()
 
+
+def remove_xyz(store_name, search_column, account_name):
+    _store = store.__dict__[store_name]
+    if search_column in _store.columns.tolist():
+        rows = _store.loc[(_store[search_column] == account_name)]
+        if not rows.empty:
+            _store = _store.drop(rows.index)
+    return _store
 
 
 def remove_data(account_name):
-    account_row = store.accounts_df.loc[(store.accounts_df.account_name == account_name)]
-    if not account_row.empty:
-        store.accounts_df = store.accounts_df.drop(account_row.index)
+    for store_name in get_store_names():
 
-    rows = store.last_processed_df.loc[(store.last_processed_df.account == account_name)]
-    if not rows.empty:
-        store.last_processed_df = store.last_processed_df.drop(rows.index)
+        store.__dict__[store_name] = remove_xyz(store_name, 'account_name', account_name)
+        store.__dict__[store_name] = remove_xyz(store_name, 'account', account_name)
+        store.__dict__[store_name] = remove_xyz(store_name, 'player', account_name)
 
-    rows = store.battle_df.loc[(store.battle_df.account == account_name)]
-    if not rows.empty:
-        store.battle_df = store.battle_df.drop(rows.index)
-
-    rows = store.collection_df.loc[(store.collection_df.player == account_name)]
-    if not rows.empty:
-        store.collection_df = store.collection_df.drop(rows.index)
-
-    rows = store.battle_big_df.loc[(store.battle_big_df.account == account_name)]
-    if not rows.empty:
-        store.battle_big_df = store.battle_big_df.drop(rows.index)
-
-    rows = store.rating_df.loc[(store.rating_df.account == account_name)]
-    if not rows.empty:
-        store.rating_df = store.rating_df.drop(rows.index)
-
-    rows = store.losing_big_df.loc[(store.losing_big_df.account == account_name)]
-    if not rows.empty:
-        store.losing_big_df = store.losing_big_df.drop(rows.index)
-
-    store.season_dec_df.reset_index().drop(columns=['index'], inplace=True)
-    rows = store.season_dec_df.loc[(store.season_dec_df.player == account_name)]
-    if not rows.empty:
-        store.season_dec_df = store.season_dec_df.drop(rows.index)
-
-    store.season_merits_df.reset_index().drop(columns=['index'], inplace=True)
-    rows = store.season_merits_df.loc[(store.season_merits_df.player == account_name)]
-    if not rows.empty:
-        store.season_merits_df = store.season_merits_df.drop(rows.index)
-
-    store.season_unclaimed_sps_df.reset_index().drop(columns=['index'], inplace=True)
-    rows = store.season_unclaimed_sps_df.loc[(store.season_unclaimed_sps_df.player == account_name)]
-    if not rows.empty:
-        store.season_unclaimed_sps_df = store.season_unclaimed_sps_df.drop(rows.index)
-
-    store.season_sps_df.reset_index().drop(columns=['index'], inplace=True)
-    rows = store.season_sps_df.loc[(store.season_sps_df.player == account_name)]
-    if not rows.empty:
-        store.season_sps_df = store.season_sps_df.drop(rows.index)
-
-    store.season_vouchers_df.reset_index().drop(columns=['index'], inplace=True)
-    rows = store.season_vouchers_df.loc[(store.season_vouchers_df.player == account_name)]
-    if not rows.empty:
-        store.season_vouchers_df = store.season_vouchers_df.drop(rows.index)
-
-    store.season_credits_df.reset_index().drop(columns=['index'], inplace=True)
-    rows = store.season_credits_df.loc[(store.season_credits_df.player == account_name)]
-    if not rows.empty:
-        store.season_credits_df = store.season_credits_df.drop(rows.index)
+    # account_row = store.accounts.loc[(store.accounts.account_name == account_name)]
+    # if not account_row.empty:
+    #     store.accounts = store.accounts.drop(account_row.index)
+    #
+    # rows = store.last_processed.loc[(store.last_processed.account == account_name)]
+    # if not rows.empty:
+    #     store.last_processed = store.last_processed.drop(rows.index)
+    #
+    # rows = store.battle.loc[(store.battle.account == account_name)]
+    # if not rows.empty:
+    #     store.battle = store.battle.drop(rows.index)
+    #
+    # rows = store.collection.loc[(store.collection.player == account_name)]
+    # if not rows.empty:
+    #     store.collection = store.collection.drop(rows.index)
+    #
+    # rows = store.battle_big.loc[(store.battle_big.account == account_name)]
+    # if not rows.empty:
+    #     store.battle_big = store.battle_big.drop(rows.index)
+    #
+    # rows = store.rating.loc[(store.rating.account == account_name)]
+    # if not rows.empty:
+    #     store.rating = store.rating.drop(rows.index)
+    #
+    # rows = store.losing_big.loc[(store.losing_big.account == account_name)]
+    # if not rows.empty:
+    #     store.losing_big = store.losing_big.drop(rows.index)
+    #
+    # store.season_dec.reset_index().drop(columns=['index'], inplace=True)
+    # rows = store.season_dec.loc[(store.season_dec.player == account_name)]
+    # if not rows.empty:
+    #     store.season_dec = store.season_dec.drop(rows.index)
+    #
+    # store.season_merits.reset_index().drop(columns=['index'], inplace=True)
+    # rows = store.season_merits.loc[(store.season_merits.player == account_name)]
+    # if not rows.empty:
+    #     store.season_merits = store.season_merits.drop(rows.index)
+    #
+    # store.season_unclaimed_sps.reset_index().drop(columns=['index'], inplace=True)
+    # rows = store.season_unclaimed_sps.loc[(store.season_unclaimed_sps.player == account_name)]
+    # if not rows.empty:
+    #     store.season_unclaimed_sps = store.season_unclaimed_sps.drop(rows.index)
+    #
+    # store.season_sps.reset_index().drop(columns=['index'], inplace=True)
+    # rows = store.season_sps.loc[(store.season_sps.player == account_name)]
+    # if not rows.empty:
+    #     store.season_sps = store.season_sps.drop(rows.index)
+    #
+    # store.season_vouchers.reset_index().drop(columns=['index'], inplace=True)
+    # rows = store.season_vouchers.loc[(store.season_vouchers.player == account_name)]
+    # if not rows.empty:
+    #     store.season_vouchers = store.season_vouchers.drop(rows.index)
+    #
+    # store.season_credits.reset_index().drop(columns=['index'], inplace=True)
+    # rows = store.season_credits.loc[(store.season_credits.player == account_name)]
+    # if not rows.empty:
+    #     store.season_credits = store.season_credits.drop(rows.index)
 
     save_stores()
 
 
 def remove_account(account_name):
-    if store.accounts_df.empty:
+    if store.accounts.empty:
         return list()
     else:
-        account_row = store.accounts_df.loc[(store.accounts_df.account_name == account_name)]
+        account_row = store.accounts.loc[(store.accounts.account_name == account_name)]
         if not account_row.empty:
             remove_data(account_name)
 
-    return store.accounts_df.account_name.tolist()
+    return store.accounts.account_name.tolist()

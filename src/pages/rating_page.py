@@ -77,13 +77,13 @@ def update_wild_graph(account, toggle):
 
 def get_rating_df(account, match_format):
     if account == 'ALL':
-        df = store.rating_df
+        df = store.rating
     else:
-        df = store.rating_df.loc[(store.rating_df.account == account)]
+        df = store.rating.loc[(store.rating.account == account)]
 
     if df.empty:
         return df
     else:
-        df = df.loc[(store.rating_df.format == match_format)].copy()
+        df = df.loc[(store.rating.format == match_format)].copy()
         df.sort_values(by='created_date', inplace=True)
         return df

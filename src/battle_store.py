@@ -21,26 +21,26 @@ def update_battle_store_card_specific(account, team, battle):
     match_format = battle['format']
     win = True if battle['winner'] == account else False
 
-    empty = store.battle_df.empty
+    empty = store.battle.empty
     mask = (False)
     uid_arr = get_uid_array(team)
     for uid in uid_arr:
 
         if not empty:
             if match_type == 'Tournament':
-                mask = (store.battle_df['uid'] == uid) \
-                       & (store.battle_df['match_type'] == match_type)
+                mask = (store.battle['uid'] == uid) \
+                       & (store.battle['match_type'] == match_type)
             else:
-                mask = (store.battle_df['uid'] == uid) \
-                       & (store.battle_df['match_type'] == match_type) \
-                       & (store.battle_df['format'] == match_format)
+                mask = (store.battle['uid'] == uid) \
+                       & (store.battle['match_type'] == match_type) \
+                       & (store.battle['format'] == match_format)
 
         if not empty and mask.any():
             # increase win or loss
             if win:
-                store.battle_df.loc[mask, 'win'] += 1
+                store.battle.loc[mask, 'win'] += 1
             else:
-                store.battle_df.loc[mask, 'loss'] += 1
+                store.battle.loc[mask, 'loss'] += 1
         else:
             # add new row
             df = pd.DataFrame({'uid': uid,
@@ -50,7 +50,7 @@ def update_battle_store_card_specific(account, team, battle):
                                'win': 1 if win else 0,
                                'loss': 1 if not win else 0
                                }, index=[0])
-            store.battle_df = pd.concat([store.battle_df, df], ignore_index=True)
+            store.battle = pd.concat([store.battle, df], ignore_index=True)
 
 
 def add_battle_store_big_my(account, team, battle):
@@ -97,7 +97,7 @@ def add_battle_store_big_my(account, team, battle):
                            'winner': winner,
                            'result': result,
                            }, index=[0])
-        store.battle_big_df = pd.concat([store.battle_big_df, df], ignore_index=True)
+        store.battle_big = pd.concat([store.battle_big, df], ignore_index=True)
 
 
 def log_battle_note(count):
@@ -126,7 +126,7 @@ def add_rating_log(account, battle):
                        'rating': final_rating,
                        'format': match_format,
                        }, index=[0])
-    store.rating_df = pd.concat([store.rating_df, df], ignore_index=True)
+    store.rating = pd.concat([store.rating, df], ignore_index=True)
 
 
 def add_losing_battle_team(account, team, battle):
@@ -170,16 +170,16 @@ def add_losing_battle_team(account, team, battle):
                            'battle_id': battle_id,
                            'opponent': opponent,
                            }, index=[0])
-        store.losing_big_df = pd.concat([store.losing_big_df, df], ignore_index=True)
+        store.losing_big = pd.concat([store.losing_big, df], ignore_index=True)
 
 
 def get_battles_to_process(account):
     battle_history = spl.get_battle_history_df(account)
-    if not store.last_processed_df.empty and \
-            not store.last_processed_df.loc[(store.last_processed_df.account == account)].empty:
+    if not store.last_processed.empty and \
+            not store.last_processed.loc[(store.last_processed.account == account)].empty:
         # filter out already processed
         last_processed_date = \
-            store.last_processed_df.loc[(store.last_processed_df.account == account)].last_processed.values[0]
+            store.last_processed.loc[(store.last_processed.account == account)].last_processed.values[0]
         battle_history = battle_history.loc[(battle_history['created_date'] > last_processed_date)]
     return battle_history
 
@@ -230,14 +230,14 @@ def process_battle(account):
 
 
 def update_last_processed_df(account, last_processed_date):
-    if store.last_processed_df.empty or store.last_processed_df.loc[(store.last_processed_df.account == account)].empty:
+    if store.last_processed.empty or store.last_processed.loc[(store.last_processed.account == account)].empty:
         # create
         new = pd.DataFrame({'account': [account],
                             'last_processed': [last_processed_date]},
                            index=[0])
-        store.last_processed_df = pd.concat([store.last_processed_df, new], ignore_index=True)
+        store.last_processed = pd.concat([store.last_processed, new], ignore_index=True)
     else:
-        store.last_processed_df.loc[(store.last_processed_df.account == account),
+        store.last_processed.loc[(store.last_processed.account == account),
         'last_processed'] = last_processed_date
 
 

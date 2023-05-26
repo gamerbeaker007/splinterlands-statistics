@@ -12,8 +12,8 @@ def update_collection():
         df['card_name'] = df.apply(lambda row: config.card_details_df.loc[row['card_detail_id']]['name'], axis=1)
         current_collection_df = pd.concat([current_collection_df, df])
 
-    if not store.collection_df.empty:
-        store.collection_df = current_collection_df.reset_index().merge(store.collection_df.reset_index()['uid'], on='uid', how='left').set_index('uid').sort_index()
-        store.collection_df.fillna(0, inplace=True)
+    if not store.collection.empty:
+        store.collection = current_collection_df.reset_index().merge(store.collection.reset_index()['uid'], on='uid', how='left').set_index('uid').sort_index()
+        store.collection.fillna(0, inplace=True)
     else:
-        store.collection_df = current_collection_df
+        store.collection = current_collection_df

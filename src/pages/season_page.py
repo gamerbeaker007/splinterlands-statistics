@@ -4,6 +4,7 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 from aio import ThemeSwitchAIO
 from dash import html, Output, Input, ctx, dcc
+from dash_extensions.enrich import DashLogger
 from plotly.subplots import make_subplots
 import plotly.express as px
 
@@ -105,11 +106,11 @@ def update_output(n_clicks):
 def update_modern_graph(account, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_modern_battle_info_df.empty:
+    if store.season_modern_battle_info.empty:
         return chart_util.blank_fig(theme)
     else:
-        season_df = store.season_modern_battle_info_df.loc[
-            (store.season_modern_battle_info_df.player == account)].copy()
+        season_df = store.season_modern_battle_info.loc[
+            (store.season_modern_battle_info.player == account)].copy()
         return plot_season_stats_rating(season_df, theme)
 
 @app.callback(Output('wild-season-battle-graph', 'figure'),
@@ -119,11 +120,11 @@ def update_modern_graph(account, toggle):
 def update_wild_battle_graph(account, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_wild_battle_info_df.empty:
+    if store.season_wild_battle_info.empty:
         return chart_util.blank_fig(theme)
     else:
-        season_df = store.season_wild_battle_info_df.loc[
-            (store.season_wild_battle_info_df.player == account)].copy()
+        season_df = store.season_wild_battle_info.loc[
+            (store.season_wild_battle_info.player == account)].copy()
         return plot_season_stats_battle(season_df, theme)
 
 
@@ -191,11 +192,11 @@ def plot_season_stats_battle(season_df, theme):
 def update_modern_battle_graph(account, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_modern_battle_info_df.empty:
+    if store.season_modern_battle_info.empty:
         return chart_util.blank_fig(theme)
     else:
-        season_df = store.season_modern_battle_info_df.loc[
-            (store.season_modern_battle_info_df.player == account)].copy()
+        season_df = store.season_modern_battle_info.loc[
+            (store.season_modern_battle_info.player == account)].copy()
         return plot_season_stats_battle(season_df, theme)
 
 @app.callback(Output('wild-season-rating-graph', 'figure'),
@@ -205,10 +206,10 @@ def update_modern_battle_graph(account, toggle):
 def update_wild_graph(account, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_wild_battle_info_df.empty:
+    if store.season_wild_battle_info.empty:
         return chart_util.blank_fig(theme)
     else:
-        season_df = store.season_wild_battle_info_df.loc[(store.season_wild_battle_info_df.player == account)].copy()
+        season_df = store.season_wild_battle_info.loc[(store.season_wild_battle_info.player == account)].copy()
         return plot_season_stats_rating(season_df, theme)
 
 
@@ -219,14 +220,14 @@ def update_wild_graph(account, toggle):
 def update_earnings_graph(account, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_sps_df.empty:
+    if store.season_sps.empty:
         return chart_util.blank_fig(theme)
     else:
-        season_df_sps = store.season_sps_df.loc[(store.season_sps_df.player == account)].copy()
-        season_df_dec = store.season_dec_df.loc[(store.season_dec_df.player == account)].copy()
-        season_df_merits = store.season_merits_df.loc[(store.season_merits_df.player == account)].copy()
-        season_df_unclaimed_sps = store.season_unclaimed_sps_df.loc[
-            (store.season_unclaimed_sps_df.player == account)].copy()
+        season_df_sps = store.season_sps.loc[(store.season_sps.player == account)].copy()
+        season_df_dec = store.season_dec.loc[(store.season_dec.player == account)].copy()
+        season_df_merits = store.season_merits.loc[(store.season_merits.player == account)].copy()
+        season_df_unclaimed_sps = store.season_unclaimed_sps.loc[
+            (store.season_unclaimed_sps.player == account)].copy()
         return plot_season_stats_earnings(season_df_sps,
                                           season_df_dec,
                                           season_df_merits,
@@ -248,20 +249,20 @@ def update_earnings_graph(account, token, skip_zero, toggle):
 
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_sps_df.empty:
+    if store.season_sps.empty:
         return chart_util.blank_fig(theme)
     else:
         if token == "SPS":
-            season_df = store.season_sps_df.loc[(store.season_sps_df.player == account)].copy()
+            season_df = store.season_sps.loc[(store.season_sps.player == account)].copy()
         elif token == "MERITS":
-            season_df = store.season_merits_df.loc[(store.season_merits_df.player == account)].copy()
+            season_df = store.season_merits.loc[(store.season_merits.player == account)].copy()
         elif token == "SPS UNCLAIMED":
-            season_df = store.season_unclaimed_sps_df.loc[
-                (store.season_unclaimed_sps_df.player == account)].copy()
+            season_df = store.season_unclaimed_sps.loc[
+                (store.season_unclaimed_sps.player == account)].copy()
         elif token == "VOUCHERS":
-            season_df = store.season_vouchers_df.loc[(store.season_vouchers_df.player == account)].copy()
+            season_df = store.season_vouchers.loc[(store.season_vouchers.player == account)].copy()
         elif token == "DEC":
-            season_df = store.season_dec_df.loc[(store.season_dec_df.player == account)].copy()
+            season_df = store.season_dec.loc[(store.season_dec.player == account)].copy()
         else:
             return chart_util.blank_fig(theme)
 

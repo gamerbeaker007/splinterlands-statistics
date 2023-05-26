@@ -54,7 +54,7 @@ def get_season_end_time(season_id):
     result = http.get(address)
     if result.status_code == 200:
         date = parser.parse(str(result.json()['ends']))
-        result = pd.DataFrame({'id': season_id, 'end_date': date}, index=[0])
+        result = pd.DataFrame({'id': season_id, 'end_date': str(date)}, index=[0])
     else:
         logging.error("Failed call: '" + str(address) + "'")
         logging.error("Unable to determine season end date return code: " + str(result.status_code))

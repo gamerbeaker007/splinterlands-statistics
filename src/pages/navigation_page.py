@@ -90,7 +90,7 @@ def display_page(pathname):
     Output('hidden-div1', 'children'),
     Input('load-new-values', 'n_clicks'),
 )
-def update_output(n_clicks):
+def update__output(n_clicks):
     if "load-new-values" == ctx.triggered_id:
         logging.info("Update battle button pressed")
         collection_store.update_collection()
