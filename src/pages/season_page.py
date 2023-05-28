@@ -85,7 +85,7 @@ layout = dbc.Container([
 
     html.Div(id='hidden-div-balance'),
     html.Div(id='progress-balance'),
-    dcc.Interval(id="interval-balance", interval=500),
+    dcc.Interval(id="interval-balance", interval=10000),
 
 ])
 
@@ -115,7 +115,7 @@ def update_progress(interval):
             loading=True,
             color="orange",
             action="show",
-            # autoClose=250,
+            autoClose=9000,
         )
 
 
