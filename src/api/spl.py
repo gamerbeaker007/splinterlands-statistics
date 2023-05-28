@@ -6,6 +6,7 @@ from dateutil import parser
 from requests.adapters import HTTPAdapter
 
 from src.api.logRetry import LogRetry
+from src.utils import progress_util
 
 base_url = "https://api2.splinterlands.com/"
 
@@ -80,9 +81,9 @@ def get_balance_history_for_token(username, token="DEC", from_date=None, unclaim
                                                                           unclaimed_sps=unclaimed_sps)
 
     while len(current_result) > 0 and offset <= max_transactions:
-        logging.info(str(token) + str(print_suffix) + " (" + str(username) + ")" +
-                     ": More then '" + str(offset + limit) +
-                     "' returned, continue for another balance pull...")
+        progress_util.set_msg(str(token) + str(print_suffix) + " (" + str(username) + ")" +
+                              ": More then '" + str(offset + limit) +
+                              "' returned, continue for another balance pull...")
         current_result = get_balance_history_for_token_impl(username,
                                                             token=token,
                                                             offset=offset + limit,
@@ -92,14 +93,14 @@ def get_balance_history_for_token(username, token="DEC", from_date=None, unclaim
         offset += limit
         created_date = parser.parse(complete_result[-1]['created_date'])
         if from_date and from_date > created_date:
-            logging.info(
+            progress_util.set_msg(
                 token + ": last pull contains all season information data from '" + str(from_date) + "' till NOW")
             break
 
     if offset > max_transactions:
-        logging.info(
+        progress_util.set_msg(
             "Stop pulling data MAX transactions (" + str(max_transactions) + ") reached. Possible not all data pulled")
-    logging.info(token + "(" + str(username) + ")" + ": all data pulled")
+    progress_util.set_msg(token + "(" + str(username) + ")" + ": all data pulled")
 
     return complete_result
 

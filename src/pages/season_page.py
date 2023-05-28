@@ -1,19 +1,19 @@
-import logging
-
 import dash_bootstrap_components as dbc
+import dash_mantine_components as dmc
+import plotly.express as px
 import plotly.graph_objects as go
 from aio import ThemeSwitchAIO
 from dash import html, Output, Input, ctx, dcc
-from dash_extensions.enrich import DashLogger
+from dash.exceptions import PreventUpdate
+from dash_extensions.enrich import Trigger
+from dash_iconify import DashIconify
 from plotly.subplots import make_subplots
-import plotly.express as px
-
 
 from main import app
 from src import season_balances_info, season_battle_info
-from src.configuration import config, store
+from src.configuration import config, store, progress
 from src.static.static_values_enum import Leagues
-from src.utils import store_util, chart_util
+from src.utils import store_util, chart_util, progress_util
 
 layout = dbc.Container([
     dbc.Row([
@@ -83,20 +83,58 @@ layout = dbc.Container([
         ),
     ]),
 
-    html.Div(id='hidden-div-balance', style={'display': 'none'}),
+    html.Div(id='hidden-div-balance'),
+    html.Div(id='progress-balance'),
+    dcc.Interval(id="interval-balance", interval=500),
+
 ])
+
+
+@app.callback(Output("progress-balance", "children"),
+              Trigger("interval-balance", "n_intervals"))
+def update_progress(interval):
+    value = progress.progress_txt
+    if value is None:
+        raise PreventUpdate
+    if value == "Done":
+        progress.progress_txt = None
+        return dmc.Notification(
+                id="my-notification",
+                title="Season update done",
+                message=str(value),
+                color="green",
+                action="update",
+                autoClose=True,
+                icon=DashIconify(icon="akar-icons:circle-check"),
+            )
+    else:
+        return dmc.Notification(
+            id="my-notification",
+            title="Season update process initiated",
+            message=str(value),
+            loading=True,
+            color="orange",
+            action="show",
+            # autoClose=250,
+        )
+
 
 
 @app.callback(
     Output('hidden-div-balance', 'children'),
     Input('update-season-btn', 'n_clicks'),
+    prevent_initial_call=True,
 )
 def update_output(n_clicks):
+    progress_util.set_msg("Start season update")
+
     if "update-season-btn" == ctx.triggered_id:
-        logging.info("Update season button was clicked")
+        progress_util.set_msg("Update season button was clicked")
         season_balances_info.update_season_balances_store()
         season_battle_info.update_season_battle_store()
         store_util.save_stores()
+        progress_util.set_msg("Done")
+
 
 
 @app.callback(Output('modern-season-rating-graph', 'figure'),

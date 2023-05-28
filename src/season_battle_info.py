@@ -6,7 +6,7 @@ import pandas as pd
 from src.api import spl
 from src.configuration import store, config
 from src.static.static_values_enum import Format
-from src.utils import store_util
+from src.utils import store_util, progress_util
 
 
 def get_season_battles(account_name, store_df, mode):
@@ -23,7 +23,7 @@ def get_season_battles(account_name, store_df, mode):
 
     if len(season_array) > 0:
         for season_id in season_array:
-            logging.info("Gathering (" + str(account_name) + ", "
+            progress_util.set_msg("Gathering (" + str(account_name) + ", "
                          + str(mode.value) +
                          ") battle info for season :" + str(season_id))
             result = spl.get_leaderboard_with_player_season(account_name, season_id, mode)
@@ -36,11 +36,11 @@ def get_season_battles(account_name, store_df, mode):
                                       pd.DataFrame({'player': account_name, 'season': season_id}, index=[0])],
                                      ignore_index=True)
     else:
-        logging.info("No new season battle info found for: " + str(account_name))
+        progress_util.set_msg("No new season battle info found for: " + str(account_name))
 
-    logging.info("Gathering '" + str(account_name) + ", "
+    progress_util.set_msg("Gathering '" + str(account_name) + ", "
                  + str(mode.value) +
-                 ") battle info done..")
+                 "' battle info done..")
 
     return store_df
 

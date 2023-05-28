@@ -80,7 +80,7 @@ def add_account(account_name):
     return store.accounts.account_name.tolist()
 
 
-def remove_xyz(store_name, search_column, account_name):
+def remove_account_from_store(store_name, search_column, account_name):
     _store = store.__dict__[store_name]
     if search_column in _store.columns.tolist():
         rows = _store.loc[(_store[search_column] == account_name)]
@@ -92,9 +92,9 @@ def remove_xyz(store_name, search_column, account_name):
 def remove_data(account_name):
     for store_name in get_store_names():
 
-        store.__dict__[store_name] = remove_xyz(store_name, 'account_name', account_name)
-        store.__dict__[store_name] = remove_xyz(store_name, 'account', account_name)
-        store.__dict__[store_name] = remove_xyz(store_name, 'player', account_name)
+        store.__dict__[store_name] = remove_account_from_store(store_name, 'account_name', account_name)
+        store.__dict__[store_name] = remove_account_from_store(store_name, 'account', account_name)
+        store.__dict__[store_name] = remove_account_from_store(store_name, 'player', account_name)
 
     # account_row = store.accounts.loc[(store.accounts.account_name == account_name)]
     # if not account_row.empty:

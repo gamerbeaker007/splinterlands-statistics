@@ -5,8 +5,8 @@ import pandas as pd
 from dateutil import parser
 
 from src.api import spl
-from src.configuration import store, config
-from src.utils import store_util
+from src.configuration import store, config, progress
+from src.utils import store_util, progress_util
 
 
 def update_balances_store(account_name):
@@ -17,7 +17,7 @@ def update_balances_store(account_name):
         start_from_season = store.season_sps.loc[store.season_sps.player == account_name].season_id.max() + 1
 
         if start_from_season == current_season_data['id']:
-            logging.info("No new season balances to process for: " + str(account_name))
+            progress_util.set_msg("No new season balances to process for: " + str(account_name))
             return
 
         season_array = np.arange(start_from_season, current_season_data['id'])
@@ -57,23 +57,23 @@ def update_balances_store(account_name):
         season_array = np.arange(first_season, current_season_data['id'])
 
     if len(season_array) > 0:
-        logging.info("Start processing DEC")
+        progress_util.set_msg("Start processing DEC")
         store.season_dec = process_season_balances(dec_df, store.season_dec.copy(), account_name, season_array)
-        logging.info("Start processing UNCLAIMED SPS")
+        progress_util.set_msg("Start processing UNCLAIMED SPS")
         store.season_unclaimed_sps = process_season_balances(unclaimed_sps_df, store.season_unclaimed_sps.copy(),
                                                              account_name, season_array, unclaimed_sps=True)
-        logging.info("Start processing SPS")
+        progress_util.set_msg("Start processing SPS")
         store.season_sps = process_season_balances(sps_df, store.season_sps.copy(), account_name, season_array)
-        logging.info("Start processing MERITS")
+        progress_util.set_msg("Start processing MERITS")
         store.season_merits = process_season_balances(merits_df, store.season_merits.copy(), account_name,
                                                       season_array)
-        logging.info("Start processing VOUCHERS")
+        progress_util.set_msg("Start processing VOUCHERS")
         store.season_vouchers = process_season_balances(vouchers_df, store.season_vouchers.copy(), account_name,
                                                         season_array)
-        logging.info("Start processing CREDITS")
+        progress_util.set_msg("Start processing CREDITS")
         store.season_credits = process_season_balances(credits_df, store.season_credits.copy(), account_name,
                                                        season_array)
-    logging.info("Get balances for account (" + str(account_name) + ") Done")
+    progress_util.set_msg("Get balances for account (" + str(account_name) + ") Done")
     store_util.save_stores()
 
 
@@ -124,7 +124,7 @@ def process_season_balances(balance_df, store_copy, account_name, season_array, 
             balance_df.amount = pd.to_numeric(balance_df.amount)
 
             for search_type in balance_df['type'].unique().tolist():
-                logging.info("Processing season '" + str(season_id) + "' for '" + str(account_name) + "' type: " + str(search_type))
+                progress_util.set_msg("Processing season '" + str(season_id) + "' for '" + str(account_name) + "' type: " + str(search_type))
 
                 # special treatment for season_rewards they are in different timeframe
                 # for unclaimed sps season_rewards are season called
