@@ -24,25 +24,25 @@ jobs:
         python-version: '3.10'
         cache: 'pip' # caching pip dependencies
     - run: pip install -r requirements.txt pyinstaller
-    - run: pyinstaller --onefile --distpath splinterlands-battle-stats main.py
-    - run: cp "config.properties" "splinterlands-battle-stats/"
+    - run: pyinstaller --onefile --distpath splinterlands-stats-v2 main.py
+    - run: cp "config.properties" "splinterlands-stats-v2/"
 
     - if: matrix.os == 'ubuntu-latest'
       run: |
-        mv "splinterlands-battle-stats/main" "splinterlands-battle-stats/main.sh"
-        tar -cvf splinterlands-battle-stats.tar splinterlands-battle-stats
+        mv "splinterlands-stats-v2/main" "splinterlands-stats-v2/main.sh"
+        tar -cvf splinterlands-stats-v2.tar splinterlands-stats-v2
 
     - if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v3
       with:
-        name: splinterlands-battle-stats-${{ matrix.os }}
-        path: splinterlands-battle-stats.tar
+        name: splinterlands-stats-v2-${{ matrix.os }}
+        path: splinterlands-stats-v2.tar
 
     - if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v3
       with:
-        name: splinterlands-battle-stats-${{ matrix.os }}
-        path: ./splinterlands-battle-stats/*
+        name: splinterlands-stats-v2-${{ matrix.os }}
+        path: ./splinterlands-stats-v2/*
 
 
   push_to_registry:
@@ -59,7 +59,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push  splinterlands-battle-stats docker image
+      - name: Build and push  splinterlands-stats-v2 docker image
         run: |
-               docker build . --tag ghcr.io/gamerbeaker007/splinterlands-battle-stats:latest
-               docker push ghcr.io/gamerbeaker007/splinterlands-battle-stats:latest
+               docker build . --tag ghcr.io/gamerbeaker007/splinterlands-stats-v2:latest
+               docker push ghcr.io/gamerbeaker007/splinterlands-stats-v2:latest

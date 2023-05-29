@@ -5,7 +5,7 @@ import sys
 from src.api import spl
 from src.configuration.custom_formatter import CustomFormatter
 
-DEBUG_FILES = True
+USE_TEST_FILES = True
 
 # config logger
 root_logger = logging.getLogger()
@@ -29,7 +29,7 @@ light_theme = 'minty'
 current_theme = dark_theme
 
 file_prefix = ""
-if DEBUG_FILES:
+if USE_TEST_FILES:
     file_prefix = "_test_file_"
 
 file_extension = '.csv'
