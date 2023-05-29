@@ -1,13 +1,11 @@
 import dash_bootstrap_components as dbc
-import numpy as np
-import plotly.express as px
 from dash import html, dcc, Output, Input
 from dash_bootstrap_templates import ThemeSwitchAIO
 
 from main import app
 from src.configuration import config, store
-from src.static import static_values_enum
-from src.static.static_values_enum import Format, RatingLevel
+from src.graphs import rating_graph
+from src.static.static_values_enum import Format
 from src.utils import store_util, chart_util
 
 # Define the page layout
@@ -28,23 +26,6 @@ layout = dbc.Container([
 ])
 
 
-def create_rating_graph(df, theme):
-    fig = px.scatter(df, x='created_date', y='rating', color='account', template=theme, height=800)
-    # Start from 1 skip Novice
-    for i in np.arange(1, len(static_values_enum.league_ratings)):
-        y = static_values_enum.league_ratings[i]
-        color = static_values_enum.league_colors[i]
-        league_name = RatingLevel(i).name
-
-        fig.add_hline(y=y,
-                      line_width=1,
-                      line_dash="dash",
-                      annotation_text=league_name,
-                      annotation_position="top left",
-                      line_color=color)
-    return fig
-
-
 @app.callback(Output('modern-rating-graph', 'figure'),
               Input('dropdown-user-selection', 'value'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
@@ -57,7 +38,7 @@ def update_modern_graph(account, toggle):
     if df.empty:
         return chart_util.blank_fig(theme)
     else:
-        return create_rating_graph(df, theme)
+        return rating_graph.create_rating_graph(df, theme)
 
 
 @app.callback(Output('wild-rating-graph', 'figure'),
@@ -72,7 +53,7 @@ def update_wild_graph(account, toggle):
     if df.empty:
         return chart_util.blank_fig(theme)
     else:
-        return create_rating_graph(df, theme)
+        return rating_graph.create_rating_graph(df, theme)
 
 
 def get_rating_df(account, match_format):
