@@ -7,9 +7,9 @@ from dash_extensions.enrich import Trigger
 from dash_iconify import DashIconify
 
 from main import app
-from src import battle_store, collection_store
+from src import battle_store, collection_store, portfolio
 from src.configuration import progress
-from src.pages import main_page, rating_page, nemesis_page, losing_page, season_page, config_page
+from src.pages import main_page, rating_page, nemesis_page, losing_page, season_page, config_page, portfolio_page
 from src.utils import store_util, progress_util
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
@@ -38,6 +38,7 @@ navbar = dbc.Navbar(
                         dbc.NavItem(dbc.NavLink('Rating', href='/rating')),
                         dbc.NavItem(dbc.NavLink('Nemesis', href='/nemesis')),
                         dbc.NavItem(dbc.NavLink('Balance', href='/balance')),
+                        dbc.NavItem(dbc.NavLink('Portfolio', href='/portfolio')),
                         dbc.NavItem(dbc.NavLink('Config', href='/config')),
                     ],
                     brand_href='/',
@@ -85,6 +86,8 @@ def display_page(pathname):
         return nemesis_page.layout
     if pathname == '/balance':
         return season_page.layout
+    if pathname == '/portfolio':
+        return portfolio_page.layout
     if pathname == '/config':
         return config_page.layout
     else:  # if redirected to unknown link
@@ -100,6 +103,7 @@ def update__output(n_clicks):
         progress_util.set_battle_msg("Update battle button pressed")
         collection_store.update_collection()
         battle_store.process_battles()
+        portfolio.update_portfolios()
 
         store_util.save_stores()
 

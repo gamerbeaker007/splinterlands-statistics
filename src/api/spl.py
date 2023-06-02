@@ -9,6 +9,7 @@ from src.api.logRetry import LogRetry
 from src.utils import progress_util
 
 base_url = "https://api2.splinterlands.com/"
+land_url = "https://vapi.splinterlands.com/"
 
 retry_strategy = LogRetry(
     total=10,
@@ -49,6 +50,10 @@ def get_current_season():
 
     return current_season
 
+
+def get_settings():
+    address = base_url + "settings"
+    return http.get(address).json()
 
 def get_season_end_time(season_id):
     address = base_url + "season?id=" + str(season_id)
@@ -144,3 +149,29 @@ def get_leaderboard_with_player_season(username, season, mode):
         return result.json()['player']
     else:
         return None
+
+
+def get_deeds_collection(username):
+    address = land_url + "land/deeds?status=collection&player=" + username
+    collection = http.get(address)
+    return collection.json()['data']
+
+
+def get_deeds_market():
+    address = land_url + "land/deeds?status=market"
+    market = http.get(address)
+    return market.json()['data']
+
+
+def get_balances(username):
+    address = base_url + "players/balances?username=" + username
+    return http.get(address).json()
+
+
+def get_all_cards_for_sale_df():
+    address = base_url + "market/for_sale_grouped"
+    all_cards_for_sale = requests.get(address).json()
+    return pd.DataFrame(sorted(all_cards_for_sale, key=lambda card: card["card_detail_id"]))
+
+
+

@@ -23,6 +23,7 @@ logging.info("Set log level: " + log_level)
 store_dir = os.path.join(os.getcwd(), 'store')
 card_details_df = spl.get_card_details()
 current_season = spl.get_current_season()
+settings = spl.get_settings()
 # season_end_dates_array = spl.get_season_end_times()
 dark_theme = 'cyborg'
 light_theme = 'minty'
