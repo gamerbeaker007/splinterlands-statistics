@@ -96,64 +96,6 @@ def remove_data(account_name):
         store.__dict__[store_name] = remove_account_from_store(store_name, 'account', account_name)
         store.__dict__[store_name] = remove_account_from_store(store_name, 'player', account_name)
 
-    # account_row = store.accounts.loc[(store.accounts.account_name == account_name)]
-    # if not account_row.empty:
-    #     store.accounts = store.accounts.drop(account_row.index)
-    #
-    # rows = store.last_processed.loc[(store.last_processed.account == account_name)]
-    # if not rows.empty:
-    #     store.last_processed = store.last_processed.drop(rows.index)
-    #
-    # rows = store.battle.loc[(store.battle.account == account_name)]
-    # if not rows.empty:
-    #     store.battle = store.battle.drop(rows.index)
-    #
-    # rows = store.collection.loc[(store.collection.player == account_name)]
-    # if not rows.empty:
-    #     store.collection = store.collection.drop(rows.index)
-    #
-    # rows = store.battle_big.loc[(store.battle_big.account == account_name)]
-    # if not rows.empty:
-    #     store.battle_big = store.battle_big.drop(rows.index)
-    #
-    # rows = store.rating.loc[(store.rating.account == account_name)]
-    # if not rows.empty:
-    #     store.rating = store.rating.drop(rows.index)
-    #
-    # rows = store.losing_big.loc[(store.losing_big.account == account_name)]
-    # if not rows.empty:
-    #     store.losing_big = store.losing_big.drop(rows.index)
-    #
-    # store.season_dec.reset_index().drop(columns=['index'], inplace=True)
-    # rows = store.season_dec.loc[(store.season_dec.player == account_name)]
-    # if not rows.empty:
-    #     store.season_dec = store.season_dec.drop(rows.index)
-    #
-    # store.season_merits.reset_index().drop(columns=['index'], inplace=True)
-    # rows = store.season_merits.loc[(store.season_merits.player == account_name)]
-    # if not rows.empty:
-    #     store.season_merits = store.season_merits.drop(rows.index)
-    #
-    # store.season_unclaimed_sps.reset_index().drop(columns=['index'], inplace=True)
-    # rows = store.season_unclaimed_sps.loc[(store.season_unclaimed_sps.player == account_name)]
-    # if not rows.empty:
-    #     store.season_unclaimed_sps = store.season_unclaimed_sps.drop(rows.index)
-    #
-    # store.season_sps.reset_index().drop(columns=['index'], inplace=True)
-    # rows = store.season_sps.loc[(store.season_sps.player == account_name)]
-    # if not rows.empty:
-    #     store.season_sps = store.season_sps.drop(rows.index)
-    #
-    # store.season_vouchers.reset_index().drop(columns=['index'], inplace=True)
-    # rows = store.season_vouchers.loc[(store.season_vouchers.player == account_name)]
-    # if not rows.empty:
-    #     store.season_vouchers = store.season_vouchers.drop(rows.index)
-    #
-    # store.season_credits.reset_index().drop(columns=['index'], inplace=True)
-    # rows = store.season_credits.loc[(store.season_credits.player == account_name)]
-    # if not rows.empty:
-    #     store.season_credits = store.season_credits.drop(rows.index)
-
     save_stores()
 
 
@@ -166,3 +108,13 @@ def remove_account(account_name):
             remove_data(account_name)
 
     return store.accounts.account_name.tolist()
+
+
+def get_last_portfolio_selection():
+    if store.view_portfolio_accounts.empty:
+        return list()
+    else:
+        # Remove users that are no longer in
+        curr_users = store.portfolio.account_name.unique().tolist()
+        mask = (store.view_portfolio_accounts.account_name.isin(curr_users))
+        return store.view_portfolio_accounts.loc[mask].account_name.tolist()

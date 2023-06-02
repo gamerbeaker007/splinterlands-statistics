@@ -1,10 +1,13 @@
 import plotly.express as px
 
 
-def plot_portfolio_all(df,
-                       theme,
-                       skip_zero=True):
-    df.drop(columns=['account_name'], inplace=True)
+def plot_portfolio_total(df,
+                         theme,
+                         skip_zero=True):
+    account_names = df.account_name.tolist()
+    df = df.groupby(['date'], as_index=False).sum()
+    df = df.filter(regex='date|value')
+    df['total'] = df.drop('collection_list_value', axis=1).sum(axis=1, numeric_only=True)
 
     if skip_zero:
         for column in df.columns.tolist():
@@ -13,8 +16,8 @@ def plot_portfolio_all(df,
 
     fig = px.line(df,
                   x='date',
-                  y=df.columns,
-                  title='Portfolio',
+                  y=df.total,
+                  title="Total portfolio values of '" + ",".join(account_names) + "' combined",
                   markers=True)
 
     fig.update_layout(

@@ -14,7 +14,7 @@ def get_liquidity_positions(account, token_pair):
             return float(result[0]['shares'])
         else:
             # no liquidity pool found return 0, 0, 0
-            return 0, 0, 0
+            return None
 
 
 def get_quantity(token_pair):

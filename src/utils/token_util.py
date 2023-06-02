@@ -60,25 +60,32 @@ def get_token_value(account):
     return df
 
 
+def get_dec_last_price():
+    market_list = pd.DataFrame(Market())
+    dec_market = market_list.loc[market_list.symbol == 'DEC']
+    return float(dec_market.lastPrice.iloc[0])
+
+
 def get_liquidity_pool(df, account, hive_in_dollar):
     token_pair = "DEC:SPS"
     my_shares = hive.get_liquidity_positions(account, token_pair)
+    dec = 0
+    sps = 0
+    value_usd = 0
+    if my_shares:
+        dec_qty, sps_qty, total_shares = hive.get_quantity(token_pair)
+        share_pct = my_shares / total_shares
+        dec = share_pct * dec_qty
+        sps = share_pct * sps_qty
 
-    dec_qty, sps_qty, total_shares = hive.get_quantity(token_pair)
-    share_pct = my_shares / total_shares
-    dec = share_pct * dec_qty
-    sps = share_pct * sps_qty
-
-    # TODO analyze if sleep is enough else we get an service temporary unavailable
-    sleep(1)
-    market_list = Market()
-    for market in market_list:
-        if market['symbol'] == 'DEC':
-            value_hive = float(market['lastPrice']) * dec
-            value_hive = value_hive * 2  # liquidity pool contain equal amount of dec and sps therefor times 2
-            value_usd = value_hive * hive_in_dollar
-            df['liq_pool_dec_qty'] = dec
-            df['liq_pool_sps_qty'] = sps
-            df['liq_pool_value'] = value_usd
+        # TODO analyze if sleep is enough else we get an service temporary unavailable
+        sleep(1)
+        dec_last_price = get_dec_last_price()
+        value_hive = dec_last_price * dec
+        value_hive = value_hive * 2  # liquidity pool contain equal amount of dec and sps therefor times 2
+        value_usd = value_hive * hive_in_dollar
+    df['liq_pool_dec_qty'] = dec
+    df['liq_pool_sps_qty'] = sps
+    df['liq_pool_value'] = value_usd
 
     return df

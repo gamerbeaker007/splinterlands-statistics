@@ -17,4 +17,4 @@ season_credits = pd.DataFrame()
 season_modern_battle_info = pd.DataFrame()
 season_wild_battle_info = pd.DataFrame()
 portfolio = pd.DataFrame()
-
+view_portfolio_accounts = pd.DataFrame()
