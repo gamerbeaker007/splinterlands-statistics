@@ -10,7 +10,6 @@ from src.utils import store_util, progress_util
 
 
 def update_balances_store(account_name):
-
     current_season_data = config.current_season
 
     if not (store.season_sps.empty or store.season_sps.loc[store.season_sps.player == account_name].empty):
@@ -44,7 +43,7 @@ def update_balances_store(account_name):
                                                                      token="VOUCHER"))
 
     else:
-        dec_df = pd.DataFrame(spl.get_balance_history_for_token(account_name,token="DEC"))
+        dec_df = pd.DataFrame(spl.get_balance_history_for_token(account_name, token="DEC"))
         unclaimed_sps_df = pd.DataFrame(spl.get_balance_history_for_token(account_name,
                                                                           token="SPS",
                                                                           unclaimed_sps=True))
@@ -77,32 +76,62 @@ def update_balances_store(account_name):
     store_util.save_stores()
 
 
-def process_season_rewards(balance_df, store_copy, account_name, season_id, search_type, positive_only):
+def process_season_rewards(balance_df, store_copy, account_name, season_id, search_type,
+                           unclaimed_sps=False, unclaimed_sps_rewards_share=False):
     # when season rewards are found these always belong to a previous season
     # timeframe of the claim rewards is always in the new season
 
     # if the balance of the current season is greater than 0 update the previous season
+    column_name = search_type
+    if unclaimed_sps_rewards_share:
+        column_name = search_type + "_fee"
     start_date, end_date = get_start_end_time_season(season_id)
-    balance_mask = get_balance_mask(balance_df, end_date, search_type, start_date, positive_only)
+    balance_mask = get_balance_mask(account_name,
+                                    balance_df,
+                                    start_date,
+                                    end_date,
+                                    search_type,
+                                    unclaimed_sps,
+                                    unclaimed_sps_rewards_share)
     amount = balance_df.loc[balance_mask].amount.sum()
+    if unclaimed_sps and not unclaimed_sps_rewards_share and amount < 0:
+        amount = amount * -1
     if amount > 0:
-        store_copy.loc[(store_copy.season_id == season_id-1) & (store_copy.player == account_name), search_type] = amount
+        store_copy.loc[(store_copy.season_id == season_id - 1)
+                       & (store_copy.player == account_name), column_name] = amount
 
     # if for the new season already a claim is done also capture this season rewards to the current
     start_date, end_date = get_start_end_time_season(season_id + 1)
-    balance_mask = get_balance_mask(balance_df, end_date, search_type, start_date, positive_only)
+    balance_mask = get_balance_mask(account_name,
+                                    balance_df,
+                                    start_date,
+                                    end_date,
+                                    search_type,
+                                    unclaimed_sps,
+                                    unclaimed_sps_rewards_share)
     amount = balance_df.loc[balance_mask].amount.sum()
-    store_copy.loc[(store_copy.season_id == season_id) & (store_copy.player == account_name), search_type] = amount
+    if unclaimed_sps and not unclaimed_sps_rewards_share and amount < 0:
+        amount = amount * -1
+    store_copy.loc[(store_copy.season_id == season_id)
+                   & (store_copy.player == account_name), column_name] = amount
 
     return store_copy
 
 
-def get_balance_mask(balance_df, end_date, search_type, start_date, positive_only):
-    if positive_only:
-        return (balance_df['created_date'] > start_date) & \
-            (balance_df['created_date'] <= end_date) & \
-            (balance_df['type'] == search_type) & \
-            (balance_df['amount'] > 0.0)
+def get_balance_mask(account_name, balance_df, start_date, end_date, search_type,
+                     unclaimed_sps=False, unclaimed_sps_reward_share=False):
+    if unclaimed_sps_reward_share:
+        return (balance_df['created_date'] > start_date) \
+            & (balance_df['created_date'] <= end_date) \
+            & (balance_df['type'] == search_type) \
+            & (balance_df['amount'] < 0.0) \
+            & (balance_df['to_player'] != account_name)
+    elif unclaimed_sps:
+        return (balance_df['created_date'] > start_date) \
+            & (balance_df['created_date'] <= end_date) \
+            & (balance_df['type'] == search_type) \
+            & (balance_df['amount'] < 0.0) \
+            & (balance_df['to_player'] == account_name)
     else:
         return (balance_df['created_date'] > start_date) & \
             (balance_df['created_date'] <= end_date) & \
@@ -110,10 +139,6 @@ def get_balance_mask(balance_df, end_date, search_type, start_date, positive_onl
 
 
 def process_season_balances(balance_df, store_copy, account_name, season_array, unclaimed_sps=False):
-    positive_only = False
-    if unclaimed_sps:
-        positive_only = True
-
     if not balance_df.empty:
         for season_id in season_array:
             store_copy = add_season_id(account_name, season_id, store_copy)
@@ -124,18 +149,46 @@ def process_season_balances(balance_df, store_copy, account_name, season_array, 
             balance_df.amount = pd.to_numeric(balance_df.amount)
 
             for search_type in balance_df['type'].unique().tolist():
-                progress_util.set_msg("Processing season '" + str(season_id) + "' for '" + str(account_name) + "' type: " + str(search_type))
+                progress_util.set_msg("Processing season '" + str(season_id) +
+                                      "' for '" + str(account_name) +
+                                      "' type: " + str(search_type))
 
                 # special treatment for season_rewards they are in different timeframe
                 # for unclaimed sps season_rewards are season called
-                if search_type == 'season_rewards' or (positive_only and search_type == 'season'):
+                if search_type == 'season_rewards' or (unclaimed_sps and search_type == 'season'):
                     store_copy = process_season_rewards(balance_df, store_copy, account_name, season_id, search_type,
-                                                        positive_only)
+                                                        unclaimed_sps)
+                    # For unclaimed SPS and season process it twice one for the rewards and one for shared reward/fees
+                    if search_type == 'season':
+                        store_copy = process_season_rewards(balance_df, store_copy, account_name, season_id,
+                                                            search_type,
+                                                            unclaimed_sps, True)
                 else:
-                    balance_mask = get_balance_mask(balance_df, end_date, search_type, start_date, positive_only)
+                    balance_mask = get_balance_mask(account_name,
+                                                    balance_df,
+                                                    start_date,
+                                                    end_date,
+                                                    search_type,
+                                                    unclaimed_sps)
 
-                    store_copy.loc[(store_copy.season_id == season_id) & (store_copy.player == account_name), search_type] = \
-                        balance_df.loc[balance_mask].amount.sum()
+                    amount = balance_df.loc[balance_mask].amount.sum()
+                    if unclaimed_sps and amount < 0:
+                        amount = amount * -1
+                    store_copy.loc[(store_copy.season_id == season_id)
+                                   & (store_copy.player == account_name), search_type] = amount
+
+                    # For unclaimed SPS process it twice one for the rewards and one for shared reward/fees
+                    if unclaimed_sps:
+                        balance_mask = get_balance_mask(account_name,
+                                                        balance_df,
+                                                        start_date,
+                                                        end_date,
+                                                        search_type,
+                                                        unclaimed_sps, True)
+                        column_name = search_type + "_fee"
+                        store_copy.loc[(store_copy.season_id == season_id) & (store_copy.player == account_name), column_name] = \
+                            balance_df.loc[balance_mask].amount.sum()
+
     return store_copy
 
 
@@ -162,7 +215,7 @@ def determine_first_season_id_played(balance_history_dec_df):
 
 
 def get_start_end_time_season(season_id):
-    return store.season_end_dates.loc[(store.season_end_dates.id == season_id - 1)]['end_date'].values[0],\
+    return store.season_end_dates.loc[(store.season_end_dates.id == season_id - 1)]['end_date'].values[0], \
         store.season_end_dates.loc[(store.season_end_dates.id == season_id)]['end_date'].values[0]
 
 

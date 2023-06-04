@@ -62,13 +62,6 @@ def plot_season_stats_battle(season_df, theme):
     return fig
 
 
-def check_data_consistency(season_df, columns):
-    for column in columns:
-        if column not in season_df:
-            season_df[column] = season_df.get(column, 0)
-    return season_df
-
-
 def plot_season_stats_rating(season_df, theme):
     season_df = season_df.sort_values(by=['season'])
     season_df = season_df.dropna(subset=['rating'])
@@ -160,10 +153,10 @@ def plot_season_stats_earnings(season_df_sps,
                                season_df_unclaimed_sps,
                                theme,
                                skip_zeros=True):
-    season_df_sps = season_df_sps.sort_values(by=['season_id']).fillna(0)
-    season_df_dec = season_df_dec.sort_values(by=['season_id']).fillna(0)
-    season_df_merits = season_df_merits.sort_values(by=['season_id']).fillna(0)
-    season_df_unclaimed_sps = season_df_unclaimed_sps.sort_values(by=['season_id']).fillna(0)
+    season_df_sps = season_df_sps.copy().sort_values(by=['season_id']).fillna(0)
+    season_df_dec = season_df_dec.copy().sort_values(by=['season_id']).fillna(0)
+    season_df_merits = season_df_merits.copy().sort_values(by=['season_id']).fillna(0)
+    season_df_unclaimed_sps = season_df_unclaimed_sps.copy().sort_values(by=['season_id']).fillna(0)
 
     # Data consistency
     columns_dec = [
@@ -177,17 +170,7 @@ def plot_season_stats_earnings(season_df_sps,
         'tournament_prize',
         'enter_tournament',
         'modern_leaderboard_prizes',
-        'wild_leaderboard_prizes',
-        'market_fees',
-        'market_list_fee']
-    columns_unclaimed_sps = [
-        'modern',
-        'wild',
-        'focus',
-        'season',
-        'brawl',
-        'land',
-        'nightmare']
+        'wild_leaderboard_prizes']
     columns_sps = [
         'claim_staking_rewards',
         'token_award',
@@ -199,59 +182,29 @@ def plot_season_stats_earnings(season_df_sps,
         'season_rewards',
         'brawl_prize']
 
-    season_df_dec = check_data_consistency(season_df_dec, columns_dec)
-    season_df_sps = check_data_consistency(season_df_sps, columns_sps)
-    season_df_merits = check_data_consistency(season_df_merits, columns_merits)
-    season_df_unclaimed_sps = check_data_consistency(season_df_unclaimed_sps, columns_unclaimed_sps)
+    season_df_dec['total'] = season_df_dec.filter(columns_dec).sum(axis=1, numeric_only=True)
 
-    dec_earned = season_df_dec.reward \
-                 + season_df_dec.quest_rewards \
-                 + season_df_dec.season_rewards \
-                 + season_df_dec.modern_leaderboard_prizes \
-                 + season_df_dec.wild_leaderboard_prizes
-
-    dec_rental_earned = season_df_dec.rental_payment + season_df_dec.rental_payment_fees
-    dec_rental_payed = season_df_dec.market_rental + season_df_dec.rental_refund
-    dec_market_fees = season_df_dec.market_list_fee
-    dec_tournament = season_df_dec.tournament_prize + season_df_dec.enter_tournament
-
-    sps_earned = season_df_sps.claim_staking_rewards + season_df_sps.token_award
-    sps_tournament = season_df_sps.tournament_prize + \
-                     season_df_sps.token_transfer_multi + \
-                     season_df_sps.enter_tournament
-    sps_battle_earning = season_df_unclaimed_sps.modern + \
-                         season_df_unclaimed_sps.wild + \
-                         season_df_unclaimed_sps.focus + \
-                         season_df_unclaimed_sps.season + \
-                         season_df_unclaimed_sps.brawl
-    sps_rewards = season_df_unclaimed_sps.land + season_df_unclaimed_sps.nightmare
-
-    sps_total = sps_earned + sps_tournament + sps_battle_earning + sps_rewards
-    dec_total = dec_earned + dec_rental_earned + dec_rental_payed + dec_tournament + dec_market_fees
-    merits_total = season_df_merits.quest_rewards + season_df_merits.season_rewards + season_df_merits.brawl_prize
-
-    # credits_earned = season_df.credits_quest_rewards + season_df.credits_season_rewards
-
-    # trace1 = go.Scatter(x=season_df.season, y=credits_earned, mode='lines+markers',  name='credits (quest + season reward)')
-    # trace2 = go.Scatter(x=season_df.season, y=sps_earned, mode='lines+markers',  name='sps (staking + token award)')
-    # trace3 = go.Scatter(x=season_df.season, y=dec_earned, mode='lines+markers',  name='dec (ranked + quest + season)')
-    # trace4 = go.Scatter(x=season_df.season, y=dec_rental_earned, mode='lines+markers',  name='dec rental (payment-fees)')
-    # trace5 = go.Scatter(x=season_df.season, y=dec_rental_payed, mode='lines+markers',  name='dec rental (cost-refund)')
-    # trace6 = go.Scatter(x=season_df.season, y=dec_tournament, mode='lines+markers',  name='dec tournament (prize-entry)')
+    season_df_sps['total_sps'] = season_df_sps.filter(columns_sps).sum(axis=1, numeric_only=True)
+    # remove _fee columns the normal columns fees are already included do not double them
+    season_df_unclaimed_sps = season_df_unclaimed_sps[season_df_unclaimed_sps.columns.drop(season_df_unclaimed_sps.filter(regex='_fee'))]
+    season_df_unclaimed_sps['total_unclaimed_sps'] = season_df_unclaimed_sps.drop(['season_id'], axis=1).sum(axis=1, numeric_only=True)
+    season_df_sps_combined = season_df_sps.merge(season_df_unclaimed_sps, on=['season_id', 'player'])
+    season_df_sps_combined['total'] = season_df_sps_combined.total_sps + season_df_sps_combined.total_unclaimed_sps
+    season_df_merits['total'] = season_df_merits.filter(columns_merits).sum(axis=1, numeric_only=True)
 
     trace7 = go.Scatter(x=season_df_dec.season_id,
-                        y=dec_total,
+                        y=season_df_dec.total,
                         mode='lines+markers',
                         name='DEC total (earnings - payments)',
                         line=dict(color='royalblue'))
 
     trace8 = go.Scatter(x=season_df_merits.season_id,
-                        y=merits_total,
+                        y=season_df_merits.total,
                         mode='lines+markers',
                         name='MERITS  total (earnings)',
                         line=dict(color='red', width=2))
-    trace9 = go.Scatter(x=season_df_sps.season_id,
-                        y=sps_total,
+    trace9 = go.Scatter(x=season_df_sps_combined.season_id,
+                        y=season_df_sps_combined.total,
                         mode='lines+markers',
                         name='SPS total (earnings - payments)',
                         line=dict(color='lightgreen', width=2))
@@ -268,27 +221,27 @@ def plot_season_stats_earnings(season_df_sps,
     else:
         total_rows = 0
         row_heights = []
-        if dec_total.sum() > 0:
+        if season_df_dec.total.sum() > 0:
             total_rows += 1
             row_heights.append(800)
-        if merits_total.sum() > 0:
+        if season_df_merits.total.sum() > 0:
             total_rows += 1
             row_heights.append(800)
-        if sps_total.sum() > 0:
+        if season_df_sps_combined.total.sum() > 0:
             total_rows += 1
             row_heights.append(800)
 
         fig = make_subplots(rows=total_rows, cols=1, row_heights=row_heights)
         rows = 0
-        if dec_total.sum() > 0:
+        if season_df_dec.total.sum() > 0:
             titles[rows] = "DEC"
             rows += 1
             fig.add_trace(trace7, row=rows, col=1)
-        if merits_total.sum() > 0:
+        if season_df_merits.total.sum() > 0:
             titles[rows] = "MERITS"
             rows += 1
             fig.add_trace(trace8, row=rows, col=1)
-        if sps_total.sum() > 0:
+        if season_df_sps_combined.total.sum() > 0:
             titles[rows] = "SPS"
             rows += 1
             fig.add_trace(trace9, row=rows, col=1)
@@ -322,7 +275,7 @@ def plot_season_stats_earnings(season_df_sps,
         xaxis2=dict(
             showgrid=True,
             gridwidth=1,
-            tickvals=season_df_sps.season_id,
+            tickvals=season_df_sps_combined.season_id,
         ),
         yaxis2=dict(
             title=titles[1],
