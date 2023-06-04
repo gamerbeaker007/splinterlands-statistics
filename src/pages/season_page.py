@@ -63,7 +63,7 @@ layout = dbc.Container([
         html.P("Tip: Double click on the legend to view one or all"),
     ]),
     dbc.Row([
-        dbc.Col(dcc.Dropdown(options=["SPS", "SPS UNCLAIMED", "DEC", "MERITS", "VOUCHERS"],
+        dbc.Col(dcc.Dropdown(options=["SPS", "SPS BATTLE", "DEC", "MERITS", "VOUCHERS", "CREDITS"],
                              value="SPS",
                              id='dropdown-token-selection',
                              className='dbc'),
@@ -198,7 +198,7 @@ def update_wild_graph(account, toggle):
 def update_earnings_graph(account, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_sps.empty:
+    if store.season_sps.loc[(store.season_sps.player == account)].empty:
         return chart_util.blank_fig(theme)
     else:
         season_df_sps = store.season_sps.loc[(store.season_sps.player == account)].copy()
@@ -232,11 +232,12 @@ def update_earnings_graph(account, token, skip_zero, toggle):
     else:
         if token == "SPS":
             season_df = store.season_sps.loc[(store.season_sps.player == account)].copy()
+        elif token == "SPS BATTLE":
+            season_df = store.season_unclaimed_sps.loc[(store.season_unclaimed_sps.player == account)].copy()
+        elif token == "CREDITS":
+            season_df = store.season_credits.loc[(store.season_credits.player == account)].copy()
         elif token == "MERITS":
             season_df = store.season_merits.loc[(store.season_merits.player == account)].copy()
-        elif token == "SPS UNCLAIMED":
-            season_df = store.season_unclaimed_sps.loc[
-                (store.season_unclaimed_sps.player == account)].copy()
         elif token == "VOUCHERS":
             season_df = store.season_vouchers.loc[(store.season_vouchers.player == account)].copy()
         elif token == "DEC":

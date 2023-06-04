@@ -185,8 +185,6 @@ def plot_season_stats_earnings(season_df_sps,
     season_df_dec['total'] = season_df_dec.filter(columns_dec).sum(axis=1, numeric_only=True)
 
     season_df_sps['total_sps'] = season_df_sps.filter(columns_sps).sum(axis=1, numeric_only=True)
-    # remove _fee columns the normal columns fees are already included do not double them
-    season_df_unclaimed_sps = season_df_unclaimed_sps[season_df_unclaimed_sps.columns.drop(season_df_unclaimed_sps.filter(regex='_fee'))]
     season_df_unclaimed_sps['total_unclaimed_sps'] = season_df_unclaimed_sps.drop(['season_id'], axis=1).sum(axis=1, numeric_only=True)
     season_df_sps_combined = season_df_sps.merge(season_df_unclaimed_sps, on=['season_id', 'player'])
     season_df_sps_combined['total'] = season_df_sps_combined.total_sps + season_df_sps_combined.total_unclaimed_sps
