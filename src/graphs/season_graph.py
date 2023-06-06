@@ -299,9 +299,7 @@ def plot_season_stats_earnings_all(season_df,
                                    theme,
                                    skip_zero=True):
     if skip_zero:
-        for column in season_df.columns.tolist():
-            if season_df[column].sum() == 0.0:
-                season_df.drop(columns=[column], inplace=True)
+        season_df = season_df.loc[:, (season_df.sum(axis=0) != 0.0)]
 
     fig = px.line(season_df,
                   x='season_id',

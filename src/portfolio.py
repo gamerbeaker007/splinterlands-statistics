@@ -20,7 +20,7 @@ def update_portfolio(account, portfolio_df, list_prices_df, market_prices_df):
         do_update = True
 
     if do_update:
-        df1 = collection_util.get_card_value(account, list_prices_df, market_prices_df)
+        df1 = collection_util.get_card_edition_value(account, list_prices_df, market_prices_df)
         df2 = token_util.get_token_value(account)
         total_df = df1.merge(df2)
         df3 = land_util.get_deeds_value(account)

@@ -7,19 +7,25 @@ from src.configuration import store, config
 from src.static.static_values_enum import Edition
 
 
-def get_card_value(account, list_prices_df, market_prices_df):
-    collection_list_value, collection_market_value = get_collection(account, list_prices_df, market_prices_df)
-    return pd.DataFrame({'date': datetime.today().strftime('%Y-%m-%d'),
-                         'account_name': account,
-                         'collection_market_value': collection_market_value,
-                         'collection_list_value': collection_list_value,}, index=[0])
+def get_card_edition_value(account, list_prices_df, market_prices_df):
+    store_copy_df = store.collection.loc[(store.collection.player == account)].copy()
+    return_df = pd.DataFrame({'date': datetime.today().strftime('%Y-%m-%d'),
+                              'account_name': account}, index=[0])
+
+    for edition in Edition.__iter__():
+        temp_df = store_copy_df.loc[(store_copy_df.edition == edition)]
+        list_value, market_value = get_collection(temp_df, list_prices_df, market_prices_df)
+        return_df[str(edition.name) + '_market_value'] = market_value
+        return_df[str(edition.name) + '_list_value'] = list_value
+
+    return return_df
 
 
-def get_collection(account, list_prices_df, market_prices_df):
+def get_collection(df, list_prices_df, market_prices_df):
     total_list_value = 0
     total_market_value = 0
 
-    for index, collection_card in store.collection.loc[(store.collection.player == account)].iterrows():
+    for index, collection_card in df.iterrows():
         list_flag = False
         market_flag = False
         list_price = 9999999
