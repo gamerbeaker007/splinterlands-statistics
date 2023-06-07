@@ -81,10 +81,16 @@ def update_earnings_graph(combine_users, toggle):
         return chart_util.blank_fig(theme)
     else:
 
-        df = store.portfolio.copy()
-        df = df.loc[df.account_name.isin(combine_users)]
-        df = df.groupby(['date'], as_index=False).sum()
-        return portfolio_graph.plot_portfolio_total(df, theme)
+        portfolio_df = store.portfolio.copy()
+        portfolio_df = portfolio_df.loc[portfolio_df.account_name.isin(combine_users)]
+        account_names = portfolio_df.account_name.unique().tolist()
+        portfolio_df = portfolio_df.groupby(['date'], as_index=False).sum()
+        investment_df = store.portfolio_investments
+        if not investment_df.empty:
+            investment_df = store.portfolio_investments.copy()
+            investment_df = investment_df.loc[investment_df.account_name.isin(combine_users)]
+            investment_df = investment_df.groupby(['date'], as_index=False).sum()
+        return portfolio_graph.plot_portfolio_total(portfolio_df, investment_df, account_names, theme)
 
 
 @app.callback(Output('all-portfolio-graph', 'figure'),

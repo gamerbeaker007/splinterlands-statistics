@@ -13,10 +13,12 @@ def get_card_edition_value(account, list_prices_df, market_prices_df):
                               'account_name': account}, index=[0])
 
     for edition in Edition.__iter__():
-        temp_df = store_copy_df.loc[(store_copy_df.edition == edition)]
-        list_value, market_value = get_collection(temp_df, list_prices_df, market_prices_df)
-        return_df[str(edition.name) + '_market_value'] = market_value
-        return_df[str(edition.name) + '_list_value'] = list_value
+        temp_df = store_copy_df.loc[(store_copy_df.edition == edition.value)]
+        collection = get_collection(temp_df, list_prices_df, market_prices_df)
+        return_df[str(edition.name) + '_market_value'] = collection['market_value']
+        return_df[str(edition.name) + '_list_value'] = collection['list_value']
+        return_df[str(edition.name) + '_bcx'] = collection['bcx']
+        return_df[str(edition.name) + '_number_of_cards'] = collection['number_of_cards']
 
     return return_df
 
@@ -24,8 +26,13 @@ def get_card_edition_value(account, list_prices_df, market_prices_df):
 def get_collection(df, list_prices_df, market_prices_df):
     total_list_value = 0
     total_market_value = 0
+    total_bcx = 0
+    number_of_cards = 0
 
     for index, collection_card in df.iterrows():
+        number_of_cards += 1
+        bcx = get_bcx(collection_card)
+        total_bcx += bcx
         list_flag = False
         market_flag = False
         list_price = 9999999
@@ -33,7 +40,7 @@ def get_collection(df, list_prices_df, market_prices_df):
         list_price_filtered = find_card(collection_card, list_prices_df)
         if not list_price_filtered.empty:
             list_price = float(list_price_filtered.low_price_bcx.iloc[0])
-            total_list_value += get_BCX(collection_card) * list_price
+            total_list_value += bcx * list_price
             list_flag = True
 
         market_prices_filtered = find_card(collection_card, market_prices_df)
@@ -44,7 +51,7 @@ def get_collection(df, list_prices_df, market_prices_df):
             else:
                 bcx_price = market_price
 
-            total_market_value += get_BCX(collection_card) * bcx_price
+            total_market_value += bcx * bcx_price
             market_flag = True
 
         if not list_flag \
@@ -57,7 +64,11 @@ def get_collection(df, list_prices_df, market_prices_df):
                             str(collection_card['card_name']) +
                             "' Not found on the markt (list/market) ignore for collection value")
 
-    return int(total_list_value), int(total_market_value)
+    return {'list_value': total_list_value,
+            'market_value': total_market_value,
+            'bcx': total_bcx,
+            'number_of_cards': number_of_cards
+            }
 
 
 def find_card(collection_card, market_df):
@@ -75,7 +86,7 @@ def does_card_match(collection_card, market_card):
     return same_id and same_foil and same_edition
 
 
-def get_BCX(collection_card):
+def get_bcx(collection_card):
     # rarity = self.card_details[int(collection_card["card_detail_id"]) - 1]["rarity"]
     rarity = config.card_details_df.loc[collection_card['card_detail_id']].rarity
     edition = int(collection_card["edition"])

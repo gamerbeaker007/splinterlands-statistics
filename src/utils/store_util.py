@@ -111,7 +111,7 @@ def remove_account(account_name):
 
 
 def get_last_portfolio_selection():
-    if store.view_portfolio_accounts.empty:
+    if store.portfolio.empty or store.view_portfolio_accounts.empty:
         return list()
     else:
         # Remove users that are no longer in

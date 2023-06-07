@@ -7,7 +7,6 @@ from src.utils import store_util
 
 def update_investment(account, amount, my_date):
     df = store.portfolio_investments.copy()
-    df.date = pd.to_datetime(df.date)
     my_date = parser.parse(my_date)
     if df.empty or df.loc[(df.date == my_date) & (df.account_name == account)].empty:
         new_df = pd.DataFrame({'date': pd.to_datetime(my_date),
@@ -21,5 +20,6 @@ def update_investment(account, amount, my_date):
         df.loc[
             (df.date == my_date) &
             (df.account_name == account), 'amount'] += amount
+    df.date = pd.to_datetime(df.date)
     store.portfolio_investments = df
     store_util.save_stores()
