@@ -35,5 +35,7 @@ def update_portfolios():
 
     for account in store_util.get_account_names():
         store.portfolio = update_portfolio(account, store.portfolio.copy(), list_prices_df, market_prices_df)
+
+    store.portfolio.fillna(0, inplace=True)
     store_util.save_stores()
 

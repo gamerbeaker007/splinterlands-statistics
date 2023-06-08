@@ -63,52 +63,85 @@ layout = dbc.Container([
     ]),
 
     html.Div(id='hidden-div-portfolio'),
+    dcc.Store(id='filtered-df'),
 
 ])
 
 
-@app.callback(Output('total-all-portfolio-graph', 'figure'),
+@app.callback(Output('filtered-df', 'data'),
               Input('dropdown-user-selection-portfolio', 'value'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
-def update_earnings_graph(combine_users, toggle):
+def update_filter_data(combine_users, toggle):
     store.view_portfolio_accounts = pd.DataFrame({'account_name': combine_users})
     store_util.save_stores()
 
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
-    if store.portfolio.empty or len(combine_users) == 0:
-        return chart_util.blank_fig(theme)
-    else:
+    portfolio_df = store.portfolio.copy()
+    portfolio_df = portfolio_df.loc[portfolio_df.account_name.isin(combine_users)]
+    portfolio_df = portfolio_df.groupby(['date'], as_index=False).sum()
 
-        portfolio_df = store.portfolio.copy()
-        portfolio_df = portfolio_df.loc[portfolio_df.account_name.isin(combine_users)]
-        account_names = portfolio_df.account_name.unique().tolist()
-        portfolio_df = portfolio_df.groupby(['date'], as_index=False).sum()
-        investment_df = store.portfolio_investments
-        if not investment_df.empty:
-            investment_df = store.portfolio_investments.copy()
-            investment_df = investment_df.loc[investment_df.account_name.isin(combine_users)]
-            investment_df = investment_df.groupby(['date'], as_index=False).sum()
-        return portfolio_graph.plot_portfolio_total(portfolio_df, investment_df, account_names, theme)
+    portfolio_df.date = pd.to_datetime(portfolio_df.date)
+
+    # remove all other columns than value columns and date
+    temp = portfolio_df.filter(regex='date|value')
+    # remove all list_value's keep market_value's columns to determine total value
+    portfolio_df['total_value'] = temp.filter(regex='.*(?<!_list_value)$').sum(axis=1, numeric_only=True)
+
+    investment_df = store.portfolio_investments
+    if not investment_df.empty:
+        investment_df = store.portfolio_investments.copy()
+        investment_df = investment_df.loc[investment_df.account_name.isin(combine_users)]
+        investment_df = investment_df.groupby(['date'], as_index=False).sum()
+        investment_df.date = pd.to_datetime(investment_df.date)
+        investment_df.sort_values('date', inplace=True)
+        investment_df['total_sum_value'] = investment_df.sum(axis=1, numeric_only=True)
+        investment_df['total_investment_value'] = investment_df.total_sum_value.cumsum()
+        portfolio_df = portfolio_df.merge(investment_df[['date', 'total_investment_value']], on='date', how='outer')
+    portfolio_df.sort_values('date', inplace=True)
+    return portfolio_df.to_json(date_format='iso', orient='split')
 
 
-@app.callback(Output('all-portfolio-graph', 'figure'),
+@app.callback(Output('total-all-portfolio-graph', 'figure'),
+              Input('filtered-df', 'data'),
               Input('dropdown-user-selection-portfolio', 'value'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
-def update_earnings_graph(combine_users, toggle):
+def update_earnings_graph(filtered_df, combine_users, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.portfolio.empty or store.portfolio.loc[store.portfolio.account_name.isin(combine_users)].empty:
+
+    if not filtered_df:
         return chart_util.blank_fig(theme)
     else:
+        temp_df = pd.read_json(filtered_df, orient='split')
 
-        df = store.portfolio.copy()
-        df = df.loc[df.account_name.isin(combine_users)]
-        df = df.groupby(['date'], as_index=False).sum()
+    if temp_df.empty or len(combine_users) == 0:
+        return chart_util.blank_fig(theme)
+    else:
+        return portfolio_graph.plot_portfolio_total(temp_df, combine_users, theme)
 
-        return portfolio_graph.plot_portfolio_all(df, theme)
+
+@app.callback(Output('all-portfolio-graph', 'figure'),
+              Input('filtered-df', 'data'),
+              Input('dropdown-user-selection-portfolio', 'value'),
+              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              )
+def update_earnings_graph(filtered_df, combine_users, toggle):
+    # TODO check which order callbacks are done
+    theme = config.light_theme if toggle else config.dark_theme
+
+    if not filtered_df:
+        return chart_util.blank_fig(theme)
+    else:
+        temp_df = pd.read_json(filtered_df, orient='split')
+
+    if temp_df.empty or len(combine_users) == 0:
+        return chart_util.blank_fig(theme)
+    else:
+        # filter_df = filter_df.loc[filter_df.account_name.isin(combine_users)]
+        # filter_df = filter_df.groupby(['date'], as_index=False).sum()
+        # filtered_df = filtered_df.filter(regex='.*(?<!total)$')
+        return portfolio_graph.plot_portfolio_all(temp_df, theme)
 
 
 @app.callback(
