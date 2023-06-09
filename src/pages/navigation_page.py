@@ -45,23 +45,22 @@ navbar = dbc.Navbar(
                 ),
             ),
             dbc.Col(
-                ThemeSwitchAIO(aio_id="theme",
+                ThemeSwitchAIO(aio_id='theme',
                                themes=[dbc.themes.MINTY, dbc.themes.CYBORG],
                                switch_props={'value': False}),
                 width='auto'),
             dbc.Col(
                 dbc.Button(
-                    'Pull new data',
+                    'Update daily',
                     id='load-new-values',
                     color='primary',
                     className='ms-2', n_clicks=0
                 ),
                 width='auto',
             ),
-            html.Div(id='hidden-div', style={'display': 'none'}),
-            html.Div(id='hidden-div1', style={'display': 'none'}),
-            html.Div(id='progress-battle'),
-            dcc.Interval(id="interval-battle", interval=500),
+            dcc.Store(id='trigger-daily-update'),
+            html.Div(id='progress-daily'),
+            dcc.Interval(id='interval-daily', interval=1000),
 
         ]),
 )
@@ -95,43 +94,64 @@ def display_page(pathname):
 
 
 @app.callback(
-    Output('hidden-div1', 'children'),
+    Output('trigger-daily-update', 'data'),
     Input('load-new-values', 'n_clicks'),
 )
 def update__output(n_clicks):
-    if "load-new-values" == ctx.triggered_id:
-        progress_util.set_battle_msg("Update battle button pressed")
+    if 'load-new-values' == ctx.triggered_id:
+
+        progress_util.set_daily_title('Update collection')
         collection_store.update_collection()
+
+        progress_util.set_daily_title('Update battles')
         battle_store.process_battles()
+
+        progress_util.set_daily_title('Update portfolio')
         portfolio.update_portfolios()
 
         store_util.save_stores()
+        progress_util.update_daily_msg('Done')
+        return True
+    return False
 
 
-@app.callback(Output("progress-battle", "children"),
-              Trigger("interval-battle", "n_intervals"))
+@app.callback(Output('progress-daily', 'children'),
+              Trigger('interval-daily', 'n_intervals'))
 def update_progress(interval):
-    value = progress.progress_battle_txt
+    value = progress.progress_daily_txt
+    title = progress.progress_daily_title
     if value is None:
         raise PreventUpdate
-    if value == "Done":
-        progress.progress_battle_txt = None
+    if value == 'Done':
+        if progress.progress_daily_first:
+            action = 'show'
+        else:
+            action = 'update'
+        progress.progress_daily_txt = None
+        progress.progress_daily_first = True
         return dmc.Notification(
-                id="my-notification",
-                title="Battle update done",
+                id='my-notification',
+                title=str(title),
                 message=str(value),
-                color="green",
-                action="update",
+                color='green',
+                action=action,
                 autoClose=True,
-                icon=DashIconify(icon="akar-icons:circle-check"),
+                icon=DashIconify(icon='akar-icons:circle-check'),
             )
     else:
+        if progress.progress_daily_first:
+            action = 'show'
+            progress.progress_daily_first = False
+        else:
+            action = 'update'
+
         return dmc.Notification(
-            id="my-notification",
-            title="Battle update process initiated",
+            id='my-notification',
+            title=str(title),
             message=str(value),
             loading=True,
-            color="orange",
-            action="show",
-            # autoClose=250,
+            color='orange',
+            action=action,
+            autoClose=False,
+            disallowClose=True,
         )

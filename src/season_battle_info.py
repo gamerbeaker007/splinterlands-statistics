@@ -23,8 +23,8 @@ def get_season_battles(account_name, store_df, mode):
 
     if len(season_array) > 0:
         for season_id in season_array:
-            progress_util.set_msg("Gathering (" + str(account_name) + ", "
-                         + str(mode.value) +
+            progress_util.update_season_msg("Gathering (" + str(account_name) + ", "
+                                            + str(mode.value) +
                          ") battle info for season :" + str(season_id))
             result = spl.get_leaderboard_with_player_season(account_name, season_id, mode)
             if 'rank' in result:
@@ -36,10 +36,10 @@ def get_season_battles(account_name, store_df, mode):
                                       pd.DataFrame({'player': account_name, 'season': season_id}, index=[0])],
                                      ignore_index=True)
     else:
-        progress_util.set_msg("No new season battle info found for: " + str(account_name))
+        progress_util.update_season_msg("No new season battle info found for: " + str(account_name))
 
-    progress_util.set_msg("Gathering '" + str(account_name) + ", "
-                 + str(mode.value) +
+    progress_util.update_season_msg("Gathering '" + str(account_name) + ", "
+                                    + str(mode.value) +
                  "' battle info done..")
 
     return store_df

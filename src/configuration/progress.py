@@ -1,2 +1,6 @@
-progress_txt = None
-progress_battle_txt = None
+progress_season_txt = None
+progress_season_first = True
+
+progress_daily_txt = None
+progress_daily_title = None
+progress_daily_first = True

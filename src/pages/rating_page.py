@@ -1,4 +1,5 @@
 import dash_bootstrap_components as dbc
+import pandas as pd
 from dash import html, dcc, Output, Input
 from dash_bootstrap_templates import ThemeSwitchAIO
 
@@ -22,49 +23,51 @@ layout = dbc.Container([
         dcc.Graph(id="modern-rating-graph"),
         html.Center(html.H1("Wild")),
         dcc.Graph(id="wild-rating-graph"),
+        dcc.Store(id='filtered-rating-df')
     ]),
 ])
 
 
 @app.callback(Output('modern-rating-graph', 'figure'),
-              Input('dropdown-user-selection', 'value'),
+              Input('filtered-rating-df', 'data'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
-def update_modern_graph(account, toggle):
+def update_modern_graph(filtered_df, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
+    filtered_df = pd.read_json(filtered_df, orient='split')
 
-    df = get_rating_df(account, Format.MODERN.value)
-    if df.empty:
+    if filtered_df.empty:
         return chart_util.blank_fig(theme)
     else:
+        df = filtered_df.loc[(store.rating.format == Format.MODERN.value)]
         return rating_graph.create_rating_graph(df, theme)
 
 
 @app.callback(Output('wild-rating-graph', 'figure'),
-              Input('dropdown-user-selection', 'value'),
+              Input('filtered-rating-df', 'data'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
-def update_wild_graph(account, toggle):
+def update_wild_graph(filtered_df, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
+    filtered_df = pd.read_json(filtered_df, orient='split')
 
-    df = get_rating_df(account, Format.WILD.value)
-    if df.empty:
+    if filtered_df.empty:
         return chart_util.blank_fig(theme)
     else:
+        df = filtered_df.loc[(store.rating.format == Format.WILD.value)]
         return rating_graph.create_rating_graph(df, theme)
 
 
-def get_rating_df(account, match_format):
+@app.callback(Output('filtered-rating-df', 'data'),
+              Input('dropdown-user-selection', 'value'),
+              )
+def filter_rating_df(account):
     if account == 'ALL':
         df = store.rating
     else:
         df = store.rating.loc[(store.rating.account == account)]
 
-    if df.empty:
-        return df
-    else:
-        df = df.loc[(store.rating.format == match_format)].copy()
-        df.sort_values(by='created_date', inplace=True)
-        return df
+    df.loc[:].sort_values(by='created_date', inplace=True)
+    return df.to_json(date_format='iso', orient='split')

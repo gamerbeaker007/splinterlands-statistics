@@ -1,6 +1,5 @@
-import logging
-
 import dash_bootstrap_components as dbc
+import pandas as pd
 from dash import html, Output, Input, dash_table, dcc
 
 from src import analyse
@@ -29,58 +28,56 @@ layout = dbc.Container([
                              className='dbc'))
     ]),
     dbc.Row([
-        html.Div(id="battle-count", className="dbc"),
+        html.Div(id='battle-count', className='dbc'),
     ]),
     dbc.Row([
-        html.Div(id="losing-table", className="dbc"),
+        html.Div(id='losing-table', className='dbc'),
     ]),
+    dcc.Store(id='filtered-losing-df')
+
 ])
 
 
 @app.callback(
     Output('losing-table', 'children'),
-    Input('dropdown-type-selection', 'value'),
-    Input('dropdown-user-selection', 'value'),
-    Input('dropdown-match-type-selection', 'value')
+    Input('filtered-losing-df', 'data'),
 )
-def update_losing_table(filter_type, filter_user, filter_match_type):
-    logging.info('Update table...')
-
-    df = analyse.get_losing_df(filter_account=filter_user, filter_match_type=filter_match_type, filter_type=filter_type)
+def update_losing_table(filtered_df):
+    df = pd.read_json(filtered_df, orient='split')
     if not df.empty:
         df = df[['url', 'card_name', 'level', 'number_of_losses']]
         return dash_table.DataTable(
-            # columns=[{"name": i, "id": i} for i in df.columns],
+            # columns=[{'name': i, 'id': i} for i in df.columns],
             columns=[
-                {"id": "url", "name": "url", "presentation": "markdown"},
-                {"id": "card_name", "name": "card_name"},
-                {"id": "level", "name": "level"},
-                {"id": "number_of_losses", "name": "number_of_losses"},
+                {'id': 'url', 'name': 'Card', 'presentation': 'markdown'},
+                {'id': 'card_name', 'name': 'Name'},
+                {'id': 'level', 'name': 'Level'},
+                {'id': 'number_of_losses', 'name': 'Numer of losses'},
 
             ],
-            data=df.to_dict("records"),
+            data=df.to_dict('records'),
             row_selectable=False,
             row_deletable=False,
             editable=False,
-            filter_action="native",
-            sort_action="native",
-            style_table={"overflowX": "auto"},
-            style_cell_conditional=[{"if": {"column_id": "url"}, "width": "200px"}, ],
+            filter_action='native',
+            sort_action='native',
+            style_table={'overflowX': 'auto'},
+            style_cell_conditional=[{'if': {'column_id': 'url'}, 'width': '200px'}, ],
             page_size=10,
         ),
     else:
         return dash_table.DataTable()
 
 
-@app.callback(
-    Output('battle-count', 'children'),
-    Input('dropdown-type-selection', 'value'),
-    Input('dropdown-user-selection', 'value'),
-    Input('dropdown-match-type-selection', 'value')
-)
-def battle_count(filter_type, filter_user, filter_match_type):
-    logging.info('Update battle count...')
-
-    bc = analyse.get_losing_battles_count(filter_account=filter_user, filter_match_type=filter_match_type,
-                                          filter_type=filter_type)
-    return html.Div("Battle count: " + str(bc))
+@app.callback(Output('filtered-losing-df', 'data'),
+              Output('battle-count', 'children'),
+              Input('dropdown-type-selection', 'value'),
+              Input('dropdown-user-selection', 'value'),
+              Input('dropdown-match-type-selection', 'value'),
+              Input('trigger-daily-update', 'data'),
+              )
+def filter_battle_df(filter_type, filter_user, filter_match_type, trigger_daily):
+    df = analyse.get_losing_df(filter_account=filter_user, filter_match_type=filter_match_type, filter_type=filter_type)
+    bc = analyse.get_losing_battles_count(filter_user, filter_match_type, filter_type)
+    return df.to_json(date_format='iso', orient='split'), \
+        html.Div('Battle count: ' + str(bc))

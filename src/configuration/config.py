@@ -5,7 +5,9 @@ import sys
 from src.api import spl
 from src.configuration.custom_formatter import CustomFormatter
 
-USE_TEST_FILES = True
+# file_prefix = ""
+file_prefix = "_test_file_"
+file_extension = '.csv'
 
 # config logger
 root_logger = logging.getLogger()
@@ -29,8 +31,3 @@ dark_theme = 'cyborg'
 light_theme = 'minty'
 current_theme = dark_theme
 
-file_prefix = ""
-if USE_TEST_FILES:
-    file_prefix = "_test_file_"
-
-file_extension = '.csv'

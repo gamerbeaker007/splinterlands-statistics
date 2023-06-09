@@ -5,7 +5,7 @@ import pandas as pd
 
 from src.api import spl, peakmonsters
 from src.configuration import store
-from src.utils import store_util, land_util, token_util, collection_util
+from src.utils import store_util, land_util, token_util, collection_util, progress_util
 
 
 def update_portfolio(account, portfolio_df, list_prices_df, market_prices_df):
@@ -30,10 +30,12 @@ def update_portfolio(account, portfolio_df, list_prices_df, market_prices_df):
 
 
 def update_portfolios():
+    progress_util.update_daily_msg("Start update portfolios")
     list_prices_df = spl.get_all_cards_for_sale_df()
     market_prices_df = peakmonsters.get_market_prices_df()
 
     for account in store_util.get_account_names():
+        progress_util.update_daily_msg("...update portfolio for: " + str(account))
         store.portfolio = update_portfolio(account, store.portfolio.copy(), list_prices_df, market_prices_df)
 
     store.portfolio.fillna(0, inplace=True)

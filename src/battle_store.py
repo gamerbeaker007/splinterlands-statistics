@@ -246,8 +246,7 @@ def is_surrender(battle_details):
 
 
 def process_battles():
-    progress_util.set_battle_msg("Start processing battles")
+    progress_util.update_daily_msg("Start processing battles")
     for account in store_util.get_account_names():
-        progress_util.set_battle_msg("...processing: " + account)
+        progress_util.update_daily_msg("...processing: " + account)
         process_battle(account)
-    progress_util.set_battle_msg("Done")
