@@ -33,7 +33,7 @@ def get_store_names():
 
 
 def get_store_file(name):
-    return os.path.join(config.store_dir, str(config.file_prefix + name + config.file_extension))
+    return os.path.join(config.store_dir, str(name + config.file_extension))
 
 
 # def get_store(name):

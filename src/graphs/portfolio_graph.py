@@ -5,9 +5,14 @@ def plot_portfolio_total(temp_df,
                          account_names,
                          theme):
     temp_df.sort_values('date', inplace=True)
+    if 'total_investment_value' in temp_df.columns.tolist():
+        column_data = temp_df[['total_value', 'total_investment_value']].columns
+    else:
+        column_data = temp_df[['total_value']].columns
+
     fig = px.line(temp_df,
                   x='date',
-                  y=temp_df[['total_value', 'total_investment_value']].columns,
+                  y=column_data,
                   title="Total portfolio values of '" + ",".join(account_names) + "' combined",
                   markers=True)
     fig.update_traces(connectgaps=True)

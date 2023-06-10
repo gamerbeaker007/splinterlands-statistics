@@ -45,8 +45,7 @@ layout = dbc.Container([
 
     ]),
     dbc.Row([
-        dcc.Dropdown(options=store_util.get_account_names(),
-                     value=store_util.get_last_portfolio_selection(),
+        dcc.Dropdown(
                      multi=True,
                      id='dropdown-user-selection-portfolio',
                      className='dbc',
@@ -69,6 +68,13 @@ layout = dbc.Container([
 ])
 
 
+@app.callback(Output('dropdown-user-selection-portfolio', 'value'),
+              Output('dropdown-user-selection-portfolio', 'options'),
+              Input('trigger-daily-update', 'data'),
+              )
+def update_user_list(tigger):
+    return store_util.get_last_portfolio_selection(), store_util.get_account_names()
+
 
 @app.callback(Output('filtered-portfolio-df', 'data'),
               Input('dropdown-user-selection-portfolio', 'value'),
@@ -79,7 +85,7 @@ layout = dbc.Container([
 def update_filter_data(combine_users, trigger_portfolio, trigger_daily, toggle):
     filtered_users = []
     for user in combine_users:
-        if not store.portfolio.loc[(store.portfolio.account_name == user)].empty:
+        if not store.portfolio.empty and not store.portfolio.loc[(store.portfolio.account_name == user)].empty:
             filtered_users.append(user)
 
     store.view_portfolio_accounts = pd.DataFrame({'account_name': filtered_users})

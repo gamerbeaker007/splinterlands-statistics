@@ -5,8 +5,13 @@ import sys
 from src.api import spl
 from src.configuration.custom_formatter import CustomFormatter
 
-# file_prefix = ""
-file_prefix = "_test_file_"
+# file_dir_prefix = ""
+file_dir_prefix = "_test_file_"
+
+store_dir = os.path.join(os.getcwd(), 'store', file_dir_prefix)
+if not os.path.isdir(store_dir):
+    os.mkdir(store_dir)
+
 file_extension = '.csv'
 
 # config logger
@@ -22,7 +27,6 @@ if not log_level:
 root_logger.setLevel(log_level)
 logging.info("Set log level: " + log_level)
 
-store_dir = os.path.join(os.getcwd(), 'store')
 card_details_df = spl.get_card_details()
 current_season = spl.get_current_season()
 settings = spl.get_settings()

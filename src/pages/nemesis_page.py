@@ -11,14 +11,10 @@ from src.utils import store_util
 layout = dbc.Container([
     dbc.Row([
         html.Center(html.H1('Nemesis, ranked matches')),
-        dbc.Col(dcc.Dropdown(options=store_util.get_account_names(),
-                             value=store_util.get_first_account_name(),
-                             id='dropdown-user-selection',
+        dbc.Col(dcc.Dropdown(id='dropdown-user-selection',
                              className='dbc'),
                 ),
-        dbc.Col(dcc.Dropdown(options=['ALL'] + static_values_enum.get_list_of_enum(MatchType),
-                             value='ALL',
-                             id='dropdown-match-type-selection',
+        dbc.Col(dcc.Dropdown(id='dropdown-match-type-selection',
                              className='dbc')),
         html.Hr(),
         html.Br(),
@@ -29,6 +25,22 @@ layout = dbc.Container([
 
     ])
 ])
+
+
+@app.callback(Output('dropdown-user-selection', 'value'),
+              Output('dropdown-user-selection', 'options'),
+              Input('trigger-daily-update', 'data'),
+              )
+def update_user_list(tigger):
+    return store_util.get_first_account_name(), store_util.get_account_names()
+
+
+@app.callback(Output('dropdown-match-type-selection', 'value'),
+              Output('dropdown-match-type-selection', 'options'),
+              Input('trigger-daily-update', 'data'),
+              )
+def update_match_types_list(tigger):
+    return 'ALL', ['ALL'] + static_values_enum.get_list_of_enum(MatchType)
 
 
 @app.callback(

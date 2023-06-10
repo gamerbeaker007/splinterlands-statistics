@@ -154,7 +154,8 @@ def update_output(n_clicks):
 def update_modern_graph(account, season_tigger, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_modern_battle_info.loc[(store.season_modern_battle_info.player == account)].empty:
+    if store.season_modern_battle_info.empty or \
+            store.season_modern_battle_info.loc[(store.season_modern_battle_info.player == account)].empty:
         return chart_util.blank_fig(theme)
     else:
         season_df = store.season_modern_battle_info.loc[
@@ -170,7 +171,8 @@ def update_modern_graph(account, season_tigger, toggle):
 def update_wild_battle_graph(account, season_trigger, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_wild_battle_info.loc[(store.season_wild_battle_info.player == account)].empty:
+    if store.season_wild_battle_info.empty or \
+            store.season_wild_battle_info.loc[(store.season_wild_battle_info.player == account)].empty:
         return chart_util.blank_fig(theme)
     else:
         season_df = store.season_wild_battle_info.loc[
@@ -186,7 +188,8 @@ def update_wild_battle_graph(account, season_trigger, toggle):
 def update_modern_battle_graph(account, season_tigger, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_modern_battle_info.loc[(store.season_modern_battle_info.player == account)].empty:
+    if store.season_modern_battle_info.empty or \
+            store.season_modern_battle_info.loc[(store.season_modern_battle_info.player == account)].empty:
         return chart_util.blank_fig(theme)
     else:
         season_df = store.season_modern_battle_info.loc[
@@ -202,7 +205,8 @@ def update_modern_battle_graph(account, season_tigger, toggle):
 def update_wild_graph(account, season_trigger, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_wild_battle_info.loc[(store.season_wild_battle_info.player == account)].empty:
+    if store.season_wild_battle_info.empty or \
+            store.season_wild_battle_info.loc[(store.season_wild_battle_info.player == account)].empty:
         return chart_util.blank_fig(theme)
     else:
         season_df = store.season_wild_battle_info.loc[(store.season_wild_battle_info.player == account)].copy()
@@ -217,7 +221,8 @@ def update_wild_graph(account, season_trigger, toggle):
 def update_earnings_graph(account, season_trigger, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_sps.loc[(store.season_sps.player == account)].empty:
+    if store.season_sps.empty or \
+            store.season_sps.loc[(store.season_sps.player == account)].empty:
         return chart_util.blank_fig(theme)
     else:
         season_df_sps = store.season_sps.loc[(store.season_sps.player == account)].copy()
