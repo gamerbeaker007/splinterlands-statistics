@@ -32,8 +32,11 @@ jobs:
         where.exe openssl.exe
         openssl help
         dir "C:\Program Files\OpenSSL\"
+        Copy-Item "C:\Program Files\OpenSSL\" -Destination "C:\OpenSSL-Win64\"
+        dir "C:\OpenSSL-Win64\"
 
-    - run: pip3 install --global-option="build_ext" --global-option="-Ic:\Program Files\OpenSSL\include" --global-option="-Lc:\Program Files\OpenSSL\lib" hiveengine==0.2.2
+    - run: pip install --upgrade pip setuptools wheel
+    - run: pip install hiveengine==0.2.2
 
     - run: pip install -r requirements.txt pyinstaller
 
