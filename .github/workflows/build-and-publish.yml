@@ -26,6 +26,11 @@ jobs:
 
     - if: matrix.os == 'windows-latest'
       run: choco install openssl
+    - if: matrix.os == 'windows-latest'
+      run: refreshenv
+    - if: matrix.os == 'windows-latest'
+      run: dir "c:\Program Files\OpenSSL-Win64\"
+
 
     - run: pip install -r requirements.txt pyinstaller
     - run: pyinstaller --onefile --distpath splinterlands-stats-v2 main.py
