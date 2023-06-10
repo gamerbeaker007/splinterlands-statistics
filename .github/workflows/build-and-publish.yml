@@ -32,6 +32,8 @@ jobs:
         where.exe openssl.exe
         openssl help
         dir "C:\Program Files\OpenSSL\"
+        SET LDFLAGS=-LC:\Program Files\OpenSSL\lib
+        SET CPPFLAGS=-IC:\Program Files\OpenSSL\include
 
 
     - run: pip install -r requirements.txt pyinstaller
