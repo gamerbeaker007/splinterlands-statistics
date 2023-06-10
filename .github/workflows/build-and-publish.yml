@@ -25,11 +25,11 @@ jobs:
         cache: 'pip' # caching pip dependencies
 
     - if: matrix.os == 'windows-latest'
-      run: choco install openssl
-    - if: matrix.os == 'windows-latest'
-      run: refreshenv
-    - if: matrix.os == 'windows-latest'
-      run: dir "c:\Program Files\OpenSSL-Win64\"
+      run: |
+        choco install openssl
+        Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+        refreshenv
+        dir "c:\Program Files\OpenSSL-Win64\"
 
 
     - run: pip install -r requirements.txt pyinstaller
