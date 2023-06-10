@@ -27,20 +27,10 @@ jobs:
     - if: matrix.os == 'windows-latest'
       run: |
         choco install openssl -y -verbose
-        Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
-        refreshenv
-        where.exe openssl.exe
-        openssl help
         md -path C:\OpenSSL-Win64
         Copy-Item "C:\Program Files\OpenSSL\*" -Destination "C:\OpenSSL-Win64" -Recurse
-        dir "C:\OpenSSL-Win64\"
-
-    - run: pip install --upgrade pip setuptools wheel
-    - run: pip install hiveengine==0.2.2
 
     - run: pip install -r requirements.txt pyinstaller
-
-
     - run: pyinstaller --onefile --distpath splinterlands-stats-v2 main.py
 
     - if: matrix.os == 'ubuntu-latest'
