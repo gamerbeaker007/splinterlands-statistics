@@ -24,6 +24,10 @@ jobs:
         python-version: '3.10'
         cache: 'pip' # caching pip dependencies
     - run: pip install -r requirements.txt pyinstaller
+
+    - if: matrix.os == 'windows-latest'
+      run: choco install openssl
+
     - run: pyinstaller --onefile --distpath splinterlands-stats-v2 main.py
 
     - if: matrix.os == 'ubuntu-latest'
