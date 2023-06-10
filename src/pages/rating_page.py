@@ -14,7 +14,7 @@ layout = dbc.Container([
     dbc.Row([
         dbc.Col(dcc.Dropdown(options=['ALL'] + store_util.get_account_names(),
                              value='ALL',
-                             id='dropdown-user-selection',
+                             id='dropdown-user-selection-rating',
                              className='dbc'),
                 ),
         html.Center(html.H1("Modern")),
@@ -29,7 +29,7 @@ layout = dbc.Container([
 
 
 @app.callback(Output('filtered-rating-df', 'data'),
-              Input('dropdown-user-selection', 'value'),
+              Input('dropdown-user-selection-rating', 'value'),
               )
 def filter_rating_df(account):
     if account == 'ALL':

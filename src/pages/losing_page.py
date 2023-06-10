@@ -15,16 +15,16 @@ layout = dbc.Container([
         dbc.Col(html.P('Filter on')),
         dbc.Col(dcc.Dropdown(options=['ALL'] + store_util.get_account_names(),
                              value=store_util.get_first_account_name(),
-                             id='dropdown-user-selection',
+                             id='dropdown-user-selection-losing',
                              className='dbc'),
                 ),
         dbc.Col(dcc.Dropdown(options=['ALL'] + static_values_enum.get_list_of_enum(CardType),
                              value='ALL',
-                             id='dropdown-type-selection',
+                             id='dropdown-type-selection-losing',
                              className='dbc')),
         dbc.Col(dcc.Dropdown(options=['ALL'] + static_values_enum.get_list_of_enum(MatchType),
                              value='ALL',
-                             id='dropdown-match-type-selection',
+                             id='dropdown-match-type-selection-losing',
                              className='dbc'))
     ]),
     dbc.Row([
@@ -71,9 +71,9 @@ def update_losing_table(filtered_df):
 
 @app.callback(Output('filtered-losing-df', 'data'),
               Output('battle-count', 'children'),
-              Input('dropdown-type-selection', 'value'),
-              Input('dropdown-user-selection', 'value'),
-              Input('dropdown-match-type-selection', 'value'),
+              Input('dropdown-type-selection-losing', 'value'),
+              Input('dropdown-user-selection-losing', 'value'),
+              Input('dropdown-match-type-selection-losing', 'value'),
               Input('trigger-daily-update', 'data'),
               )
 def filter_battle_df(filter_type, filter_user, filter_match_type, trigger_daily):
