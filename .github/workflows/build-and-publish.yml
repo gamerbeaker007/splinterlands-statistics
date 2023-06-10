@@ -26,7 +26,7 @@ jobs:
 
     - if: matrix.os == 'windows-latest'
       run: |
-        choco install openssl.light --params "/InstallDir:C:\Program Files\OpenSSL-Win64
+        choco install openssl.light --params "/InstallDir:C:\Program Files\OpenSSL-Win64"
         Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
         refreshenv
         dir "C:\Program Files\OpenSSL-Win64\"
