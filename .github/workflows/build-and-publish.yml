@@ -31,8 +31,7 @@ jobs:
         refreshenv
         where.exe openssl.exe
         openssl help
-        dir "C:\Program Files\OpenSSL\"
-        Copy-Item "C:\Program Files\OpenSSL\" -Destination "C:\OpenSSL-Win64\"
+        Copy-Item "C:\Program Files\OpenSSL\*" -Destination "C:\OpenSSL-Win64" -Recurse
         dir "C:\OpenSSL-Win64\"
 
     - run: pip install --upgrade pip setuptools wheel
