@@ -26,9 +26,10 @@ jobs:
 
     - if: matrix.os == 'windows-latest'
       run: |
-        choco install openssl -y -verbos
+        choco install openssl -y -verbose
         Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
         refreshenv
+        .\where.exe openssl.exe
         openssl help
         dir "C:\Program Files\OpenSSL-Win64\"
 
