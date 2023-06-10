@@ -33,9 +33,10 @@ jobs:
         openssl help
         dir "C:\Program Files\OpenSSL\"
 
+    - run: pip3 install hiveengine==0.2.2 --no-binary :all:
+
     - run: pip install -r requirements.txt pyinstaller
 
-    - run: pip install pip install --global-option="build_ext" --global-option="-Ic:\Program Files\OpenSSL\include" --global-option="-Lc:\Program Files\OpenSSL\lib" hiveengine==0.2.2
 
     - run: pyinstaller --onefile --distpath splinterlands-stats-v2 main.py
 
