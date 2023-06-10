@@ -31,7 +31,7 @@ jobs:
         refreshenv
         where.exe openssl.exe
         openssl help
-        dir "C:\Program Files\OpenSSL-Win64\"
+        dir "C:\Program Files\OpenSSL\"
 
 
     - run: pip install -r requirements.txt pyinstaller
