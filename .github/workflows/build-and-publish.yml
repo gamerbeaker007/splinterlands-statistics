@@ -26,10 +26,10 @@ jobs:
 
     - if: matrix.os == 'windows-latest'
       run: |
-        choco install openssl
+        choco install openssl.light --params "/InstallDir:C:\Program Files\OpenSSL-Win64
         Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
         refreshenv
-        dir "c:\Program Files\OpenSSL-Win64\"
+        dir "C:\Program Files\OpenSSL-Win64\"
 
 
     - run: pip install -r requirements.txt pyinstaller
