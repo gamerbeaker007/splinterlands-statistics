@@ -31,6 +31,7 @@ jobs:
         refreshenv
         where.exe openssl.exe
         openssl help
+        md -path C:\OpenSSL-Win64
         Copy-Item "C:\Program Files\OpenSSL\*" -Destination "C:\OpenSSL-Win64" -Recurse
         dir "C:\OpenSSL-Win64\"
 
