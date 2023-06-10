@@ -29,7 +29,7 @@ jobs:
         choco install openssl -y -verbose
         Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
         refreshenv
-        .\where.exe openssl.exe
+        where.exe openssl.exe
         openssl help
         dir "C:\Program Files\OpenSSL-Win64\"
 
