@@ -1,3 +1,5 @@
+import logging
+
 from src.pages import navigation_page
 from src.pages.main_dash import app
 from src.utils import store_util
@@ -15,6 +17,8 @@ def main():
     # portfolio.update_portfolios()
 
     app.layout = navigation_page.layout
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
     app.run_server(debug=False)
 
 

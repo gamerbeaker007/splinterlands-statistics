@@ -15,10 +15,10 @@ from src.utils import store_util, chart_util, progress_util
 
 layout = dbc.Container([
     dbc.Row([
-        html.H1('Update press button'),
+        html.H1('Season statistics'),
         dbc.Col(
             dbc.Button(
-                'Pull new data',
+                'Update seasons',
                 id='update-season-btn',
                 color='primary',
                 className='ms-2', n_clicks=0
@@ -259,30 +259,39 @@ def update_earnings_all_graph(account, token, skip_zero, season_trigger, toggle)
 
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
-    if store.season_sps.empty or store.season_sps.loc[(store.season_sps.player == account)].empty:
-        return chart_util.blank_fig(theme)
-    else:
-        if token == 'SPS':
-            season_df = store.season_sps.loc[(store.season_sps.player == account)].copy()
-        elif token == 'SPS BATTLE':
-            season_df = store.season_unclaimed_sps.loc[(store.season_unclaimed_sps.player == account)].copy()
-        elif token == 'CREDITS':
-            season_df = store.season_credits.loc[(store.season_credits.player == account)].copy()
-        elif token == 'MERITS':
-            season_df = store.season_merits.loc[(store.season_merits.player == account)].copy()
-        elif token == 'VOUCHERS':
-            season_df = store.season_vouchers.loc[(store.season_vouchers.player == account)].copy()
-        elif token == 'DEC':
-            season_df = store.season_dec.loc[(store.season_dec.player == account)].copy()
-        else:
+    if token == 'SPS':
+        if store.season_sps.empty or store.season_sps.loc[(store.season_sps.player == account)].empty:
             return chart_util.blank_fig(theme)
+        season_df = store.season_sps.loc[(store.season_sps.player == account)].copy()
+    elif token == 'SPS BATTLE':
+        if store.season_unclaimed_sps.empty or store.season_unclaimed_sps.loc[(store.season_sps.player == account)].empty:
+            return chart_util.blank_fig(theme)
+        season_df = store.season_unclaimed_sps.loc[(store.season_unclaimed_sps.player == account)].copy()
+    elif token == 'CREDITS':
+        if store.season_credits.empty or store.season_credits.loc[(store.season_sps.player == account)].empty:
+            return chart_util.blank_fig(theme)
+        season_df = store.season_credits.loc[(store.season_credits.player == account)].copy()
+    elif token == 'MERITS':
+        if store.season_merits.empty or store.season_merits.loc[(store.season_sps.player == account)].empty:
+            return chart_util.blank_fig(theme)
+        season_df = store.season_merits.loc[(store.season_merits.player == account)].copy()
+    elif token == 'VOUCHERS':
+        if store.season_vouchers.empty or store.season_vouchers.loc[(store.season_sps.player == account)].empty:
+            return chart_util.blank_fig(theme)
+        season_df = store.season_vouchers.loc[(store.season_vouchers.player == account)].copy()
+    elif token == 'DEC':
+        if store.season_dec.empty or store.season_dec.loc[(store.season_sps.player == account)].empty:
+            return chart_util.blank_fig(theme)
+        season_df = store.season_dec.loc[(store.season_dec.player == account)].copy()
+    else:
+        return chart_util.blank_fig(theme)
 
-        season_df = season_df.sort_values(by=['season_id']).fillna(0)
-        season_df.drop(columns=['player'], inplace=True)
-        season_df['Total'] = season_df.select_dtypes(include=['float']).sum(axis=1)
+    season_df = season_df.sort_values(by=['season_id']).fillna(0)
+    season_df.drop(columns=['player'], inplace=True)
+    season_df['Total'] = season_df.select_dtypes(include=['float']).sum(axis=1)
 
-        return season_graph.plot_season_stats_earnings_all(season_df,
-                                                           token,
-                                                           theme,
-                                                           skip_zero)
+    return season_graph.plot_season_stats_earnings_all(season_df,
+                                                       token,
+                                                       theme,
+                                                       skip_zero)
 
