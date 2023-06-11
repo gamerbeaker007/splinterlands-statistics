@@ -46,6 +46,7 @@ jobs:
         mv "splinterlands-stats-v2/main" "splinterlands-stats-v2/main.sh"
         tar -cvf splinterlands-stats-v2.tar splinterlands-stats-v2
 
+    - if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v3
       with:
         name: splinterlands-stats-v2-${{ matrix.os }}
