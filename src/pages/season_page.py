@@ -1,5 +1,6 @@
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
+import pandas as pd
 from aio import ThemeSwitchAIO
 from dash import html, Output, Input, ctx, dcc
 from dash.exceptions import PreventUpdate
@@ -225,11 +226,17 @@ def update_earnings_graph(account, season_trigger, toggle):
             store.season_sps.loc[(store.season_sps.player == account)].empty:
         return chart_util.blank_fig(theme)
     else:
-        season_df_sps = store.season_sps.loc[(store.season_sps.player == account)].copy()
-        season_df_dec = store.season_dec.loc[(store.season_dec.player == account)].copy()
-        season_df_merits = store.season_merits.loc[(store.season_merits.player == account)].copy()
-        season_df_unclaimed_sps = store.season_unclaimed_sps.loc[
-            (store.season_unclaimed_sps.player == account)].copy()
+        season_df_sps = season_df_dec = season_df_merits = season_df_unclaimed_sps = pd.DataFrame()
+        if not store.season_sps.empty:
+            season_df_sps = store.season_sps.loc[(store.season_sps.player == account)].copy()
+        if not store.season_dec.empty:
+            season_df_dec = store.season_dec.loc[(store.season_dec.player == account)].copy()
+        if not store.season_merits.empty:
+            season_df_merits = store.season_merits.loc[(store.season_merits.player == account)].copy()
+        if not store.season_unclaimed_sps.empty:
+            season_df_unclaimed_sps = store.season_unclaimed_sps.loc[
+                (store.season_unclaimed_sps.player == account)].copy()
+
         return season_graph.plot_season_stats_earnings(season_df_sps,
                                                        season_df_dec,
                                                        season_df_merits,
@@ -244,7 +251,7 @@ def update_earnings_graph(account, season_trigger, toggle):
               Input('trigger-season-update', 'data'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
-def update_earnings_graph(account, token, skip_zero, season_trigger, toggle):
+def update_earnings_all_graph(account, token, skip_zero, season_trigger, toggle):
     if skip_zero == 'Skip Zeros':
         skip_zero = True
     else:

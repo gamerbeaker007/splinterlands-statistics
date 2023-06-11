@@ -124,7 +124,7 @@ def update_filter_data(combine_users, trigger_portfolio, trigger_daily, toggle):
               Input('dropdown-user-selection-portfolio', 'value'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
-def update_earnings_graph(filtered_df, combine_users, toggle):
+def update_portfolio_total_graph(filtered_df, combine_users, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
 
@@ -144,7 +144,7 @@ def update_earnings_graph(filtered_df, combine_users, toggle):
               Input('dropdown-user-selection-portfolio', 'value'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
-def update_earnings_graph(filtered_df, combine_users, toggle):
+def update_portfolio_all_graph(filtered_df, combine_users, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
 

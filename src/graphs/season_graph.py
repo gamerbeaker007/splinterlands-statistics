@@ -1,3 +1,4 @@
+import pandas as pd
 from plotly.subplots import make_subplots
 
 from src.static.static_values_enum import Leagues
@@ -153,11 +154,6 @@ def plot_season_stats_earnings(season_df_sps,
                                season_df_unclaimed_sps,
                                theme,
                                skip_zeros=True):
-    season_df_sps = season_df_sps.copy().sort_values(by=['season_id']).fillna(0)
-    season_df_dec = season_df_dec.copy().sort_values(by=['season_id']).fillna(0)
-    season_df_merits = season_df_merits.copy().sort_values(by=['season_id']).fillna(0)
-    season_df_unclaimed_sps = season_df_unclaimed_sps.copy().sort_values(by=['season_id']).fillna(0)
-
     # Data consistency
     columns_dec = [
         'reward',
@@ -182,13 +178,33 @@ def plot_season_stats_earnings(season_df_sps,
         'season_rewards',
         'brawl_prize']
 
-    season_df_dec['total'] = season_df_dec.filter(columns_dec).sum(axis=1, numeric_only=True)
+    if not season_df_dec.empty:
+        season_df_dec = season_df_dec.copy().sort_values(by=['season_id']).fillna(0)
+        season_df_dec['total'] = season_df_dec.filter(columns_dec).sum(axis=1, numeric_only=True)
+    else:
+        season_df_dec['season_id'] = []
+        season_df_dec['total'] = []
 
-    season_df_sps['total_sps'] = season_df_sps.filter(columns_sps).sum(axis=1, numeric_only=True)
-    season_df_unclaimed_sps['total_unclaimed_sps'] = season_df_unclaimed_sps.drop(['season_id'], axis=1).sum(axis=1, numeric_only=True)
-    season_df_sps_combined = season_df_sps.merge(season_df_unclaimed_sps, on=['season_id', 'player'])
-    season_df_sps_combined['total'] = season_df_sps_combined.total_sps + season_df_sps_combined.total_unclaimed_sps
-    season_df_merits['total'] = season_df_merits.filter(columns_merits).sum(axis=1, numeric_only=True)
+    season_df_sps_combined = pd.DataFrame()
+    season_df_sps_combined['season_id'] = []
+    season_df_sps_combined['total'] = []
+    if not season_df_sps.empty:
+        season_df_sps_combined = season_df_sps.copy().sort_values(by=['season_id']).fillna(0)
+        season_df_sps_combined['total'] = season_df_sps.filter(columns_sps).sum(axis=1, numeric_only=True)
+
+    if not season_df_unclaimed_sps.empty:
+        season_df_sps_combined['total_sps'] = season_df_sps_combined['total']
+        season_df_unclaimed_sps = season_df_unclaimed_sps.copy().sort_values(by=['season_id']).fillna(0)
+        season_df_unclaimed_sps['total_unclaimed_sps'] = season_df_unclaimed_sps.drop(['season_id'], axis=1).sum(axis=1, numeric_only=True)
+        season_df_sps_combined = season_df_sps.merge(season_df_unclaimed_sps, on=['season_id', 'player'])
+        season_df_sps_combined['total'] = season_df_sps_combined.total_sps + season_df_sps_combined.total_unclaimed_sps
+
+    if not season_df_merits.empty:
+        season_df_merits = season_df_merits.copy().sort_values(by=['season_id']).fillna(0)
+        season_df_merits['total'] = season_df_merits.filter(columns_merits).sum(axis=1, numeric_only=True)
+    else:
+        season_df_merits['season_id'] = []
+        season_df_merits['total'] = []
 
     trace7 = go.Scatter(x=season_df_dec.season_id,
                         y=season_df_dec.total,
