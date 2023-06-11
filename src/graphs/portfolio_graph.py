@@ -21,7 +21,6 @@ def plot_portfolio_total(temp_df,
         xaxis=dict(
             showgrid=True,
             gridwidth=1,
-            tickvals=temp_df.date,
         ),
 
     )
@@ -47,7 +46,6 @@ def plot_portfolio_all(df, theme, skip_zero=True):
         xaxis=dict(
             showgrid=True,
             gridwidth=1,
-            tickvals=df.date,
         ),
 
     )
