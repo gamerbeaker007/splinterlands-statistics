@@ -31,14 +31,14 @@ jobs:
         Copy-Item "C:\Program Files\OpenSSL\*" -Destination "C:\OpenSSL-Win64" -Recurse
 
     - run: pip install -r requirements.txt pyinstaller
-    - run: |
-        pyinstaller --onefile \
-        --collect-data dash_mantine_components \
-        --collect-data dash_extensions \
-        --collect-data dash_iconify \
-        --collect-data dash_bootstrap_templates \
-        --hidden-import _scrypt \
-        --distpath splinterlands-stats-v2 \
+    - run: >
+        pyinstaller --onefile 
+        --collect-data dash_mantine_components 
+        --collect-data dash_extensions 
+        --collect-data dash_iconify 
+        --collect-data dash_bootstrap_templates 
+        --hidden-import _scrypt
+        --distpath splinterlands-stats-v2
         main.py
 
     - if: matrix.os == 'ubuntu-latest'
