@@ -1,3 +1,13 @@
 requests==2.30.0
 urllib3==2.0.2
 pandas==2.0.1
+plotly==5.14.1
+dash==2.10.0
+python-dateutil==2.8.2
+numpy==1.24.3
+dash-mantine-components==0.12.1
+dash-extensions==1.0.1
+dash_iconify==0.1.2
+dash_bootstrap_templates==1.0.8
+hiveengine==0.2.2
+pycoingecko==3.1.0
