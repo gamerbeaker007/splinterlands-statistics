@@ -21,10 +21,10 @@ Tip: to see the console log of the program run this via and command prompt
 docker pull ghcr.io/gamerbeaker007/splinterlands-stats-v2:latest</code>
 
 ### Windows (docker):
-<code>docker run -it -v C:\Temp\:/app/store ghcr.io/gamerbeaker007/splinterlands-stats-v2:latest</code>
+<code>docker run -p 8050:8050 -e "HOST=0.0.0.0" -it -v C:\Temp\:/app/store ghcr.io/gamerbeaker007/splinterlands-stats-v2:latest</code>
 
 ### Linux (docker):
-<code>docker run -it -v \tmp\:/app/store ghcr.io/gamerbeaker007/splinterlands-stats-v2:latest</code>
+<code>docker run -p 8050:8050 -e "HOST=0.0.0.0" -it -v \tmp\:/app/store ghcr.io/gamerbeaker007/splinterlands-stats-v2:latest</code>
 
 ## With python development or local execution
 Download source and unpack. 
