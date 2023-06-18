@@ -185,66 +185,11 @@ def filter_battle_df(account,
     return df.to_json(date_format='iso', orient='split')
 
 
-@app.callback(
-    Output("water-filter-button", "class_name"),
-    Input("water-filter-button", "n_clicks"),
-)
-def toggle_water_filter(n_clicks):
-    return btn_active if is_active(n_clicks) else btn_inactive
-
-
-@app.callback(
-    Output("death-filter-button", "class_name"),
-    Input("death-filter-button", "n_clicks"),
-
-)
-def toggle_death_filter(n_clicks):
-    return btn_active if is_active(n_clicks) else btn_inactive
-
-
-@app.callback(
-    Output("life-filter-button", "class_name"),
-    Input("life-filter-button", "n_clicks"),
-
-)
-def toggle_life_filter(n_clicks):
-    return btn_active if is_active(n_clicks) else btn_inactive
-
-
-@app.callback(
-    Output("earth-filter-button", "class_name"),
-    Input("earth-filter-button", "n_clicks"),
-
-)
-def toggle_earth_filter(n_clicks):
-    return btn_active if is_active(n_clicks) else btn_inactive
-
-
-@app.callback(
-    Output("fire-filter-button", "class_name"),
-    Input("fire-filter-button", "n_clicks"),
-
-)
-def toggle_fire_filter(n_clicks):
-    return btn_active if is_active(n_clicks) else btn_inactive
-
-
-@app.callback(
-    Output("dragon-filter-button", "class_name"),
-    Input("dragon-filter-button", "n_clicks"),
-
-)
-def toggle_dragon_filter(n_clicks):
-    return btn_active if is_active(n_clicks) else btn_inactive
-
-
-@app.callback(
-    Output("neutral-filter-button", "class_name"),
-    Input("neutral-filter-button", "n_clicks"),
-
-)
-def toggle_neutral_filter(n_clicks):
-    return btn_active if is_active(n_clicks) else btn_inactive
+for element in ('water', 'death', 'fire', 'life', 'dragon', 'earth', 'neutral'):
+    @app.callback(Output('{}-filter-button'.format(element), 'class_name'),
+                  Input('{}-filter-button'.format(element), 'n_clicks'))
+    def on_click(n_clicks):
+        return btn_active if is_active(n_clicks) else btn_inactive
 
 
 def is_active(n_clicks):
