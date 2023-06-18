@@ -62,5 +62,15 @@ class Edition(Enum):
     soulbound = 10
 
 
+class Element(Enum):
+    water = 'Blue'
+    death = 'Black'
+    fire = 'Red'
+    life = 'White'
+    dragon = 'Gold'
+    earth = 'Green'
+    neutral = 'Gray'
+
+
 def get_list_of_enum(enum):
     return list(map(lambda x: x.value, enum._member_map_.values()))

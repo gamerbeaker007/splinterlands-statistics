@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 
 from src.configuration import store
-from src.static.static_values_enum import Edition
+from src.static.static_values_enum import Edition, Element
 
 
 def get_image_url_markdown(card_name, level, edition):
@@ -110,25 +110,22 @@ def get_my_battles_df(filter_user):
     return total_df
 
 
-def filter_out_splinter(input_df, water_active, death_active, life_active, fire_active, dragon_active, earth_active, neutral_active):
+def filter_out_splinter(input_df, filter_settings):
+    # TODO improve all true or all false
+    water_active = filter_settings['water']
+    death_active = filter_settings['death']
+    life_active = filter_settings['life']
+    fire_active = filter_settings['fire']
+    dragon_active = filter_settings['dragon']
+    earth_active = filter_settings['earth']
+    neutral_active = filter_settings['neutral']
     if water_active and dragon_active and death_active and life_active and fire_active and earth_active and neutral_active:
         return input_df
     if not water_active and not dragon_active and not death_active and not life_active and not fire_active and not earth_active and not neutral_active:
         return input_df
 
     list_of_colors = []
-    if water_active:
-        list_of_colors.append("Blue")
-    if death_active:
-        list_of_colors.append("Black")
-    if life_active:
-        list_of_colors.append("White")
-    if fire_active:
-        list_of_colors.append("Red")
-    if earth_active:
-        list_of_colors.append("Green")
-    if dragon_active:
-        list_of_colors.append("Gold")
-    if neutral_active:
-        list_of_colors.append("Gray")
+    for element in Element:
+        if filter_settings[element.name]:
+            list_of_colors.append(element.value)
     return input_df.loc[input_df.color.isin(list_of_colors)]
