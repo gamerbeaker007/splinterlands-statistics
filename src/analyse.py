@@ -77,11 +77,24 @@ def get_my_battles_df(filter_user):
 
     total_df = pd.DataFrame()
     if not temp_df.empty:
-        temp_df = temp_df.groupby(['card_detail_id', 'card_name', 'level', 'edition', 'result'], as_index=False).agg(
-            count=pd.NamedAgg(column='account', aggfunc='count'))
-        win = temp_df.loc[(temp_df.result == 'win')].rename(columns={"count": "win", }).drop(['result'], axis=1)
-        loss = temp_df.loc[(temp_df.result == 'loss')].rename(columns={"count": "loss", }).drop(['result'], axis=1)
-        total_df = win.merge(loss, on=['card_detail_id', 'card_name', 'level', 'edition'], how='outer')
+        grouped = temp_df.groupby(['card_detail_id',
+                                   'card_name',
+                                   'card_type',
+                                   'level',
+                                   'edition',
+                                   'color',
+                                   'secondary_color',
+                                   'result'], as_index=False, dropna=False)
+        new_df = grouped.agg(count=pd.NamedAgg(column='account',aggfunc='count'))
+        win = new_df.loc[(new_df.result == 'win')].rename(columns={"count": "win", }).drop(['result'], axis=1)
+        loss = new_df.loc[(new_df.result == 'loss')].rename(columns={"count": "loss", }).drop(['result'], axis=1)
+        total_df = win.merge(loss, on=['card_detail_id',
+                                       'card_name',
+                                       'card_type',
+                                       'level',
+                                       'edition',
+                                       'color',
+                                       'secondary_color'], how='outer')
         total_df = total_df.fillna(0)
         total_df['win_to_loss_ratio'] = total_df.win / total_df.loss
         total_df['battles'] = total_df.win + total_df.loss
@@ -95,3 +108,27 @@ def get_my_battles_df(filter_user):
         total_df.sort_values(['battles', 'win_percentage'], ascending=False, inplace=True)
 
     return total_df
+
+
+def filter_out_splinter(input_df, water_active, death_active, life_active, fire_active, dragon_active, earth_active, neutral_active):
+    if water_active and dragon_active and death_active and life_active and fire_active and earth_active and neutral_active:
+        return input_df
+    if not water_active and not dragon_active and not death_active and not life_active and not fire_active and not earth_active and not neutral_active:
+        return input_df
+
+    list_of_colors = []
+    if water_active:
+        list_of_colors.append("Blue")
+    if death_active:
+        list_of_colors.append("Black")
+    if life_active:
+        list_of_colors.append("White")
+    if fire_active:
+        list_of_colors.append("Red")
+    if earth_active:
+        list_of_colors.append("Green")
+    if dragon_active:
+        list_of_colors.append("Gold")
+    if neutral_active:
+        list_of_colors.append("Gray")
+    return input_df.loc[input_df.color.isin(list_of_colors)]

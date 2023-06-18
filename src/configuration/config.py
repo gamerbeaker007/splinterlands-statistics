@@ -5,8 +5,8 @@ import sys
 from src.api import spl
 from src.configuration.custom_formatter import CustomFormatter
 
-file_dir_prefix = ""
-# file_dir_prefix = "_new_test_file_"
+# file_dir_prefix = ""
+file_dir_prefix = "_new_test_file_"
 
 store_dir = os.path.join(os.getcwd(), 'store', file_dir_prefix)
 if not os.path.isdir(store_dir):

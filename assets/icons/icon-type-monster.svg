@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="17px" height="15px" viewBox="0 0 17 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.1 (57501) - http://www.bohemiancoding.com/sketch -->
+    <title>btn_type_monster_on</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="btn_type_monster_on" transform="translate(-11.000000, -12.000000)" fill-rule="nonzero">
+            <g id="Rectangle_159" fill="#450000" fill-opacity="0">
+                <rect id="Rectangle-path" x="0" y="0" width="37.8" height="37.8" rx="5"></rect>
+            </g>
+            <path d="M23.152,26.416 L11,26.416 L13.126,20.916 L15.126,26.102 L17,23.647 L19.016,26.273 L21.032,23.647 L23.004,26.226 L25.056,20.92 L27.174,26.42 L23.152,26.416 Z M23.052,12.316 L21.173,14.769 L19.161,12.139 L17.15,14.769 L15.17,12.19 L13.126,17.5 L11,12 L27.176,12 L25.058,17.5 L23.052,12.316 Z" id="Union_5" fill="#EEEEEE"></path>
+        </g>
+    </g>
+</svg>
