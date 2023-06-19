@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 
 from src.configuration import store
-from src.static.static_values_enum import Edition, Element
+from src.static.static_values_enum import Edition, Element, CardType
 
 
 def get_image_url_markdown(card_name, level, edition):
@@ -110,22 +110,53 @@ def get_my_battles_df(filter_user):
     return total_df
 
 
-def filter_out_splinter(input_df, filter_settings):
-    # TODO improve all true or all false
-    water_active = filter_settings['water']
-    death_active = filter_settings['death']
-    life_active = filter_settings['life']
-    fire_active = filter_settings['fire']
-    dragon_active = filter_settings['dragon']
-    earth_active = filter_settings['earth']
-    neutral_active = filter_settings['neutral']
-    if water_active and dragon_active and death_active and life_active and fire_active and earth_active and neutral_active:
-        return input_df
-    if not water_active and not dragon_active and not death_active and not life_active and not fire_active and not earth_active and not neutral_active:
-        return input_df
-
+def filter_out_element(input_df, filter_settings):
     list_of_colors = []
+    all_true = True
+    all_false = True
     for element in Element:
-        if filter_settings[element.name]:
+        active = filter_settings[element.name]
+        if active:
+            all_false = False
             list_of_colors.append(element.value)
-    return input_df.loc[input_df.color.isin(list_of_colors)]
+        else:
+            all_true = False
+    if all_true or all_false:
+        return input_df
+    else:
+        return input_df.loc[input_df.color.isin(list_of_colors)]
+
+
+def filter_out_edition(input_df, filter_settings):
+
+    list_of_edition_values = []
+    all_true = True
+    all_false = True
+    for edition in Edition:
+        active = filter_settings[edition.name]
+        if active:
+            all_false = False
+            list_of_edition_values.append(edition.value)
+        else:
+            all_true = False
+    if all_true or all_false:
+        return input_df
+    else:
+        return input_df.loc[input_df.edition.isin(list_of_edition_values)]
+
+
+def filter_out_card_type(input_df, filter_settings):
+    values = []
+    all_true = True
+    all_false = True
+    for card_type in CardType:
+        active = filter_settings[card_type.name]
+        if active:
+            all_false = False
+            values.append(card_type.value)
+        else:
+            all_true = False
+    if all_true or all_false:
+        return input_df
+    else:
+        return input_df.loc[input_df.card_type.isin(values)]

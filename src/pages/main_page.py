@@ -1,17 +1,25 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, Output, Input, dash_table, dcc, ctx
+from dash import html, Output, Input, dash_table, dcc, ctx, State
 from dash.exceptions import PreventUpdate
 
 from main import app
 from src import analyse
-from src.static.static_layout import *
-from src.static.static_values_enum import Element
+from src.pages import filter_page
+from src.static.static_values_enum import Element, Edition, CardType
 from src.utils import store_util
+
+btn_active_style = '#222'
+btn_inactive_style = '#bdbfbe'
 
 filter_settings = {}
 for element in Element:
     filter_settings[element.name] = False
+for edition in Edition:
+    filter_settings[edition.name] = False
+for card_type in CardType:
+    filter_settings[card_type.name] = False
+
 filter_settings['account'] = ''
 
 layout = dbc.Container([
@@ -26,89 +34,15 @@ layout = dbc.Container([
                 ),
     ]),
     dbc.Row([
-        dbc.Col(
-            [
-                html.H4('Filter Bar'),
-                dbc.ButtonGroup([
-                    dbc.Button(
-                        id='water-filter-button',
-                        children=[
-                            html.Img(
-                                src=app.get_asset_url(water_filter_icon),
-                                className='round-sm-img',
-                            ),
-                        ],
-                    ),
-                    dbc.Button(
-                        id='death-filter-button',
-                        children=[
-                            html.Img(
-                                src=app.get_asset_url(death_filter_icon),
-                                className='round-sm-img',
-                            )
-
-                        ],
-                    ),
-                    dbc.Button(
-                        id='dragon-filter-button',
-                        children=[
-                            html.Img(
-                                src=app.get_asset_url(dragon_filter_icon),
-                                className='round-sm-img',
-                            )
-
-                        ],
-                    ),
-                    dbc.Button(
-                        id='life-filter-button',
-                        children=[
-                            html.Img(
-                                src=app.get_asset_url(life_filter_icon),
-                                className='round-sm-img',
-                            )
-
-                        ],
-                    ),
-                    dbc.Button(
-                        id='fire-filter-button',
-                        children=[
-                            html.Img(
-                                src=app.get_asset_url(fire_filter_icon),
-                                className='round-sm-img',
-                            )
-
-                        ],
-                    ),
-                    dbc.Button(
-                        id='earth-filter-button',
-                        children=[
-                            html.Img(
-                                src=app.get_asset_url(earth_filter_icon),
-                                className='round-sm-img',
-                            )
-
-                        ],
-                    ),
-                    dbc.Button(
-                        id='neutral-filter-button',
-                        children=[
-                            html.Img(
-                                src=app.get_asset_url(neutral_filter_icon),
-                                className='round-sm-img',
-                            )
-
-                        ],
-                    ),
-                ],)
-            ],
-            md=3,
-            class_name='mb-4',
-        ),
+        dbc.Col(html.H4('Filter Bar')),
+        dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(CardType))),
+        dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(Element))),
+        dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(Edition))),
         dbc.Col(
             [
                 html.Div(id='filter-output')
             ]
-        )
+        ),
 
     ]),
     dbc.Row([
@@ -157,10 +91,11 @@ def update_main_table(filtered_df):
 def filter_battle_df(store_filter_settings):
     if store_filter_settings is None or store_filter_settings['account'] == '':
         raise PreventUpdate
-    print(store_filter_settings)
 
     df = analyse.get_my_battles_df(store_filter_settings['account'])
-    df = analyse.filter_out_splinter(df, filter_settings)
+    df = analyse.filter_out_element(df, filter_settings)
+    df = analyse.filter_out_edition(df, filter_settings)
+    df = analyse.filter_out_card_type(df, filter_settings)
     return df.to_json(date_format='iso', orient='split')
 
 
@@ -175,14 +110,44 @@ def filter_battle_df(account,
 
 
 for element in Element:
-    @app.callback(Output('{}-filter-button'.format(element.name), 'class_name'),
+    @app.callback(Output('{}-filter-button'.format(element.name), 'style'),
                   Output('filter-settings', 'data'),
-                  Input('{}-filter-button'.format(element.name), 'n_clicks'))
-    def on_click(n_clicks):
+                  Input('{}-filter-button'.format(element.name), 'n_clicks'),
+                  State('{}-filter-button'.format(element.name), 'style')
+                  )
+    def on_click(n_clicks, style):
         setting = ctx.inputs_list[0]['id'].split('-')[0]
-        class_name = btn_active if is_active(n_clicks) else btn_inactive
+        class_name = btn_active_style if is_active(n_clicks) else btn_inactive_style
         filter_settings[setting] = is_active(n_clicks)
-        return class_name, filter_settings
+        style['background-color'] = class_name
+        return style, filter_settings
+
+for edition in Edition:
+    @app.callback(Output('{}-filter-button'.format(edition.name), 'style'),
+                  Output('filter-settings', 'data'),
+                  Input('{}-filter-button'.format(edition.name), 'n_clicks'),
+                  State('{}-filter-button'.format(edition.name), 'style')
+                  )
+    def on_click(n_clicks, style):
+        setting = ctx.inputs_list[0]['id'].split('-')[0]
+        class_name = btn_active_style if is_active(n_clicks) else btn_inactive_style
+        filter_settings[setting] = is_active(n_clicks)
+        style['background-color'] = class_name
+
+        return style, filter_settings
+
+for card_type in CardType:
+    @app.callback(Output('{}-filter-button'.format(card_type.name), 'style'),
+                  Output('filter-settings', 'data'),
+                  Input('{}-filter-button'.format(card_type.name), 'n_clicks'),
+                  State('{}-filter-button'.format(card_type.name), 'style')
+                  )
+    def on_click(n_clicks, style):
+        setting = ctx.inputs_list[0]['id'].split('-')[0]
+        class_name = btn_active_style if is_active(n_clicks) else btn_inactive_style
+        filter_settings[setting] = is_active(n_clicks)
+        style['background-color'] = class_name
+        return style, filter_settings
 
 
 def is_active(n_clicks):

@@ -17,8 +17,8 @@ class MatchType(Enum):
 
 
 class CardType(Enum):
-    SUMMONER = 'Summoner'
-    MONSTER = 'Monster'
+    summoner = 'Summoner'
+    monster = 'Monster'
 
 
 class Leagues(Enum):
@@ -70,6 +70,13 @@ class Element(Enum):
     dragon = 'Gold'
     earth = 'Green'
     neutral = 'Gray'
+
+
+class Rarity(Enum):
+    common = ""
+    rare = ""
+    epic = ""
+    legendary = ""
 
 
 def get_list_of_enum(enum):
