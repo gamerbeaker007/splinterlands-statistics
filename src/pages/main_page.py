@@ -9,8 +9,8 @@ from src.pages import filter_page
 from src.static.static_values_enum import Element, Edition, CardType
 from src.utils import store_util
 
-btn_active_style = '#222'
-btn_inactive_style = '#bdbfbe'
+btn_active_color = '#222'
+btn_inactive_color = '#bdbfbe'
 
 filter_settings = {}
 for element in Element:
@@ -26,7 +26,9 @@ layout = dbc.Container([
     dbc.Row([
         html.H1('Statistics battles'),
         html.P('Your battle statistics of your summoners and monster'),
-        dbc.Col(html.P('Filter on')),
+        dbc.Col(html.H4('Filter')),
+    ]),
+    dbc.Row([
         dbc.Col(dcc.Dropdown(store_util.get_account_names(),
                              value=store_util.get_first_account_name(),
                              id='dropdown-user-selection',
@@ -34,7 +36,6 @@ layout = dbc.Container([
                 ),
     ]),
     dbc.Row([
-        dbc.Col(html.H4('Filter Bar')),
         dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(CardType))),
         dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(Element))),
         dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(Edition))),
@@ -117,9 +118,9 @@ for element in Element:
                   )
     def on_click(n_clicks, style):
         setting = ctx.inputs_list[0]['id'].split('-')[0]
-        class_name = btn_active_style if is_active(n_clicks) else btn_inactive_style
+        bg_color = btn_active_color if is_active(n_clicks) else btn_inactive_color
         filter_settings[setting] = is_active(n_clicks)
-        style['background-color'] = class_name
+        style['background-color'] = bg_color
         return style, filter_settings
 
 for edition in Edition:
@@ -130,9 +131,9 @@ for edition in Edition:
                   )
     def on_click(n_clicks, style):
         setting = ctx.inputs_list[0]['id'].split('-')[0]
-        class_name = btn_active_style if is_active(n_clicks) else btn_inactive_style
+        bg_color = btn_active_color if is_active(n_clicks) else btn_inactive_color
         filter_settings[setting] = is_active(n_clicks)
-        style['background-color'] = class_name
+        style['background-color'] = bg_color
 
         return style, filter_settings
 
@@ -144,9 +145,9 @@ for card_type in CardType:
                   )
     def on_click(n_clicks, style):
         setting = ctx.inputs_list[0]['id'].split('-')[0]
-        class_name = btn_active_style if is_active(n_clicks) else btn_inactive_style
+        bg_color = btn_active_color if is_active(n_clicks) else btn_inactive_color
         filter_settings[setting] = is_active(n_clicks)
-        style['background-color'] = class_name
+        style['background-color'] = bg_color
         return style, filter_settings
 
 
