@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 from dash import html
 
 from main import app
-from src.static.static_values_enum import Element, Edition, CardType
+from src.static.static_values_enum import Element, Edition, CardType, Rarity
 
 
 def get_filter_buttons(enumeration):
@@ -44,3 +44,5 @@ def get_icon(enum, name):
             return os.path.join("icons", 'img_overlay_' + name + '.png')
         else:
             return os.path.join("icons", 'icon-edition-' + name + '.svg')
+    elif enum == Rarity:
+        return os.path.join("icons", 'icon-rarity-' + name + '.svg')

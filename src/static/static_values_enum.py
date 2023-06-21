@@ -73,10 +73,10 @@ class Element(Enum):
 
 
 class Rarity(Enum):
-    common = ""
-    rare = ""
-    epic = ""
-    legendary = ""
+    common = 1
+    rare = 2
+    epic = 3
+    legendary = 4
 
 
 def get_list_of_enum(enum):

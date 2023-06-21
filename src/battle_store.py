@@ -64,7 +64,6 @@ def add_battle_store_big_my(account, team, battle):
     winner = battle['winner']
     result = "win" if winner == account else "loss"
 
-
     cards = list(team['monsters'])
     cards.append(team['summoner'])
     ruleset_split = ['None', 'None', 'None']
@@ -78,6 +77,7 @@ def add_battle_store_big_my(account, team, battle):
         df = pd.DataFrame({'card_detail_id': card_id,
                            'card_name': card_name,
                            'card_type': config.card_details_df.loc[card_id]['type'],
+                           'rarity': config.card_details_df.loc[card_id]['rarity'],
                            'color': config.card_details_df.loc[card_id]['color'],
                            'secondary_color': config.card_details_df.loc[card_id]['secondary_color'],
                            'xp': card['xp'],
@@ -152,6 +152,7 @@ def add_losing_battle_team(account, team, battle):
         df = pd.DataFrame({'card_detail_id': card_id,
                            'card_name': card_name,
                            'card_type': config.card_details_df.loc[card_id]['type'],
+                           'rarity': config.card_details_df.loc[card_id]['rarity'],
                            'color': config.card_details_df.loc[card_id]['color'],
                            'secondary_color': config.card_details_df.loc[card_id]['secondary_color'],
                            'xp': card['xp'],

@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 
 from src.configuration import store
-from src.static.static_values_enum import Edition, Element, CardType
+from src.static.static_values_enum import Edition, Element, CardType, Rarity
 
 
 def get_image_url_markdown(card_name, level, edition):
@@ -80,6 +80,7 @@ def get_my_battles_df(filter_user):
         grouped = temp_df.groupby(['card_detail_id',
                                    'card_name',
                                    'card_type',
+                                   'rarity',
                                    'level',
                                    'edition',
                                    'color',
@@ -91,6 +92,7 @@ def get_my_battles_df(filter_user):
         total_df = win.merge(loss, on=['card_detail_id',
                                        'card_name',
                                        'card_type',
+                                       'rarity',
                                        'level',
                                        'edition',
                                        'color',
@@ -110,7 +112,7 @@ def get_my_battles_df(filter_user):
     return total_df
 
 
-def filter_out_element(input_df, filter_settings):
+def filter_element(input_df, filter_settings):
     list_of_colors = []
     all_true = True
     all_false = True
@@ -124,10 +126,10 @@ def filter_out_element(input_df, filter_settings):
     if all_true or all_false:
         return input_df
     else:
-        return input_df.loc[input_df.color.isin(list_of_colors)]
+        return input_df.loc[(input_df.color.isin(list_of_colors) | input_df.secondary_color.isin(list_of_colors))]
 
 
-def filter_out_edition(input_df, filter_settings):
+def filter_edition(input_df, filter_settings):
 
     list_of_edition_values = []
     all_true = True
@@ -145,7 +147,7 @@ def filter_out_edition(input_df, filter_settings):
         return input_df.loc[input_df.edition.isin(list_of_edition_values)]
 
 
-def filter_out_card_type(input_df, filter_settings):
+def filter_card_type(input_df, filter_settings):
     values = []
     all_true = True
     all_false = True
@@ -160,3 +162,24 @@ def filter_out_card_type(input_df, filter_settings):
         return input_df
     else:
         return input_df.loc[input_df.card_type.isin(values)]
+
+
+def filter_rarity(input_df, filter_settings):
+    values = []
+    all_true = True
+    all_false = True
+    for rarity in Rarity:
+        active = filter_settings[rarity.name]
+        if active:
+            all_false = False
+            values.append(rarity.value)
+        else:
+            all_true = False
+    if all_true or all_false:
+        return input_df
+    else:
+        return input_df.loc[input_df.rarity.isin(values)]
+
+
+def filter_battle_count(input_df, value):
+    return input_df.loc[(input_df.battles >= value)]

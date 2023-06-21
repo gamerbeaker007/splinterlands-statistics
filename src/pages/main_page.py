@@ -6,7 +6,7 @@ from dash.exceptions import PreventUpdate
 from main import app
 from src import analyse
 from src.pages import filter_page
-from src.static.static_values_enum import Element, Edition, CardType
+from src.static.static_values_enum import Element, Edition, CardType, Rarity
 from src.utils import store_util
 
 btn_active_color = '#222'
@@ -19,7 +19,10 @@ for edition in Edition:
     filter_settings[edition.name] = False
 for card_type in CardType:
     filter_settings[card_type.name] = False
+for rarity in Rarity:
+    filter_settings[rarity.name] = False
 
+filter_settings['minimal-battles'] = 0
 filter_settings['account'] = ''
 
 layout = dbc.Container([
@@ -44,7 +47,22 @@ layout = dbc.Container([
                 html.Div(id='filter-output')
             ]
         ),
-
+    ]),
+    dbc.Row([
+        dbc.Col(
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText("Minimal battles"),
+                    dbc.Input(id='minimal-battles-filter',
+                              min=0,
+                              value=0,
+                              type='number',
+                              pattern='[0-9]')
+                ],
+                className="mb-3",
+            )
+        ),
+        dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(Rarity))),
     ]),
     dbc.Row([
         html.Div(id='main-table', className='dbc'),
@@ -59,6 +77,9 @@ layout = dbc.Container([
     Input('filtered-battle-df', 'data'),
 )
 def update_main_table(filtered_df):
+    if not filtered_df:
+        raise PreventUpdate
+
     filtered_df = pd.read_json(filtered_df, orient='split')
 
     if not filtered_df.empty:
@@ -94,9 +115,12 @@ def filter_battle_df(store_filter_settings):
         raise PreventUpdate
 
     df = analyse.get_my_battles_df(store_filter_settings['account'])
-    df = analyse.filter_out_element(df, filter_settings)
-    df = analyse.filter_out_edition(df, filter_settings)
-    df = analyse.filter_out_card_type(df, filter_settings)
+    df = analyse.filter_element(df, filter_settings)
+    df = analyse.filter_edition(df, filter_settings)
+    df = analyse.filter_card_type(df, filter_settings)
+    df = analyse.filter_rarity(df, filter_settings)
+    df = analyse.filter_battle_count(df, filter_settings['minimal-battles'])
+
     return df.to_json(date_format='iso', orient='split')
 
 
@@ -110,6 +134,23 @@ def filter_battle_df(account,
     return filter_settings
 
 
+@app.callback(Output('filter-settings', 'data'),
+              Input('minimal-battles-filter', 'value'),
+              )
+def update_minimal_battle_filter(value):
+    if not value:
+        value = 0
+
+    filter_settings['minimal-battles'] = value
+    return filter_settings
+
+
+def update_style(n_clicks, style):
+    bg_color = btn_active_color if is_active(n_clicks) else btn_inactive_color
+    style['background-color'] = bg_color
+    return style
+
+
 for element in Element:
     @app.callback(Output('{}-filter-button'.format(element.name), 'style'),
                   Output('filter-settings', 'data'),
@@ -117,10 +158,9 @@ for element in Element:
                   State('{}-filter-button'.format(element.name), 'style')
                   )
     def on_click(n_clicks, style):
+        style = update_style(n_clicks, style)
         setting = ctx.inputs_list[0]['id'].split('-')[0]
-        bg_color = btn_active_color if is_active(n_clicks) else btn_inactive_color
         filter_settings[setting] = is_active(n_clicks)
-        style['background-color'] = bg_color
         return style, filter_settings
 
 for edition in Edition:
@@ -130,11 +170,9 @@ for edition in Edition:
                   State('{}-filter-button'.format(edition.name), 'style')
                   )
     def on_click(n_clicks, style):
+        style = update_style(n_clicks, style)
         setting = ctx.inputs_list[0]['id'].split('-')[0]
-        bg_color = btn_active_color if is_active(n_clicks) else btn_inactive_color
         filter_settings[setting] = is_active(n_clicks)
-        style['background-color'] = bg_color
-
         return style, filter_settings
 
 for card_type in CardType:
@@ -144,10 +182,21 @@ for card_type in CardType:
                   State('{}-filter-button'.format(card_type.name), 'style')
                   )
     def on_click(n_clicks, style):
+        style = update_style(n_clicks, style)
         setting = ctx.inputs_list[0]['id'].split('-')[0]
-        bg_color = btn_active_color if is_active(n_clicks) else btn_inactive_color
         filter_settings[setting] = is_active(n_clicks)
-        style['background-color'] = bg_color
+        return style, filter_settings
+
+for rarity in Rarity:
+    @app.callback(Output('{}-filter-button'.format(rarity.name), 'style'),
+                  Output('filter-settings', 'data'),
+                  Input('{}-filter-button'.format(rarity.name), 'n_clicks'),
+                  State('{}-filter-button'.format(rarity.name), 'style')
+                  )
+    def on_click(n_clicks, style):
+        style = update_style(n_clicks, style)
+        setting = ctx.inputs_list[0]['id'].split('-')[0]
+        filter_settings[setting] = is_active(n_clicks)
         return style, filter_settings
 
 
