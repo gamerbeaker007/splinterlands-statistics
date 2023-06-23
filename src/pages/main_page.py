@@ -5,8 +5,9 @@ from dash.exceptions import PreventUpdate
 
 from main import app
 from src import analyse
+from src.configuration import store
 from src.pages import filter_page
-from src.static.static_values_enum import Element, Edition, CardType, Rarity
+from src.static.static_values_enum import Element, Edition, CardType, Rarity, ManaCap
 from src.utils import store_util
 
 btn_active_color = '#222'
@@ -21,6 +22,8 @@ for card_type in CardType:
     filter_settings[card_type.name] = False
 for rarity in Rarity:
     filter_settings[rarity.name] = False
+for mana_cap in ManaCap:
+    filter_settings[mana_cap.name] = False
 
 filter_settings['minimal-battles'] = 0
 filter_settings['account'] = ''
@@ -40,6 +43,7 @@ layout = dbc.Container([
     ]),
     dbc.Row([
         dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(CardType))),
+        dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(Rarity))),
         dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(Element))),
         dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(Edition))),
         dbc.Col(
@@ -62,7 +66,15 @@ layout = dbc.Container([
                 className="mb-3",
             )
         ),
-        dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(Rarity))),
+        dbc.Col(
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText("Mana Cap"),
+                    dbc.ButtonGroup(filter_page.get_filter_buttons_text(ManaCap)),
+                ],
+                className="mb-3",
+            )
+        ),
     ]),
     dbc.Row([
         html.Div(id='main-table', className='dbc'),
@@ -114,7 +126,9 @@ def filter_battle_df(store_filter_settings):
     if store_filter_settings is None or store_filter_settings['account'] == '':
         raise PreventUpdate
 
-    df = analyse.get_my_battles_df(store_filter_settings['account'])
+    df = analyse.filter_battles(store.battle_big, filter_account=store_filter_settings['account'])
+    df = analyse.filter_mana_cap(df, filter_settings)
+    df = analyse.process_battles_win_percentage(df)
     df = analyse.filter_element(df, filter_settings)
     df = analyse.filter_edition(df, filter_settings)
     df = analyse.filter_card_type(df, filter_settings)
@@ -192,6 +206,18 @@ for rarity in Rarity:
                   Output('filter-settings', 'data'),
                   Input('{}-filter-button'.format(rarity.name), 'n_clicks'),
                   State('{}-filter-button'.format(rarity.name), 'style')
+                  )
+    def on_click(n_clicks, style):
+        style = update_style(n_clicks, style)
+        setting = ctx.inputs_list[0]['id'].split('-')[0]
+        filter_settings[setting] = is_active(n_clicks)
+        return style, filter_settings
+
+for mana_cap in ManaCap:
+    @app.callback(Output('{}-filter-button'.format(mana_cap.name), 'style'),
+                  Output('filter-settings', 'data'),
+                  Input('{}-filter-button'.format(mana_cap.name), 'n_clicks'),
+                  State('{}-filter-button'.format(mana_cap.name), 'style')
                   )
     def on_click(n_clicks, style):
         style = update_style(n_clicks, style)

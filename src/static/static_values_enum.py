@@ -79,5 +79,12 @@ class Rarity(Enum):
     legendary = 4
 
 
+class ManaCap(Enum):
+    low = '0-20'
+    medium = '21-40'
+    high = '41-60'
+    max = '61-999'
+
+
 def get_list_of_enum(enum):
     return list(map(lambda x: x.value, enum._member_map_.values()))

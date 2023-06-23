@@ -9,7 +9,19 @@ from src.static.static_values_enum import Element, Edition, CardType, Rarity
 
 def get_filter_buttons(enumeration):
     buttons = []
+    last_item = list(enumeration)[-1]
+    first = True
     for enum in enumeration:
+        if first:
+            first=False
+            rounding = '50% 0% 0% 50%'
+        elif last_item.name == enum.name:
+            rounding = '0% 50% 50% 0%'
+        else:
+            rounding = '0% 0% 0% 0%'
+
+
+
         buttons.append(dbc.Button(
             id=enum.name + '-filter-button',
             children=[
@@ -20,15 +32,50 @@ def get_filter_buttons(enumeration):
                            'height': '30px',
                            'padding': '5px'}
                 ),
-            ], style={'border-radius': '50%',
+            ], style={'border-radius': rounding,
+                      'border-style': 'none',
                       'width': '40px',
                       'height': '40px',
-                      'font-size': '16px',
                       'padding': '0px',
-                      'margin': '3px',
+                      'margin-top': '3px',
+                      'margin-bottom': '3px',
                       'display': 'flex',
                       'justify-content': 'center',
                       'align-items': 'center'},
+        ),
+        )
+    return buttons
+
+
+def get_filter_buttons_text(enumeration):
+    buttons = []
+    last_item = list(enumeration)[-1]
+    first = True
+    for enum in enumeration:
+        if first:
+            first=False
+            rounding = '50% 0% 0% 50%'
+        elif last_item.name == enum.name:
+            rounding = '0% 50% 50% 0%'
+        else:
+            rounding = '0% 0% 0% 0%'
+
+
+
+        buttons.append(dbc.Button(
+            id=enum.name + '-filter-button',
+            children=[
+                html.P(enum.value, style={'padding-top': '7px'}),
+            ], style={'border-radius': rounding,
+                      'border-style': 'none',
+                      'width': '65px',
+                      'height': '40px',
+                      'padding': '0px',
+                      'margin-top': '3px',
+                      'margin-bottom': '3px',
+                      'display': 'flex',
+                      'justify-content': 'center',
+                      'text-align': 'center'},
         ),
         )
     return buttons

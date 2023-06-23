@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 
 from src.configuration import store
-from src.static.static_values_enum import Edition, Element, CardType, Rarity
+from src.static.static_values_enum import Edition, Element, CardType, Rarity, ManaCap
 
 
 def get_image_url_markdown(card_name, level, edition):
@@ -72,12 +72,13 @@ def get_top_3_losing_account(account, filter_match_type):
         return temp_df.head(3)
 
 
-def get_my_battles_df(filter_user):
-    temp_df = filter_battles(store.battle_big, filter_account=filter_user)
+def process_battles_win_percentage(df):
+    if df.empty:
+        return df
 
     total_df = pd.DataFrame()
-    if not temp_df.empty:
-        grouped = temp_df.groupby(['card_detail_id',
+    if not df.empty:
+        grouped = df.groupby(['card_detail_id',
                                    'card_name',
                                    'card_type',
                                    'rarity',
@@ -113,6 +114,9 @@ def get_my_battles_df(filter_user):
 
 
 def filter_element(input_df, filter_settings):
+    if input_df.empty:
+        return input_df
+
     list_of_colors = []
     all_true = True
     all_false = True
@@ -130,6 +134,9 @@ def filter_element(input_df, filter_settings):
 
 
 def filter_edition(input_df, filter_settings):
+    if input_df.empty:
+        return input_df
+
 
     list_of_edition_values = []
     all_true = True
@@ -148,6 +155,9 @@ def filter_edition(input_df, filter_settings):
 
 
 def filter_card_type(input_df, filter_settings):
+    if input_df.empty:
+        return input_df
+
     values = []
     all_true = True
     all_false = True
@@ -165,6 +175,9 @@ def filter_card_type(input_df, filter_settings):
 
 
 def filter_rarity(input_df, filter_settings):
+    if input_df.empty:
+        return input_df
+
     values = []
     all_true = True
     all_false = True
@@ -182,4 +195,30 @@ def filter_rarity(input_df, filter_settings):
 
 
 def filter_battle_count(input_df, value):
+    if input_df.empty:
+        return input_df
     return input_df.loc[(input_df.battles >= value)]
+
+
+def filter_mana_cap(input_df, filter_settings):
+    if input_df.empty:
+        return input_df
+
+    total_df = pd.DataFrame()
+    all_true = True
+    all_false = True
+    for mana_cap in ManaCap:
+        active = filter_settings[mana_cap.name]
+        if active:
+            all_false = False
+            min_value = int(mana_cap.value.split('-')[0])
+            max_value = int(mana_cap.value.split('-')[1])
+
+            temp_df = input_df.loc[(input_df.mana_cap >= min_value) & (input_df.mana_cap <= max_value)]
+            total_df = pd.concat([total_df, temp_df])
+        else:
+            all_true = False
+    if all_true or all_false:
+        return input_df
+    else:
+        return total_df
