@@ -1,3 +1,5 @@
+import datetime
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dash_table, dcc, ctx, State
@@ -27,7 +29,7 @@ for mana_cap in ManaCap:
     filter_settings[mana_cap.name] = False
 
 filter_settings['minimal-battles'] = 0
-filter_settings['from_season'] = 0
+filter_settings['from_date'] = datetime.datetime(2000, 1, 1)
 filter_settings['account'] = ''
 
 layout = dbc.Container([
@@ -182,9 +184,15 @@ def filter_battle_df(store_filter_settings):
     if store_filter_settings is None or store_filter_settings['account'] == '':
         raise PreventUpdate
 
+    # Filter before processing is done
     df = analyse.filter_battles(store.battle_big, filter_account=store_filter_settings['account'])
+    df = analyse.filter_date(df, filter_settings)
     df = analyse.filter_mana_cap(df, filter_settings)
+
+    # Processing
     df = analyse.process_battles_win_percentage(df)
+
+    # Filter after processing is done
     df = analyse.filter_element(df, filter_settings)
     df = analyse.filter_edition(df, filter_settings)
     df = analyse.filter_card_type(df, filter_settings)
@@ -209,9 +217,16 @@ def filter_battle_df(account,
               Input('dropdown-season-selection', 'value')
               )
 def filter_season_df(season_id,):
-    filter_settings['from_season'] = season_id
-    end_date = store.season_end_dates.loc[(store.season_end_dates.id == season_id)].end_date.iloc[0]
-    return filter_settings, str(parser.parse(end_date).strftime("%Y-%m-%d %H:%M (UTC)"))
+    if season_id == 1:
+        season_end_date = store.season_end_dates.loc[(store.season_end_dates.id == season_id)].end_date.iloc[0]
+        from_date = parser.parse(season_end_date)
+        from_date = from_date - datetime.timedelta(weeks=3)
+    else:
+        season_end_date = store.season_end_dates.loc[(store.season_end_dates.id == season_id-1)].end_date.iloc[0]
+        from_date = parser.parse(season_end_date)
+
+    filter_settings['from_date'] = from_date
+    return filter_settings, str(from_date.strftime("%Y-%m-%d %H:%M (UTC)"))
 
 
 @app.callback(Output('filter-settings', 'data'),
