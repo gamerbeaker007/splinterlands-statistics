@@ -15,14 +15,25 @@ def get_image_url_markdown(card_name, level, edition):
     return str(markdown_prefix) + "(" + str(card_url) + ")"
 
 
+def get_image_url(card_name, level, edition):
+    base_card_url = 'https://d36mxiodymuqjm.cloudfront.net/cards_by_level/'
+    edition_name = Edition(edition).name
+    card_name = str(card_name).replace(" ", "%20")
+    card_url = str(base_card_url) + str(edition_name) + "/" + card_name + "_lv" + str(level) + ".png"
+    return str(card_url)
+
+
 def get_losing_df(filter_account=None, filter_match_type=None, filter_type=None):
     temp_df = filter_battles(store.losing_big, filter_account, filter_match_type, filter_type)
     if not temp_df.empty:
         temp_df = temp_df.groupby(['card_detail_id', 'card_name', 'level', 'edition'], as_index=False) \
             .agg(number_of_losses=pd.NamedAgg(column='xp', aggfunc='count'))
-        temp_df['url'] = temp_df.apply(lambda row: get_image_url_markdown(row['card_name'],
-                                                                          row['level'],
-                                                                          row['edition']), axis=1)
+        temp_df['url_markdown'] = temp_df.apply(lambda row: get_image_url_markdown(row['card_name'],
+                                                                                   row['level'],
+                                                                                   row['edition']), axis=1)
+        temp_df['url'] = temp_df.apply(lambda row: get_image_url(row['card_name'],
+                                                                 row['level'],
+                                                                 row['edition']), axis=1)
 
         temp_df.sort_values('number_of_losses', ascending=False, inplace=True)
 
@@ -79,15 +90,15 @@ def process_battles_win_percentage(df):
     total_df = pd.DataFrame()
     if not df.empty:
         grouped = df.groupby(['card_detail_id',
-                                   'card_name',
-                                   'card_type',
-                                   'rarity',
-                                   'level',
-                                   'edition',
-                                   'color',
-                                   'secondary_color',
-                                   'result'], as_index=False, dropna=False)
-        new_df = grouped.agg(count=pd.NamedAgg(column='account',aggfunc='count'))
+                              'card_name',
+                              'card_type',
+                              'rarity',
+                              'level',
+                              'edition',
+                              'color',
+                              'secondary_color',
+                              'result'], as_index=False, dropna=False)
+        new_df = grouped.agg(count=pd.NamedAgg(column='account', aggfunc='count'))
         win = new_df.loc[(new_df.result == 'win')].rename(columns={"count": "win", }).drop(['result'], axis=1)
         loss = new_df.loc[(new_df.result == 'loss')].rename(columns={"count": "loss", }).drop(['result'], axis=1)
         total_df = win.merge(loss, on=['card_detail_id',
@@ -104,9 +115,12 @@ def process_battles_win_percentage(df):
         total_df['win_ratio'] = total_df.win / total_df.battles
         total_df['win_percentage'] = total_df.win_ratio * 100
         total_df = total_df.round(2)
-        total_df['url'] = total_df.apply(lambda row: get_image_url_markdown(row['card_name'],
-                                                                            row['level'],
-                                                                            row['edition']), axis=1)
+        total_df['url_markdown'] = total_df.apply(lambda row: get_image_url_markdown(row['card_name'],
+                                                                                     row['level'],
+                                                                                     row['edition']), axis=1)
+        total_df['url'] = total_df.apply(lambda row: get_image_url(row['card_name'],
+                                                                   row['level'],
+                                                                   row['edition']), axis=1)
 
         total_df.sort_values(['battles', 'win_percentage'], ascending=False, inplace=True)
 
@@ -136,7 +150,6 @@ def filter_element(input_df, filter_settings):
 def filter_edition(input_df, filter_settings):
     if input_df.empty:
         return input_df
-
 
     list_of_edition_values = []
     all_true = True

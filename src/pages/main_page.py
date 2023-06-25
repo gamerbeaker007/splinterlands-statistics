@@ -2,6 +2,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dash_table, dcc, ctx, State
 from dash.exceptions import PreventUpdate
+from dateutil import parser
 
 from main import app
 from src import analyse
@@ -26,6 +27,7 @@ for mana_cap in ManaCap:
     filter_settings[mana_cap.name] = False
 
 filter_settings['minimal-battles'] = 0
+filter_settings['from_season'] = 0
 filter_settings['account'] = ''
 
 layout = dbc.Container([
@@ -38,7 +40,7 @@ layout = dbc.Container([
         dbc.Col(dcc.Dropdown(store_util.get_account_names(),
                              value=store_util.get_first_account_name(),
                              id='dropdown-user-selection',
-                             className='dbc'),
+                             className='mb-3 dbc'),
                 ),
     ]),
     dbc.Row([
@@ -46,38 +48,58 @@ layout = dbc.Container([
         dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(Rarity))),
         dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(Element))),
         dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(Edition))),
-        dbc.Col(
-            [
-                html.Div(id='filter-output')
-            ]
-        ),
-    ]),
+    ], className='mb-3'),
     dbc.Row([
         dbc.Col(
             dbc.InputGroup(
                 [
-                    dbc.InputGroupText("Minimal battles"),
+                    dbc.InputGroupText('Minimal battles'),
                     dbc.Input(id='minimal-battles-filter',
                               min=0,
                               value=0,
                               type='number',
                               pattern='[0-9]')
                 ],
-                className="mb-3",
+                className='mb-3',
             )
         ),
         dbc.Col(
             dbc.InputGroup(
                 [
-                    dbc.InputGroupText("Mana Cap"),
+                    dbc.InputGroupText('Mana cap'),
                     dbc.ButtonGroup(filter_page.get_filter_buttons_text(ManaCap)),
                 ],
-                className="mb-3",
+                className='mb-3',
             )
         ),
     ]),
     dbc.Row([
-        html.Div(id='main-table', className='dbc'),
+        dbc.Col(
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText('Since season'),
+                    dcc.Dropdown(store.season_end_dates.sort_values('id', ascending=False).id.to_list(),
+                                 value=store.season_end_dates.sort_values('id', ascending=False).id.to_list()[-1],
+                                 id='dropdown-season-selection',
+                                 clearable=False,
+                                 style={'width': '100px'},
+                                 className='dbc'),
+                    dbc.InputGroupText(id='filter-from-date')
+
+                ],
+                className='mb-3',
+            )
+        ),
+    ]),
+
+    dbc.Row(id='top-cards'),
+    dbc.Row([
+        dbc.Accordion(
+            dbc.AccordionItem(html.Div(id='main-table', className='dbc'),
+                              title='Complete table',
+                              ),
+            start_collapsed=True,
+        )
     ]),
     dcc.Store(id='filtered-battle-df'),
     dcc.Store(id='filter-settings'),
@@ -98,7 +120,7 @@ def update_main_table(filtered_df):
         return dash_table.DataTable(
             # columns=[{'name': i, 'id': i} for i in df.columns],
             columns=[
-                {'id': 'url', 'name': 'Card', 'presentation': 'markdown'},
+                {'id': 'url_markdown', 'name': 'Card', 'presentation': 'markdown'},
                 {'id': 'card_name', 'name': 'Name'},
                 {'id': 'level', 'name': 'Level'},
                 # {'id': 'win_to_loss_ratio', 'name': 'win_to_loss_ratio'},
@@ -118,6 +140,40 @@ def update_main_table(filtered_df):
         ),
     else:
         return dash_table.DataTable()
+
+
+@app.callback(
+    Output('top-cards', 'children'),
+    Input('filtered-battle-df', 'data'),
+)
+def update_top_cards(filtered_df):
+    if not filtered_df:
+        raise PreventUpdate
+
+    filtered_df = pd.read_json(filtered_df, orient='split')
+
+    cards = []
+    if not filtered_df.empty:
+        filtered_df = filtered_df.head(5)
+        for index, row in filtered_df.iterrows():
+            cards.append(
+                dbc.Card(
+                    [
+                        dbc.CardImg(src=row.url, top=True, style={'height': '200px', 'object-fit': 'contain'}),
+                        dbc.CardBody([
+                            html.P(str(row.card_name) + '\t\t★' + str(row.level), className='card-text'),
+                            html.P('Battles (W-L): ' + str(int(row.win)) + '-' + str(int(row.loss)),
+                                   className='card-text'),
+                            html.P('Win: ' + str(row.win_percentage) + '%', className='card-text'),
+                        ]
+                        ),
+                    ],
+                    style={'height': '350px'},
+                    className='mb-3',
+                )
+            )
+
+    return [dbc.Col(card) for card in cards]
 
 
 @app.callback(Output('filtered-battle-df', 'data'),
@@ -146,6 +202,16 @@ def filter_battle_df(account,
                      trigger_daily):
     filter_settings['account'] = account
     return filter_settings
+
+
+@app.callback(Output('filter-settings', 'data'),
+              Output('filter-from-date', 'children'),
+              Input('dropdown-season-selection', 'value')
+              )
+def filter_season_df(season_id,):
+    filter_settings['from_season'] = season_id
+    end_date = store.season_end_dates.loc[(store.season_end_dates.id == season_id)].end_date.iloc[0]
+    return filter_settings, str(parser.parse(end_date).strftime("%Y-%m-%d %H:%M (UTC)"))
 
 
 @app.callback(Output('filter-settings', 'data'),

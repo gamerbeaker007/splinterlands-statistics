@@ -50,17 +50,11 @@ def get_filter_buttons(enumeration):
 def get_filter_buttons_text(enumeration):
     buttons = []
     last_item = list(enumeration)[-1]
-    first = True
     for enum in enumeration:
-        if first:
-            first=False
-            rounding = '50% 0% 0% 50%'
-        elif last_item.name == enum.name:
-            rounding = '0% 50% 50% 0%'
+        if last_item.name == enum.name:
+            rounding = '0% 20% 20% 0%'
         else:
             rounding = '0% 0% 0% 0%'
-
-
 
         buttons.append(dbc.Button(
             id=enum.name + '-filter-button',
@@ -71,10 +65,6 @@ def get_filter_buttons_text(enumeration):
                       'width': '65px',
                       'height': '40px',
                       'padding': '0px',
-                      'margin-top': '3px',
-                      'margin-bottom': '3px',
-                      'display': 'flex',
-                      'justify-content': 'center',
                       'text-align': 'center'},
         ),
         )
