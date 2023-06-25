@@ -30,6 +30,7 @@ for mana_cap in ManaCap:
 
 filter_settings['minimal-battles'] = 0
 filter_settings['from_date'] = datetime.datetime(2000, 1, 1)
+filter_settings['rule_sets'] = []
 filter_settings['account'] = ''
 
 layout = dbc.Container([
@@ -39,11 +40,22 @@ layout = dbc.Container([
         dbc.Col(html.H4('Filter')),
     ]),
     dbc.Row([
-        dbc.Col(dcc.Dropdown(store_util.get_account_names(),
-                             value=store_util.get_first_account_name(),
-                             id='dropdown-user-selection',
-                             className='mb-3 dbc'),
-                ),
+        dbc.Col(
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText('Account'),
+                    dcc.Dropdown(store_util.get_account_names(),
+                                 value=store_util.get_first_account_name(),
+                                 id='dropdown-user-selection',
+                                 className='dbc',
+                                 style={'width': '70%'},
+                                 ),
+
+                ],
+                className='mb-3',
+            ),
+            md=4,
+        ),
     ]),
     dbc.Row([
         dbc.Col(dbc.ButtonGroup(filter_page.get_filter_buttons(CardType))),
@@ -80,8 +92,8 @@ layout = dbc.Container([
             dbc.InputGroup(
                 [
                     dbc.InputGroupText('Since season'),
-                    dcc.Dropdown(store.season_end_dates.sort_values('id', ascending=False).id.to_list(),
-                                 value=store.season_end_dates.sort_values('id', ascending=False).id.to_list()[-1],
+                    dcc.Dropdown(options=store_util.get_seasons_played_list(),
+                                 value=store_util.get_seasons_played_list()[-1],
                                  id='dropdown-season-selection',
                                  clearable=False,
                                  style={'width': '100px'},
@@ -90,7 +102,22 @@ layout = dbc.Container([
 
                 ],
                 className='mb-3',
-            )
+            ),
+        ),
+        dbc.Col(
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText('Rule sets'),
+                    dcc.Dropdown(options=store_util.get_rule_sets_list(),
+                                 id='dropdown-rule-sets-selection',
+                                 multi=True,
+                                 className='dbc',
+                                 style={'width': '70%'},
+                                 ),
+
+                ],
+                className='mb-3',
+            ),
         ),
     ]),
 
@@ -166,11 +193,12 @@ def update_top_cards(filtered_df):
                             html.P(str(row.card_name) + '\t\t★' + str(row.level), className='card-text'),
                             html.P('Battles (W-L): ' + str(int(row.win)) + '-' + str(int(row.loss)),
                                    className='card-text'),
+                            html.P('Battle count: ' + str(int(row.battles)), className='card-text'),
                             html.P('Win: ' + str(row.win_percentage) + '%', className='card-text'),
                         ]
                         ),
                     ],
-                    style={'height': '350px'},
+                    style={'height': '375px'},
                     className='mb-3',
                 )
             )
@@ -188,6 +216,7 @@ def filter_battle_df(store_filter_settings):
     df = analyse.filter_battles(store.battle_big, filter_account=store_filter_settings['account'])
     df = analyse.filter_date(df, filter_settings)
     df = analyse.filter_mana_cap(df, filter_settings)
+    df = analyse.filter_rule_sets(df, filter_settings)
 
     # Processing
     df = analyse.process_battles_win_percentage(df)
@@ -214,19 +243,20 @@ def filter_battle_df(account,
 
 @app.callback(Output('filter-settings', 'data'),
               Output('filter-from-date', 'children'),
-              Input('dropdown-season-selection', 'value')
-              )
-def filter_season_df(season_id,):
-    if season_id == 1:
-        season_end_date = store.season_end_dates.loc[(store.season_end_dates.id == season_id)].end_date.iloc[0]
-        from_date = parser.parse(season_end_date)
-        from_date = from_date - datetime.timedelta(weeks=3)
-    else:
-        season_end_date = store.season_end_dates.loc[(store.season_end_dates.id == season_id-1)].end_date.iloc[0]
-        from_date = parser.parse(season_end_date)
+              Input('dropdown-season-selection', 'value'))
+def filter_season_df(season_id):
+    season_end_date = store.season_end_dates.loc[(store.season_end_dates.id == season_id - 1)].end_date.iloc[0]
+    from_date = parser.parse(season_end_date)
 
     filter_settings['from_date'] = from_date
     return filter_settings, str(from_date.strftime("%Y-%m-%d %H:%M (UTC)"))
+
+
+@app.callback(Output('filter-settings', 'data'),
+              Input('dropdown-rule-sets-selection', 'value'))
+def filter_season_df(rule_sets):
+    filter_settings['rule_sets'] = rule_sets
+    return filter_settings
 
 
 @app.callback(Output('filter-settings', 'data'),

@@ -91,7 +91,6 @@ def remove_account_from_store(store_name, search_column, account_name):
 
 def remove_data(account_name):
     for store_name in get_store_names():
-
         store.__dict__[store_name] = remove_account_from_store(store_name, 'account_name', account_name)
         store.__dict__[store_name] = remove_account_from_store(store_name, 'account', account_name)
         store.__dict__[store_name] = remove_account_from_store(store_name, 'player', account_name)
@@ -118,3 +117,22 @@ def get_last_portfolio_selection():
         curr_users = store.portfolio.account_name.unique().tolist()
         mask = (store.view_portfolio_accounts.account_name.isin(curr_users))
         return store.view_portfolio_accounts.loc[mask].account_name.tolist()
+
+
+def get_seasons_played_list():
+    input_df = store.battle_big.copy()
+    first_date = pd.to_datetime(input_df.created_date).min()
+
+    temp_end_dates = store.season_end_dates.copy()
+    temp_end_dates.end_date = pd.to_datetime(temp_end_dates.end_date)
+
+    last_id = temp_end_dates.loc[(temp_end_dates.end_date > first_date)].id.min()
+    return temp_end_dates.sort_values('id', ascending=False).loc[(temp_end_dates.id >= last_id-1)].id.to_list()
+
+
+def get_rule_sets_list():
+    rule_sets = config.settings['battles']['rulesets']
+    list_of_ruleset = []
+    for rule_set in rule_sets:
+        list_of_ruleset.append(rule_set['name'])
+    return list(list_of_ruleset)

@@ -246,3 +246,13 @@ def filter_date(input_df, filter_settings):
     input_df = input_df.loc[input_df.created_date > from_date]
 
     return input_df
+
+
+def filter_rule_sets(input_df, filter_settings):
+    rule_sets = filter_settings['rule_sets']
+    if input_df.empty or not rule_sets:
+        return input_df
+
+    return input_df.loc[(input_df.ruleset1.isin(rule_sets) |
+                         input_df.ruleset2.isin(rule_sets) |
+                         input_df.ruleset3.isin(rule_sets))]
