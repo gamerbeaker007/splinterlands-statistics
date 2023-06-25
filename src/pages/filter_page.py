@@ -4,7 +4,8 @@ import dash_bootstrap_components as dbc
 from dash import html
 
 from main import app
-from src.static.static_values_enum import Element, Edition, CardType, Rarity
+from src.configuration import config
+from src.static.static_values_enum import Element, CardType, Edition, Rarity
 
 
 def get_filter_buttons(enumeration):
@@ -13,20 +14,18 @@ def get_filter_buttons(enumeration):
     first = True
     for enum in enumeration:
         if first:
-            first=False
+            first = False
             rounding = '50% 0% 0% 50%'
         elif last_item.name == enum.name:
             rounding = '0% 50% 50% 0%'
         else:
             rounding = '0% 0% 0% 0%'
 
-
-
         buttons.append(dbc.Button(
             id=enum.name + '-filter-button',
             children=[
                 html.Img(
-                    src=app.get_asset_url(get_icon(enumeration, enum.name)),
+                    src=get_icon_url(enumeration, enum.name),
                     className='round-sm-img',
                     style={'width': '30px',
                            'height': '30px',
@@ -71,15 +70,18 @@ def get_filter_buttons_text(enumeration):
     return buttons
 
 
-def get_icon(enum, name):
+def get_icon_url(enum, name):
+    # https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-edition-alpha.svg
+    prefix = str(config.settings['asset_url']) + 'website/icons/'
+
     if enum == Element:
-        return os.path.join("icons", 'icon-element-' + name + '-2.svg')
+        return prefix + 'icon-element-' + str(name) + '-2.svg'
     elif enum == CardType:
-        return os.path.join("icons", 'icon-type-' + name + '.svg')
+        return prefix + 'icon-type-' + str(name) + '.svg'
     elif enum == Edition:
         if name == Edition.soulbound.name:
-            return os.path.join("icons", 'img_overlay_' + name + '.png')
+            return app.get_asset_url(os.path.join('icons', 'img_overlay_' + str(name) + '.png'))
         else:
-            return os.path.join("icons", 'icon-edition-' + name + '.svg')
+            return prefix + 'icon-edition-' + str(name) + '.svg'
     elif enum == Rarity:
-        return os.path.join("icons", 'icon-rarity-' + name + '.svg')
+        return prefix + 'icon-rarity-' + str(name) + '.svg'
