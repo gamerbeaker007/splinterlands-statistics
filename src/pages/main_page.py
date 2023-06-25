@@ -32,6 +32,7 @@ filter_settings['minimal-battles'] = 0
 filter_settings['from_date'] = datetime.datetime(2000, 1, 1)
 filter_settings['rule_sets'] = []
 filter_settings['account'] = ''
+filter_settings['sort_by'] = []
 
 layout = dbc.Container([
     dbc.Row([
@@ -96,7 +97,7 @@ layout = dbc.Container([
                                  value=store_util.get_seasons_played_list()[-1],
                                  id='dropdown-season-selection',
                                  clearable=False,
-                                 style={'width': '100px'},
+                                 style={'width': '85px'},
                                  className='dbc'),
                     dbc.InputGroupText(id='filter-from-date')
 
@@ -113,6 +114,25 @@ layout = dbc.Container([
                                  multi=True,
                                  className='dbc',
                                  style={'width': '70%'},
+                                 ),
+
+                ],
+                className='mb-3',
+            ),
+        ),
+    ]),
+
+    dbc.Row([
+        dbc.Col(
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText('Sort by'),
+                    dcc.Dropdown(options=['battles', 'percentage', 'win', 'loss'],
+                                 value=['battles'],
+                                 id='dropdown-sort-by-selection',
+                                 multi=True,
+                                 className='dbc',
+                                 style={'width': '50%'},
                                  ),
 
                 ],
@@ -227,6 +247,7 @@ def filter_battle_df(store_filter_settings):
     df = analyse.filter_card_type(df, filter_settings)
     df = analyse.filter_rarity(df, filter_settings)
     df = analyse.filter_battle_count(df, filter_settings['minimal-battles'])
+    df = analyse.sort_by(df, filter_settings['sort_by'])
 
     return df.to_json(date_format='iso', orient='split')
 
@@ -250,6 +271,13 @@ def filter_season_df(season_id):
 
     filter_settings['from_date'] = from_date
     return filter_settings, str(from_date.strftime("%Y-%m-%d %H:%M (UTC)"))
+
+
+@app.callback(Output('filter-settings', 'data'),
+              Input('dropdown-sort-by-selection', 'value'))
+def sort_by(sorts):
+    filter_settings['sort_by'] = sorts
+    return filter_settings
 
 
 @app.callback(Output('filter-settings', 'data'),

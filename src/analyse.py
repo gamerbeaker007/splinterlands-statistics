@@ -256,3 +256,13 @@ def filter_rule_sets(input_df, filter_settings):
     return input_df.loc[(input_df.ruleset1.isin(rule_sets) |
                          input_df.ruleset2.isin(rule_sets) |
                          input_df.ruleset3.isin(rule_sets))]
+
+
+def sort_by(input_df, sorts):
+    columns = []
+    for sort in sorts:
+        if sort == 'percentage':
+            columns.append('win_percentage')
+        else:
+            columns.append(sort)
+    return input_df.sort_values(columns, ascending=False)

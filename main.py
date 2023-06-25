@@ -40,7 +40,7 @@ def main():
     app.layout = navigation_page.layout
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
-    app.run_server(debug=True)
+    app.run_server(debug=False)
 
 
 if __name__ == '__main__':

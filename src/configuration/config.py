@@ -5,8 +5,8 @@ import sys
 from src.api import spl
 from src.configuration.custom_formatter import CustomFormatter
 
-# file_dir_prefix = ""
-file_dir_prefix = "_new_test_file_"
+file_dir_prefix = ""
+# file_dir_prefix = "_new_test_file_"
 
 store_dir = os.path.join(os.getcwd(), 'store', file_dir_prefix)
 if not os.path.isdir(store_dir):
@@ -30,7 +30,6 @@ logging.info("Set log level: " + log_level)
 card_details_df = spl.get_card_details()
 current_season = spl.get_current_season()
 settings = spl.get_settings()
-# season_end_dates_array = spl.get_season_end_times()
 dark_theme = 'cyborg'
 light_theme = 'minty'
 current_theme = dark_theme
