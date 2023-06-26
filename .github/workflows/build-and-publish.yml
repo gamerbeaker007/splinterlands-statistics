@@ -24,14 +24,16 @@ jobs:
         python-version: '3.10'
         cache: 'pip' # caching pip dependencies
 
+    - run: pip install -r requirements.txt pyinstaller
+
     - if: matrix.os == 'windows-latest'
       run: |
         choco install openssl -y
         md -path C:\OpenSSL-Win64
         Copy-Item "C:\Program Files\OpenSSL\*" -Destination "C:\OpenSSL-Win64" -Recurse
 
-    - run: pip install -r requirements.txt pyinstaller
-    - run: >
+    - if: matrix.os == 'windows-latest'
+      run: >
         pyinstaller --onefile 
         --collect-data dash_mantine_components 
         --collect-data dash_extensions 
@@ -39,6 +41,18 @@ jobs:
         --collect-data dash_bootstrap_templates 
         --hidden-import _scrypt
         --add-data="assets;assets"
+        --distpath splinterlands-stats-v2
+        main.py
+
+    - if: matrix.os == 'ubuntu-latest'
+      run: >
+        pyinstaller --onefile 
+        --collect-data dash_mantine_components 
+        --collect-data dash_extensions 
+        --collect-data dash_iconify 
+        --collect-data dash_bootstrap_templates 
+        --hidden-import _scrypt
+        --add-data="assets:assets"
         --distpath splinterlands-stats-v2
         main.py
 
