@@ -23,25 +23,24 @@ def get_deeds_value(account_name):
     deeds_total = 0.0
     for deed in collection:
         deeds_owned += 1
-        listing_price = 0
-        df = filter_items(deed, market_df, "deed_type")
-        df = filter_items(deed, df, "rarity")
-        df = filter_items(deed, df, "plot_status")
-        df = filter_items(deed, df, "castle")
-        df = filter_items(deed, df, "keep")
-        df = filter_items(deed, df, "magic_type")
-        if df.empty:
-            logging.warning("NO LISTING FOUND FOR DEED: \n"
-                            "deed_type: " + str(deed['deed_type']) + "\n" +
-                            "rarity: " + str(deed['rarity']) + "\n" +
-                            "plot_status: " + str(deed['plot_status']) + "\n" +
-                            "castle: " + str(deed['castle']) + "\n" +
-                            "keep: " + str(deed['keep']) + "\n" +
-                            "magic_type: " + str(deed['magic_type']) + "\n")
-            logging.warning("TODO HOW TO DETERMINE PRICE!!!")
-        else:
-            listing_price = df.astype({'listing_price': 'float'}).listing_price.min()
-            deeds_price_found += 1
+        filter_types = ["rarity", 'plot_status', 'magic_type', 'deed_type']
+        df = market_df
+        missing_types = []
+        for filter_type in filter_types:
+            temp = filter_items(deed, df, filter_type)
+            if not temp.empty:
+                df = temp
+            else:
+                missing_types.append(filter_type)
+        if missing_types:
+            logging.warning("Not a perfect match found missing filters: " + str(missing_types))
+            logging.warning("Was looking for: \n" +
+                            "\n".join([str(x) + ": " + str(deed[x]) for x in filter_types]))
+            logging.warning("Current estimated best value now: " +
+                            str(df.astype({'listing_price': 'float'}).listing_price.min()))
+        listing_price = df.astype({'listing_price': 'float'}).listing_price.min()
+        deeds_price_found += 1
+
         deeds_total += listing_price
 
     return pd.DataFrame({'date': datetime.today().strftime('%Y-%m-%d'),

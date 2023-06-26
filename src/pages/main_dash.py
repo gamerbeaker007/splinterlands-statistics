@@ -1,5 +1,4 @@
 import dash_bootstrap_components as dbc
-from dash import Dash
 from dash_bootstrap_templates import load_figure_template
 from dash_extensions.enrich import DashProxy, LogTransform
 

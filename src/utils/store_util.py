@@ -16,7 +16,7 @@ def update_season_end_dates():
     till_season_id = spl.get_current_season()['id']
     # logging.info("Update season end dates for '" + str(till_season_id) + "' seasons")
     for season_id in range(from_season_id, till_season_id + 1):
-        logging.info("Update season end date for season: '" + str(season_id))
+        logging.info("Update season end date for season: " + str(season_id))
 
         store.season_end_dates = pd.concat([store.season_end_dates,
                                             spl.get_season_end_time(season_id)],
@@ -35,12 +35,6 @@ def get_store_names():
 def get_store_file(name):
     return os.path.join(config.store_dir, str(name + config.file_extension))
 
-
-# def get_store(name):
-#     for store_name, store in stores.__dict__.items():
-#         if store_name == name:
-#             return store_name, store
-#     return None
 
 def load_stores():
     for store_name in get_store_names():
@@ -91,7 +85,6 @@ def remove_account_from_store(store_name, search_column, account_name):
 
 def remove_data(account_name):
     for store_name in get_store_names():
-
         store.__dict__[store_name] = remove_account_from_store(store_name, 'account_name', account_name)
         store.__dict__[store_name] = remove_account_from_store(store_name, 'account', account_name)
         store.__dict__[store_name] = remove_account_from_store(store_name, 'player', account_name)
@@ -118,3 +111,25 @@ def get_last_portfolio_selection():
         curr_users = store.portfolio.account_name.unique().tolist()
         mask = (store.view_portfolio_accounts.account_name.isin(curr_users))
         return store.view_portfolio_accounts.loc[mask].account_name.tolist()
+
+
+def get_seasons_played_list():
+    input_df = store.battle_big.copy()
+    if not input_df.empty:
+        first_date = pd.to_datetime(input_df.created_date).min()
+
+        temp_end_dates = store.season_end_dates.copy()
+        temp_end_dates.end_date = pd.to_datetime(temp_end_dates.end_date)
+
+        last_id = temp_end_dates.loc[(temp_end_dates.end_date > first_date)].id.min()
+        return temp_end_dates.sort_values('id', ascending=False).loc[(temp_end_dates.id >= last_id-1)].id.to_list()
+    else:
+        return list()
+
+
+def get_rule_sets_list():
+    rule_sets = config.settings['battles']['rulesets']
+    list_of_ruleset = []
+    for rule_set in rule_sets:
+        list_of_ruleset.append(rule_set['name'])
+    return list(list_of_ruleset)

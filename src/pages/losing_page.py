@@ -45,11 +45,11 @@ layout = dbc.Container([
 def update_losing_table(filtered_df):
     df = pd.read_json(filtered_df, orient='split')
     if not df.empty:
-        df = df[['url', 'card_name', 'level', 'number_of_losses']]
+        df = df[['url_markdown', 'card_name', 'level', 'number_of_losses']]
         return dash_table.DataTable(
             # columns=[{'name': i, 'id': i} for i in df.columns],
             columns=[
-                {'id': 'url', 'name': 'Card', 'presentation': 'markdown'},
+                {'id': 'url_markdown', 'name': 'Card', 'presentation': 'markdown'},
                 {'id': 'card_name', 'name': 'Name'},
                 {'id': 'level', 'name': 'Level'},
                 {'id': 'number_of_losses', 'name': 'Numer of losses'},

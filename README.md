@@ -27,11 +27,15 @@ docker pull ghcr.io/gamerbeaker007/splinterlands-stats-v2:latest</code>
 <code>docker run -p 8050:8050 -e "HOST=0.0.0.0" -it -v \tmp\:/app/store ghcr.io/gamerbeaker007/splinterlands-stats-v2:latest</code>
 
 ## With python development or local execution
-Download source and unpack. 
-Modify config.properties with your desired information
+Download sources and unpack. 
+
 Use python 3.8 or higher.
 <code>pip install -r requirements.txt
 python src/main.py</code>
+
+When installing on a windows machine and this error given: 
+<code>scrypt-1.2.1/libcperciva/crypto/crypto_aes.c(6): fatal error C1083: Cannot open include file: 'openssl/aes.h': No such file or directory</code>
+Then install [Win64 OpenSSL](https://slproweb.com/products/Win32OpenSSL.html) (not the light version)
 
 # Result how to use
 TODO

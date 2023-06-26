@@ -17,8 +17,8 @@ class MatchType(Enum):
 
 
 class CardType(Enum):
-    SUMMONER = 'Summoner'
-    MONSTER = 'Monster'
+    summoner = 'Summoner'
+    monster = 'Monster'
 
 
 class Leagues(Enum):
@@ -60,6 +60,30 @@ class Edition(Enum):
     chaos = 7
     rift = 8
     soulbound = 10
+
+
+class Element(Enum):
+    water = 'Blue'
+    death = 'Black'
+    fire = 'Red'
+    life = 'White'
+    dragon = 'Gold'
+    earth = 'Green'
+    neutral = 'Gray'
+
+
+class Rarity(Enum):
+    common = 1
+    rare = 2
+    epic = 3
+    legendary = 4
+
+
+class ManaCap(Enum):
+    low = '0-20'
+    medium = '21-40'
+    high = '41-60'
+    max = '61-999'
 
 
 def get_list_of_enum(enum):
