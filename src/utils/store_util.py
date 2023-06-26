@@ -16,7 +16,7 @@ def update_season_end_dates():
     till_season_id = spl.get_current_season()['id']
     # logging.info("Update season end dates for '" + str(till_season_id) + "' seasons")
     for season_id in range(from_season_id, till_season_id + 1):
-        logging.info("Update season end date for season: '" + str(season_id))
+        logging.info("Update season end date for season: " + str(season_id))
 
         store.season_end_dates = pd.concat([store.season_end_dates,
                                             spl.get_season_end_time(season_id)],
@@ -35,12 +35,6 @@ def get_store_names():
 def get_store_file(name):
     return os.path.join(config.store_dir, str(name + config.file_extension))
 
-
-# def get_store(name):
-#     for store_name, store in stores.__dict__.items():
-#         if store_name == name:
-#             return store_name, store
-#     return None
 
 def load_stores():
     for store_name in get_store_names():
@@ -121,13 +115,16 @@ def get_last_portfolio_selection():
 
 def get_seasons_played_list():
     input_df = store.battle_big.copy()
-    first_date = pd.to_datetime(input_df.created_date).min()
+    if not input_df.empty:
+        first_date = pd.to_datetime(input_df.created_date).min()
 
-    temp_end_dates = store.season_end_dates.copy()
-    temp_end_dates.end_date = pd.to_datetime(temp_end_dates.end_date)
+        temp_end_dates = store.season_end_dates.copy()
+        temp_end_dates.end_date = pd.to_datetime(temp_end_dates.end_date)
 
-    last_id = temp_end_dates.loc[(temp_end_dates.end_date > first_date)].id.min()
-    return temp_end_dates.sort_values('id', ascending=False).loc[(temp_end_dates.id >= last_id-1)].id.to_list()
+        last_id = temp_end_dates.loc[(temp_end_dates.end_date > first_date)].id.min()
+        return temp_end_dates.sort_values('id', ascending=False).loc[(temp_end_dates.id >= last_id-1)].id.to_list()
+    else:
+        return list()
 
 
 def get_rule_sets_list():

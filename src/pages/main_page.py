@@ -93,9 +93,7 @@ layout = dbc.Container([
             dbc.InputGroup(
                 [
                     dbc.InputGroupText('Since season'),
-                    dcc.Dropdown(options=store_util.get_seasons_played_list(),
-                                 value=store_util.get_seasons_played_list()[-1],
-                                 id='dropdown-season-selection',
+                    dcc.Dropdown(id='dropdown-season-selection',
                                  clearable=False,
                                  style={'width': '85px'},
                                  className='dbc'),
@@ -154,6 +152,16 @@ layout = dbc.Container([
     dcc.Store(id='filter-settings'),
 ])
 
+
+@app.callback(Output('dropdown-season-selection', 'options'),
+              Output('dropdown-season-selection', 'value'),
+              Input('trigger-daily-update', 'data'))
+def update_seasons_played_list(tigger):
+    season_played = store_util.get_seasons_played_list()
+    first_played_season = ''
+    if len(season_played) > 0:
+        first_played_season = season_played[-1]
+    return season_played, first_played_season
 
 @app.callback(
     Output('main-table', 'children'),
@@ -266,11 +274,14 @@ def filter_battle_df(account,
               Output('filter-from-date', 'children'),
               Input('dropdown-season-selection', 'value'))
 def filter_season_df(season_id):
-    season_end_date = store.season_end_dates.loc[(store.season_end_dates.id == season_id - 1)].end_date.iloc[0]
-    from_date = parser.parse(season_end_date)
+    if season_id:
+        season_end_date = store.season_end_dates.loc[(store.season_end_dates.id == int(season_id) - 1)].end_date.iloc[0]
+        from_date = parser.parse(season_end_date)
 
-    filter_settings['from_date'] = from_date
-    return filter_settings, str(from_date.strftime("%Y-%m-%d %H:%M (UTC)"))
+        filter_settings['from_date'] = from_date
+        return filter_settings, str(from_date.strftime("%Y-%m-%d %H:%M (UTC)"))
+    else:
+        return filter_settings, ""
 
 
 @app.callback(Output('filter-settings', 'data'),

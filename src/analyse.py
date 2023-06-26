@@ -259,6 +259,9 @@ def filter_rule_sets(input_df, filter_settings):
 
 
 def sort_by(input_df, sorts):
+    if input_df.empty:
+        return input_df
+
     columns = []
     for sort in sorts:
         if sort == 'percentage':
