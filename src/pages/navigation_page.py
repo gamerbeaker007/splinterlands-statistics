@@ -37,7 +37,7 @@ navbar = dbc.Navbar(
                         dbc.NavItem(dbc.NavLink('Losing', href='/losing')),
                         dbc.NavItem(dbc.NavLink('Rating', href='/rating')),
                         dbc.NavItem(dbc.NavLink('Nemesis', href='/nemesis')),
-                        dbc.NavItem(dbc.NavLink('Balance', href='/balance')),
+                        dbc.NavItem(dbc.NavLink('Season', href='/season')),
                         dbc.NavItem(dbc.NavLink('Portfolio', href='/portfolio')),
                         dbc.NavItem(dbc.NavLink('Config', href='/config')),
                     ],
@@ -60,7 +60,9 @@ navbar = dbc.Navbar(
             ),
             dcc.Store(id='trigger-daily-update'),
             html.Div(id='progress-daily'),
+            html.Div(id='progress-season'),
             dcc.Interval(id='interval-daily', interval=1000),
+            dcc.Interval(id='interval-season', interval=1000),
 
         ]),
 )
@@ -83,7 +85,7 @@ def display_page(pathname):
         return rating_page.layout
     if pathname == '/nemesis':
         return nemesis_page.layout
-    if pathname == '/balance':
+    if pathname == '/season':
         return season_page.layout
     if pathname == '/portfolio':
         return portfolio_page.layout
@@ -148,6 +150,47 @@ def update_progress(interval):
         return dmc.Notification(
             id='my-notification',
             title=str(title),
+            message=str(value),
+            loading=True,
+            color='orange',
+            action=action,
+            autoClose=False,
+            disallowClose=True,
+        )
+
+
+@app.callback(Output('progress-season', 'children'),
+              Trigger('interval-season', 'n_intervals'))
+def update_progress(interval):
+    value = progress.progress_season_txt
+    if value is None:
+        raise PreventUpdate
+    if value == 'Done':
+        if progress.progress_season_first:
+            action = 'show'
+        else:
+            action = 'update'
+        progress.progress_season_txt = None
+        progress.progress_season_first = True
+        return dmc.Notification(
+            id='season-notification',
+            title='Season update done',
+            message=str(value),
+            color='green',
+            action=action,
+            autoClose=True,
+            icon=DashIconify(icon='akar-icons:circle-check'),
+        )
+    else:
+        if progress.progress_season_first:
+            action = 'show'
+            progress.progress_season_first = False
+        else:
+            action = 'update'
+
+        return dmc.Notification(
+            id='season-notification',
+            title='Season update process initiated',
             message=str(value),
             loading=True,
             color='orange',

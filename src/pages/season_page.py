@@ -16,23 +16,57 @@ from src.utils import store_util, chart_util, progress_util
 layout = dbc.Container([
     dbc.Row([
         html.H1('Season statistics'),
-        dbc.Col(
-            dbc.Button(
-                'Update seasons',
-                id='update-season-btn',
-                color='primary',
-                className='ms-2', n_clicks=0
-            ),
-            width='auto',
-        ),
-    ]),
-    dbc.Row([
-        dbc.Col(dcc.Dropdown(options=store_util.get_account_names(),
-                             value=store_util.get_first_account_name(),
-                             id='dropdown-user-selection',
-                             className='dbc'),
+        dbc.Col([
+            dbc.Row(
+                dbc.Button(
+                    'Update seasons',
+                    id='update-season-btn',
+                    color='primary',
+                    n_clicks=0,
+                    style={'width': '30%'},
+                    className='mb-3',
                 ),
+            ),
+            dbc.Row(
+                dbc.InputGroup(
+                    [
+                        dbc.InputGroupText('Account'),
+                        dcc.Dropdown(store_util.get_account_names(),
+                                     value=store_util.get_first_account_name(),
+                                     id='dropdown-user-selection',
+                                     className='dbc',
+                                     style={'width': '70%'},
+                                     ),
+
+                    ],
+                    className='mb-3',
+                )
+            ),
+        ]),
+        dbc.Col(
+            dbc.Accordion(
+                dbc.AccordionItem([
+                    dbc.InputGroup(
+                        [
+                            dbc.InputGroupText('Accounts'),
+                            dcc.Dropdown(
+                                multi=True,
+                                id='dropdown-user-selection-season',
+                                className='dbc',
+                                style={'width': '70%'},
+                            ),
+                        ], className='mb-3',
+                    ),
+                    dbc.Col([
+                        dbc.Button('Generate', id='generate-blog', className='mb-3'),
+                        dbc.Button('Copy to Clipboard', id='copy-to-clipboard', className='mb-3')]
+                    ),
+                ], title='Generate last season blog',
+                ),
+                start_collapsed=True,
+            ), className='mb-3'),
     ]),
+
     dbc.Row([
         dbc.Col(html.H1('Modern')),
         dbc.Col(html.H1('Wild')),
@@ -81,52 +115,18 @@ layout = dbc.Container([
         ),
     ]),
 
-    html.Div(id='hidden-div-balance'),
-    html.Div(id='progress-season'),
-    dcc.Interval(id='interval-season', interval=1000),
     dcc.Store(id='trigger-season-update'),
+    dcc.Store(id='hive-blog-content'),
+
 ])
 
 
-@app.callback(Output('progress-season', 'children'),
-              Trigger('interval-season', 'n_intervals'))
-def update_progress(interval):
-    value = progress.progress_season_txt
-    if value is None:
-        raise PreventUpdate
-    if value == 'Done':
-        if progress.progress_season_first:
-            action = 'show'
-        else:
-            action = 'update'
-        progress.progress_season_txt = None
-        progress.progress_season_first = True
-        return dmc.Notification(
-            id='season-notification',
-            title='Season update done',
-            message=str(value),
-            color='green',
-            action=action,
-            autoClose=True,
-            icon=DashIconify(icon='akar-icons:circle-check'),
-        )
-    else:
-        if progress.progress_season_first:
-            action = 'show'
-            progress.progress_season_first = False
-        else:
-            action = 'update'
-
-        return dmc.Notification(
-            id='season-notification',
-            title='Season update process initiated',
-            message=str(value),
-            loading=True,
-            color='orange',
-            action=action,
-            autoClose=False,
-            disallowClose=True,
-        )
+@app.callback(Output('dropdown-user-selection-season', 'value'),
+              Output('dropdown-user-selection-season', 'options'),
+              Input('trigger-daily-update', 'data'),
+              )
+def update_user_list(tigger):
+    return store_util.get_last_portfolio_selection(), store_util.get_account_names()
 
 
 @app.callback(
@@ -145,6 +145,43 @@ def update_output(n_clicks):
         progress_util.update_season_msg('Done')
         return True
     return False
+
+
+@app.callback(
+    Output('generate-blog', 'disabled'),
+    Output('update-season-btn', 'disabled'),
+    Input('generate-blog', 'n_clicks'),
+    Input('update-season-btn', 'n_clicks'),
+)
+def validate_buttons(n_clicks_generate_blog, n_clicks_update_season_btn):
+    if not ctx.triggered_id:
+        raise PreventUpdate
+
+    return True, True
+
+
+@app.callback(
+    Output('generate-blog', 'disabled'),
+    Output('update-season-btn', 'disabled'),
+    Trigger('interval-season', 'n_intervals')
+)
+def check_button_status(count):
+    if progress.progress_season_txt:
+        return True, True
+    else:
+        return False, False
+
+
+@app.callback(
+    Output('copy-to-clipboard', 'disabled'),
+    Input('hive-blog-content', 'data')
+)
+def update_copy_to_clipboard(hive_blog):
+    if not hive_blog:
+        return True
+    else:
+        return False
+    # TODO put it to the clipbaord
 
 
 @app.callback(Output('modern-season-rating-graph', 'figure'),
