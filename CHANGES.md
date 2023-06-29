@@ -1,6 +1,14 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
+## 0.3.0 WIP
+- Separated market_purchases in buy_market_purchases and sell_market_purchases
+  - Necessary to reload all seasonal data this can be done by delete all csv that start with season_ 
+  - restart application
+  - Update season information again
+- Add generate hive blog
+
+
 ## 0.2.0
 - Migrate data + add rarity of cards to battle stores 
 - Add filter and sort options to home page

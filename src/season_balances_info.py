@@ -145,8 +145,8 @@ def process_season_balances(balance_df, store_copy, account_name, season_array, 
 
             for search_type in balance_df['type'].unique().tolist():
                 progress_util.update_season_msg("Processing season '" + str(season_id) +
-                                      "' for '" + str(account_name) +
-                                      "' type: " + str(search_type))
+                                                "' for '" + str(account_name) +
+                                                "' type: " + str(search_type))
 
                 # special treatment for season_rewards they are in different timeframe
                 # for unclaimed sps season_rewards are season called
@@ -166,8 +166,21 @@ def process_season_balances(balance_df, store_copy, account_name, season_array, 
                                                     search_type,
                                                     unclaimed_sps)
 
-                    store_copy.loc[(store_copy.season_id == season_id)
-                                   & (store_copy.player == account_name), search_type] = balance_df.loc[balance_mask].amount.sum()
+                    if search_type == 'market_purchase':
+                        store_copy.loc[(store_copy.season_id == season_id)
+                                       & (store_copy.player == account_name),
+                                       'sell_' + search_type] = balance_df.loc[
+                            balance_mask & (pd.to_numeric(balance_df.amount) > 0)].amount.sum()
+                        store_copy.loc[(store_copy.season_id == season_id)
+                                       & (store_copy.player == account_name),
+                                       'buy_' + search_type] = balance_df.loc[
+                            balance_mask & (pd.to_numeric(balance_df.amount) < 0)].amount.sum()
+
+                    else:
+                        store_copy.loc[(store_copy.season_id == season_id)
+                                   & (store_copy.player == account_name), search_type] = balance_df.loc[
+                        balance_mask].amount.sum()
+
 
                     # For unclaimed SPS process it twice one for the rewards and one for shared reward/fees
                     if unclaimed_sps:
@@ -178,7 +191,8 @@ def process_season_balances(balance_df, store_copy, account_name, season_array, 
                                                         search_type,
                                                         unclaimed_sps, True)
                         store_copy.loc[(store_copy.season_id == season_id)
-                                       & (store_copy.player == account_name), search_type + "_fee"] =  balance_df.loc[balance_mask].amount.sum()
+                                       & (store_copy.player == account_name), search_type + "_fee"] = balance_df.loc[
+                            balance_mask].amount.sum()
 
     return store_copy
 

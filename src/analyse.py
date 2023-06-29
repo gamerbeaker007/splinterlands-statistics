@@ -1,7 +1,6 @@
 import logging
 
 import pandas as pd
-from dateutil import parser
 
 from src.configuration import store
 from src.static.static_values_enum import Edition, Element, CardType, Rarity, ManaCap

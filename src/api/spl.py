@@ -1,3 +1,4 @@
+import json
 import logging
 
 import pandas as pd
@@ -174,4 +175,44 @@ def get_all_cards_for_sale_df():
     return pd.DataFrame(sorted(all_cards_for_sale, key=lambda card: card["card_detail_id"]))
 
 
+def get_tournament(tournament_id):
+    address = base_url + "tournaments/find?id=" + str(tournament_id)
+    return http.get(address).json()
 
+
+def get_player_tournaments_ids(username):
+    address = base_url + "players/history?username=" + str(
+        username) + "&from_block=-1&limit=500&types=token_transfer"
+    result = http.get(address).json()
+    tournaments_transfers = list(filter(lambda item: "enter_tournament" in item['data'], result))
+    tournaments_ids = []
+    for tournament in tournaments_transfers:
+        tournaments_ids.append(json.loads(tournament['data'])['tournament_id'])
+    return tournaments_ids
+
+
+def get_spl_transaction(trx_id):
+    # https://api.splinterlands.io/market/status?id=d8f8593d637ebdd0bca7994dd7e1a15d9f12efa7-0
+    address = base_url + "market/status?id=" + str(trx_id)
+
+    result = http.get(address)
+    if result.status_code == 200:
+        return result.json()
+    else:
+        return None
+
+
+def get_cards_by_ids(ids):
+    #https://api.splinterlands.io/cards/find?ids=C3-457-3VIL75QJ2O,
+    address = base_url + "cards/find?ids=" + str(ids)
+
+    result = http.get(address)
+    if result.status_code == 200:
+        return result.json()
+    else:
+        return None
+
+def get_player_history_rewards(username):
+    address = base_url + "players/history?username=" + str(
+        username) + "&from_block=-1&limit=500&types=card_award,claim_reward"
+    return http.get(address).json()

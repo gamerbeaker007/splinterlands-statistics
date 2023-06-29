@@ -1,17 +1,16 @@
 import dash_bootstrap_components as dbc
-import dash_mantine_components as dmc
 import pandas as pd
+import pyperclip
 from aio import ThemeSwitchAIO
 from dash import html, Output, Input, ctx, dcc
 from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import Trigger
-from dash_iconify import DashIconify
 
 from main import app
-from src import season_balances_info, season_battle_info
+from src import season_balances_info, season_battle_info, market_info
 from src.configuration import config, store, progress
 from src.graphs import season_graph
-from src.utils import store_util, chart_util, progress_util
+from src.utils import store_util, chart_util, progress_util, hive_blog, tournaments_info
 
 layout = dbc.Container([
     dbc.Row([
@@ -61,6 +60,8 @@ layout = dbc.Container([
                         dbc.Button('Generate', id='generate-blog', className='mb-3'),
                         dbc.Button('Copy to Clipboard', id='copy-to-clipboard', className='mb-3')]
                     ),
+                    html.Div(id='error-hive-blog'),
+                    html.Div(id='text-output-temp')
                 ], title='Generate last season blog',
                 ),
                 start_collapsed=True,
@@ -149,6 +150,78 @@ def update_output(n_clicks):
 
 
 @app.callback(
+    Output('hive-blog-content', 'data'),
+    Output('error-hive-blog', 'children'),
+    Input('generate-blog', 'n_clicks'),
+    Input('dropdown-user-selection-season', 'value'),
+    prevent_initial_call=True,
+)
+def generate_hive_blog(n_clicks, users):
+    if 'generate-blog' == ctx.triggered_id:
+        if not users:
+            return None, html.P(html.Div("No accounts selected", className='text-warning'))
+        previous_season_id = store.season_end_dates.id.max() - 1
+        sps_df = store_util.get_last_season_values(store.season_sps, users)
+
+        for account in users:
+            player_spd_df = sps_df.loc[sps_df.player == account]
+            if player_spd_df.empty or not (player_spd_df.season_id == previous_season_id).all():
+                return None, html.P(
+                    html.Div("Latest season information is missing, use update season first", className='text-warning'))
+
+        progress_util.set_season_title("Generate hive blog")
+        progress_util.update_season_msg('Start collecting last season data')
+        season_info_store = {
+            'sps': sps_df,
+            'dec': store_util.get_last_season_values(store.season_dec, users),
+            'merits': store_util.get_last_season_values(store.season_merits, users),
+            'credits': store_util.get_last_season_values(store.season_credits, users),
+            'vouchers': store_util.get_last_season_values(store.season_vouchers, users),
+            'unclaimed_sps': store_util.get_last_season_values(store.season_unclaimed_sps, users),
+            'modern_battle': store_util.get_last_season_values(store.season_modern_battle_info, users, 'season'),
+            'wild_battle': store_util.get_last_season_values(store.season_wild_battle_info, users, 'season')
+        }
+
+        start_date, end_date = season_balances_info.get_start_end_time_season(previous_season_id)
+        tournaments_info_dict = {}
+        purchases_dict = {}
+        sold_dict = {}
+        last_season_rewards_dict = {}
+        for account_name in users:
+            # get tournament information
+            progress_util.update_season_msg('Collecting tournament information')
+            tournaments_info_dict[account_name] = tournaments_info.get_tournaments_info(account_name,
+                                                                                        start_date,
+                                                                                        end_date)
+
+            progress_util.update_season_msg('Collecting bought and sold cards')
+            purchases_dict[account_name], sold_dict[account_name] = market_info.get_purchased_sold_cards(account_name,
+                                                                                                         start_date,
+                                                                                                         end_date)
+
+            # get last season rewards
+            progress_util.update_season_msg('Collecting last season rewards')
+            last_season_rewards_dict[account_name] = market_info.get_last_season_player_history_rewards(account_name,
+                                                                                                        start_date,
+                                                                                                        end_date,
+                                                                                                        previous_season_id)
+
+        # print single post for each account
+        post = hive_blog.write_blog_post(users,
+                                         season_info_store,
+                                         last_season_rewards_dict,
+                                         tournaments_info_dict,
+                                         purchases_dict,
+                                         sold_dict,
+                                         previous_season_id)
+
+        progress_util.set_season_title("Generate hive blog finished ")
+        progress_util.update_season_msg('Done')
+        return post, ""
+    return None, ""
+
+
+@app.callback(
     Output('generate-blog', 'disabled'),
     Output('update-season-btn', 'disabled'),
     Input('generate-blog', 'n_clicks'),
@@ -170,19 +243,32 @@ def check_button_status(count):
     if progress.progress_season_txt:
         return True, True
     else:
-        return False, False
+        generate_blog_disabled = False
+        if store.season_sps.empty:
+            generate_blog_disabled = True
+
+        return generate_blog_disabled, False
 
 
 @app.callback(
     Output('copy-to-clipboard', 'disabled'),
     Input('hive-blog-content', 'data')
 )
-def update_copy_to_clipboard(hive_blog):
-    if not hive_blog:
+def update_copy_to_clipboard(hive_blog_txt):
+    if not hive_blog_txt:
         return True
     else:
         return False
-    # TODO put it to the clipbaord
+
+@app.callback(
+    Output('text-output-temp', 'children'),
+    Input('hive-blog-content', 'data'),
+    Input('copy-to-clipboard', 'n_clicks')
+)
+def update_copy_to_clipboard(hive_blog_txt, n_clicks):
+    if ctx.triggered_id == 'copy-to-clipboard':
+        pyperclip.copy(hive_blog_txt)
+        return html.P("Text is copied to clipboard")
 
 
 @app.callback(Output('modern-season-rating-graph', 'figure'),
@@ -302,7 +388,8 @@ def update_earnings_all_graph(account, token, skip_zero, season_trigger, toggle)
             return chart_util.blank_fig(theme)
         season_df = store.season_sps.loc[(store.season_sps.player == account)].copy()
     elif token == 'SPS BATTLE':
-        if store.season_unclaimed_sps.empty or store.season_unclaimed_sps.loc[(store.season_sps.player == account)].empty:
+        if store.season_unclaimed_sps.empty or store.season_unclaimed_sps.loc[
+            (store.season_sps.player == account)].empty:
             return chart_util.blank_fig(theme)
         season_df = store.season_unclaimed_sps.loc[(store.season_unclaimed_sps.player == account)].copy()
     elif token == 'CREDITS':
@@ -332,4 +419,3 @@ def update_earnings_all_graph(account, token, skip_zero, season_trigger, toggle)
                                                        token,
                                                        theme,
                                                        skip_zero)
-
