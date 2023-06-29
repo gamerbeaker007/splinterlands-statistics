@@ -135,13 +135,14 @@ def update_user_list(tigger):
     prevent_initial_call=True,
 )
 def update_output(n_clicks):
-    progress_util.update_season_msg('Start season update')
-
     if 'update-season-btn' == ctx.triggered_id:
+        progress_util.set_season_title("Season update process initiated")
+        progress_util.update_season_msg('Start season update')
         progress_util.update_season_msg('Update season button was clicked')
         season_balances_info.update_season_balances_store()
         season_battle_info.update_season_battle_store()
         store_util.save_stores()
+        progress_util.set_season_title("Season update done")
         progress_util.update_season_msg('Done')
         return True
     return False
@@ -163,7 +164,7 @@ def validate_buttons(n_clicks_generate_blog, n_clicks_update_season_btn):
 @app.callback(
     Output('generate-blog', 'disabled'),
     Output('update-season-btn', 'disabled'),
-    Trigger('interval-season', 'n_intervals')
+    Trigger('interval-global', 'n_intervals')
 )
 def check_button_status(count):
     if progress.progress_season_txt:

@@ -61,9 +61,7 @@ navbar = dbc.Navbar(
             dcc.Store(id='trigger-daily-update'),
             html.Div(id='progress-daily'),
             html.Div(id='progress-season'),
-            dcc.Interval(id='interval-daily', interval=1000),
-            dcc.Interval(id='interval-season', interval=1000),
-
+            dcc.Interval(id='interval-global', interval=1000),
         ]),
 )
 
@@ -75,7 +73,7 @@ layout = html.Div([
 
 
 @app.callback(Output('page-content', 'children'),
-          [Input('url', 'pathname')])
+              [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == '/':
         return main_page.layout
@@ -101,7 +99,6 @@ def display_page(pathname):
 )
 def update__output(n_clicks):
     if 'load-new-values' == ctx.triggered_id:
-
         progress_util.set_daily_title('Update collection')
         collection_store.update_collection()
 
@@ -118,63 +115,47 @@ def update__output(n_clicks):
 
 
 @app.callback(Output('progress-daily', 'children'),
-              Trigger('interval-daily', 'n_intervals'))
+              Output('progress-season', 'children'),
+              Trigger('interval-global', 'n_intervals'))
 def update_progress(interval):
-    value = progress.progress_daily_txt
-    title = progress.progress_daily_title
-    if value is None:
-        raise PreventUpdate
-    if value == 'Done':
-        if progress.progress_daily_first:
-            action = 'show'
-        else:
-            action = 'update'
-        progress.progress_daily_txt = None
-        progress.progress_daily_first = True
-        return dmc.Notification(
-                id='my-notification',
-                title=str(title),
-                message=str(value),
-                color='green',
-                action=action,
-                autoClose=True,
-                icon=DashIconify(icon='akar-icons:circle-check'),
-            )
+    ret_val_daily = determine_notification(daily=True)
+    ret_val_season = determine_notification()
+
+    return ret_val_daily, ret_val_season
+
+
+def determine_notification(daily=False):
+    if daily:
+        notification_id = 'notification-daily'
+        value = progress.progress_daily_txt
+        title = progress.progress_daily_title
+        first = progress.progress_daily_first
     else:
-        if progress.progress_daily_first:
-            action = 'show'
-            progress.progress_daily_first = False
-        else:
-            action = 'update'
+        notification_id = 'notification-season'
+        value = progress.progress_season_txt
+        title = progress.progress_season_title
+        first = progress.progress_season_first
 
-        return dmc.Notification(
-            id='my-notification',
-            title=str(title),
-            message=str(value),
-            loading=True,
-            color='orange',
-            action=action,
-            autoClose=False,
-            disallowClose=True,
-        )
+    if not value:
+        return None
 
-
-@app.callback(Output('progress-season', 'children'),
-              Trigger('interval-season', 'n_intervals'))
-def update_progress(interval):
-    value = progress.progress_season_txt
-    if value is None:
-        raise PreventUpdate
+    if first:
+        action = 'show'
+    else:
+        action = 'update'
     if value == 'Done':
-        if progress.progress_season_first:
-            action = 'show'
+        if daily:
+            progress.progress_daily_txt = None
         else:
-            action = 'update'
-        progress.progress_season_txt = None
-        progress.progress_season_first = True
+            progress.progress_season_txt = None
+        if daily:
+            progress.progress_daily_first = True
+        else:
+            progress.progress_season_first = True
+
         return dmc.Notification(
-            id='season-notification',
-            title='Season update done',
+            id=notification_id,
+            title=str(title),
             message=str(value),
             color='green',
             action=action,
@@ -182,15 +163,15 @@ def update_progress(interval):
             icon=DashIconify(icon='akar-icons:circle-check'),
         )
     else:
-        if progress.progress_season_first:
-            action = 'show'
-            progress.progress_season_first = False
-        else:
-            action = 'update'
+        if first:
+            if daily:
+                progress.progress_daily_first = False
+            else:
+                progress.progress_season_first = False
 
         return dmc.Notification(
-            id='season-notification',
-            title='Season update process initiated',
+            id=notification_id,
+            title=str(title),
             message=str(value),
             loading=True,
             color='orange',
