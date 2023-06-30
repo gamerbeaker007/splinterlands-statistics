@@ -5,12 +5,14 @@ from aio import ThemeSwitchAIO
 from dash import html, Output, Input, ctx, dcc
 from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import Trigger
+from dash_iconify import DashIconify
 
 from main import app
 from src import season_balances_info, season_battle_info, market_info
 from src.configuration import config, store, progress
 from src.graphs import season_graph
 from src.utils import store_util, chart_util, progress_util, hive_blog, tournaments_info
+import dash_mantine_components as dmc
 
 layout = dbc.Container([
     dbc.Row([
@@ -45,23 +47,30 @@ layout = dbc.Container([
         dbc.Col(
             dbc.Accordion(
                 dbc.AccordionItem([
-                    dbc.InputGroup(
-                        [
-                            dbc.InputGroupText('Accounts'),
-                            dcc.Dropdown(
-                                multi=True,
-                                id='dropdown-user-selection-season',
-                                className='dbc',
-                                style={'width': '70%'},
-                            ),
-                        ], className='mb-3',
+                    dbc.Row(
+                        dbc.InputGroup(
+                            [
+                                dbc.InputGroupText('Accounts'),
+                                dcc.Dropdown(
+                                    multi=True,
+                                    id='dropdown-user-selection-season',
+                                    className='dbc',
+                                ),
+                            ], className='mb-3',
+                        ),
                     ),
-                    dbc.Col([
-                        dbc.Button('Generate', id='generate-blog', className='mb-3'),
-                        dbc.Button('Copy to Clipboard', id='copy-to-clipboard', className='mb-3')]
-                    ),
-                    html.Div(id='error-hive-blog'),
-                    html.Div(id='text-output-temp')
+                    dbc.Row([
+                        dbc.Col(dbc.Button('Generate', id='generate-blog', className='mb-3'), width='auto'),
+                        dbc.Col(dmc.Button(children='Copy',
+                                           id='copy-to-clipboard',
+                                           leftIcon=DashIconify(icon="dashicons:clipboard", width=20),
+                                           className='mb-3')
+                                , width='auto'),
+                    ]),
+                    dbc.Row([
+                        html.Div(id='error-hive-blog'),
+                        html.Div(id='text-output-temp')
+                    ]),
                 ], title='Generate last season blog',
                 ),
                 start_collapsed=True,
@@ -260,6 +269,7 @@ def update_copy_to_clipboard(hive_blog_txt):
     else:
         return False
 
+
 @app.callback(
     Output('text-output-temp', 'children'),
     Input('hive-blog-content', 'data'),
@@ -388,24 +398,24 @@ def update_earnings_all_graph(account, token, skip_zero, season_trigger, toggle)
             return chart_util.blank_fig(theme)
         season_df = store.season_sps.loc[(store.season_sps.player == account)].copy()
     elif token == 'SPS BATTLE':
-        if store.season_unclaimed_sps.empty or store.season_unclaimed_sps.loc[
-            (store.season_sps.player == account)].empty:
+        if store.season_unclaimed_sps.empty or \
+                store.season_unclaimed_sps.loc[(store.season_unclaimed_sps.player == account)].empty:
             return chart_util.blank_fig(theme)
         season_df = store.season_unclaimed_sps.loc[(store.season_unclaimed_sps.player == account)].copy()
     elif token == 'CREDITS':
-        if store.season_credits.empty or store.season_credits.loc[(store.season_sps.player == account)].empty:
+        if store.season_credits.empty or store.season_credits.loc[(store.season_credits.player == account)].empty:
             return chart_util.blank_fig(theme)
         season_df = store.season_credits.loc[(store.season_credits.player == account)].copy()
     elif token == 'MERITS':
-        if store.season_merits.empty or store.season_merits.loc[(store.season_sps.player == account)].empty:
+        if store.season_merits.empty or store.season_merits.loc[(store.season_merits.player == account)].empty:
             return chart_util.blank_fig(theme)
         season_df = store.season_merits.loc[(store.season_merits.player == account)].copy()
     elif token == 'VOUCHERS':
-        if store.season_vouchers.empty or store.season_vouchers.loc[(store.season_sps.player == account)].empty:
+        if store.season_vouchers.empty or store.season_vouchers.loc[(store.season_vouchers.player == account)].empty:
             return chart_util.blank_fig(theme)
         season_df = store.season_vouchers.loc[(store.season_vouchers.player == account)].copy()
     elif token == 'DEC':
-        if store.season_dec.empty or store.season_dec.loc[(store.season_sps.player == account)].empty:
+        if store.season_dec.empty or store.season_dec.loc[(store.season_dec.player == account)].empty:
             return chart_util.blank_fig(theme)
         season_df = store.season_dec.loc[(store.season_dec.player == account)].copy()
     else:

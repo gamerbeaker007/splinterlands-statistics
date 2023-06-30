@@ -21,14 +21,14 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
     if not last_season_wild_battles.empty and not last_season_wild_battles.rating.isna().values[0]:
         last_season_wild_battles = last_season_wild_battles.iloc[0]
         wild_league = last_season_wild_battles.league.astype(int)
-        wild_battles = last_season_wild_battles.battles
-        wild_rank = last_season_wild_battles['rank']
-        wild_rating = last_season_wild_battles.rating
+        wild_battles = int(last_season_wild_battles.battles)
+        wild_rank = int(last_season_wild_battles['rank'])
+        wild_rating = int(last_season_wild_battles.rating)
         wild_league_name = Leagues(wild_league).name
-        wild_max_rating = last_season_wild_battles.max_rating
-        wild_win = last_season_wild_battles.wins
+        wild_max_rating = int(last_season_wild_battles.max_rating)
+        wild_win = int(last_season_wild_battles.wins)
         wild_win_pct = round((wild_win / wild_battles * 100), 2)
-        wild_longest_streak = last_season_wild_battles.longest_streak
+        wild_longest_streak = int(last_season_wild_battles.longest_streak)
         wild_ratio = round(wild_win / (wild_battles - wild_win), 2)
         wild_loss = wild_battles - wild_win
     else:
@@ -47,14 +47,14 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
     if not last_season_modern_battles.empty and not last_season_modern_battles.rating.isna().values[0]:
         last_season_modern_battles = last_season_modern_battles.iloc[0]
         modern_league = last_season_modern_battles.league.astype(int)
-        modern_battles = last_season_modern_battles.battles
-        modern_rank = last_season_modern_battles['rank']
-        modern_rating = last_season_modern_battles.rating
+        modern_battles = int(last_season_modern_battles.battles)
+        modern_rank = int(last_season_modern_battles['rank'])
+        modern_rating = int(last_season_modern_battles.rating)
         modern_league_name = Leagues(modern_league).name
-        modern_max_rating = last_season_modern_battles.max_rating
-        modern_win = last_season_modern_battles.wins
+        modern_max_rating = int(last_season_modern_battles.max_rating)
+        modern_win = int(last_season_modern_battles.wins)
         modern_win_pct = round((modern_win / modern_battles * 100), 2)
-        modern_longest_streak = last_season_modern_battles.longest_streak
+        modern_longest_streak = int(last_season_modern_battles.longest_streak)
         modern_ratio = round(modern_win / (modern_battles - modern_win), 2)
         modern_loss = modern_battles - modern_win
     else:
