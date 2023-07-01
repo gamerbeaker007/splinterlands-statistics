@@ -5,15 +5,6 @@ import sys
 from src.api import spl
 from src.configuration.custom_formatter import CustomFormatter
 
-# file_dir_prefix = ""
-file_dir_prefix = "_new_test_file_1"
-
-store_dir = os.path.join(os.getcwd(), 'store', file_dir_prefix)
-if not os.path.isdir(store_dir):
-    os.mkdir(store_dir)
-
-file_extension = '.csv'
-
 # config logger
 root_logger = logging.getLogger()
 console_handler = logging.StreamHandler(sys.stdout)
@@ -34,3 +25,21 @@ dark_theme = 'cyborg'
 light_theme = 'minty'
 current_theme = dark_theme
 
+debug_env = os.environ.get("DEBUG")
+store_prefix_env = os.environ.get("STORE")
+
+debug = False
+if debug_env:
+    logging.info("Debug environment variable found using debug: " + str(debug_env))
+    debug = debug_env
+
+file_dir_prefix = ""
+if store_prefix_env:
+    logging.info("Store prefix environment variable found using store dir: " + str(store_prefix_env))
+    file_dir_prefix = store_prefix_env
+
+store_dir = os.path.join(os.getcwd(), 'store', file_dir_prefix)
+if not os.path.isdir(store_dir):
+    os.mkdir(store_dir)
+
+file_extension = '.csv'

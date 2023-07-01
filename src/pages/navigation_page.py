@@ -1,7 +1,6 @@
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
 from dash import html, Output, Input, dcc, ctx
-from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import ThemeSwitchAIO
 from dash_extensions.enrich import Trigger
 from dash_iconify import DashIconify

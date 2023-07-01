@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
   - restart application
   - Update season information again
 - Add generate hive blog
+- Add option to use environment variables STORE and DEBUG 
+  - Store is create a separate store e.g. one for main account one for alt account
+  - Debug is used to switch between development and production more easily without code modification
 
 
 ## 0.2.0
