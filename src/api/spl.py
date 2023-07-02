@@ -56,6 +56,7 @@ def get_settings():
     address = base_url + "settings"
     return http.get(address).json()
 
+
 def get_season_end_time(season_id):
     address = base_url + "season?id=" + str(season_id)
     result = http.get(address)
@@ -88,8 +89,8 @@ def get_balance_history_for_token(username, token="DEC", from_date=None, unclaim
 
     while len(current_result) > 0 and offset <= max_transactions:
         progress_util.update_season_msg(str(token) + str(print_suffix) + " (" + str(username) + ")" +
-                              ": More then '" + str(offset + limit) +
-                              "' returned, continue for another balance pull...")
+                                        ": More then '" + str(offset + limit) +
+                                        "' returned, continue for another balance pull...")
         current_result = get_balance_history_for_token_impl(username,
                                                             token=token,
                                                             offset=offset + limit,
@@ -203,7 +204,7 @@ def get_spl_transaction(trx_id):
 
 
 def get_cards_by_ids(ids):
-    #https://api.splinterlands.io/cards/find?ids=C3-457-3VIL75QJ2O,
+    # https://api.splinterlands.io/cards/find?ids=C3-457-3VIL75QJ2O,
     address = base_url + "cards/find?ids=" + str(ids)
 
     result = http.get(address)
@@ -211,6 +212,7 @@ def get_cards_by_ids(ids):
         return result.json()
     else:
         return None
+
 
 def get_player_history_rewards(username):
     address = base_url + "players/history?username=" + str(
