@@ -1,4 +1,5 @@
 import json
+import logging
 
 import numpy as np
 import pandas as pd
@@ -6,7 +7,7 @@ import pandas as pd
 from src.api import hive, spl
 from src.configuration import config
 from src.static.static_values_enum import Edition
-from src.utils import collection_util
+from src.utils import collection_util, progress_util
 from dateutil import parser
 
 
@@ -99,9 +100,10 @@ def get_purchased_sold_cards(account_name, start_date, end_date):
     if not sm_market_purchase.empty:
         sm_market_purchase = sm_market_purchase.reset_index(drop=True)
         count = sm_market_purchase.count().values[0]
-        print("Number card to get: " + str())
+        logging.info("Number card to get: " + str())
         for index, row in sm_market_purchase.iterrows():
-            print("Get card transaction: " + str(index) + "/" + str(count))
+            progress_util.update_season_msg("Collecting bought and sold cards transaction: "
+                                            + str(index) + "/" + str(count))
             # TODO look into a way to parallel process
             result = spl.get_spl_transaction(row.values[0])
             purchases = pd.concat([purchases, pd.DataFrame(result['cards'])])
