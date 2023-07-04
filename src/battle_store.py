@@ -176,7 +176,8 @@ def add_losing_battle_team(account, team, battle):
 
 def get_battles_to_process(account):
     battle_history = spl.get_battle_history_df(account)
-    if not store.last_processed.empty and \
+    if not battle_history.empty and \
+            not store.last_processed.empty and \
             not store.last_processed.loc[(store.last_processed.account == account)].empty:
         # filter out already processed
         last_processed_date = \

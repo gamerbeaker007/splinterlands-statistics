@@ -262,7 +262,7 @@ def plot_season_stats_earnings(season_df_sps,
 
     fig.update_layout(
         template=theme,
-        height=1200,  # px
+        height=480 * rows,  # px
 
         legend=dict(
             x=0,

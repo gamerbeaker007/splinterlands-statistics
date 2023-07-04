@@ -1,7 +1,6 @@
 import logging
 
 import pandas as pd
-from dateutil import parser
 
 from src.configuration import store
 from src.static.static_values_enum import Edition, Element, CardType, Rarity, ManaCap
@@ -243,7 +242,7 @@ def filter_date(input_df, filter_settings):
         return input_df
     from_date = filter_settings['from_date']
     input_df.created_date = pd.to_datetime(input_df.created_date)
-    input_df = input_df.loc[input_df.created_date > from_date]
+    input_df = input_df.loc[input_df.created_date > pd.to_datetime(from_date)]
 
     return input_df
 

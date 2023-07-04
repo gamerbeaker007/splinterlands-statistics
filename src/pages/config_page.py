@@ -53,4 +53,4 @@ def add_remove(account_name, add_clicks, remove_clicks):
     if 'remove-account-btn' == ctx.triggered_id:
         logging.info('Remove account button was clicked')
         current_account_names = store_util.remove_account(account_name)
-    return html.P(','.join(current_account_names)), html.Div(error_text, className='text-warning')
+    return html.P(', '.join(current_account_names)), html.Div(error_text, className='text-warning')

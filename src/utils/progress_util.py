@@ -8,6 +8,10 @@ def update_season_msg(msg):
     progress.progress_season_txt = msg
 
 
+def set_season_title(title):
+    progress.progress_season_title = title
+
+
 def set_daily_title(title):
     progress.progress_daily_title = title
 
