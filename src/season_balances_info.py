@@ -1,11 +1,9 @@
-import logging
-
 import numpy as np
 import pandas as pd
 from dateutil import parser
 
 from src.api import spl
-from src.configuration import store, config, progress
+from src.configuration import store, config
 from src.utils import store_util, progress_util
 
 

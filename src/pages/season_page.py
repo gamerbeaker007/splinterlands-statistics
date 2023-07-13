@@ -198,18 +198,18 @@ def generate_hive_blog(n_clicks, users):
         last_season_rewards_dict = {}
         for account_name in users:
             # get tournament information
-            progress_util.update_season_msg('Collecting tournament information')
+            progress_util.update_season_msg('Collecting tournament information for: ' + str(account_name))
             tournaments_info_dict[account_name] = tournaments_info.get_tournaments_info(account_name,
                                                                                         start_date,
                                                                                         end_date)
 
-            progress_util.update_season_msg('Collecting bought and sold cards')
+            progress_util.update_season_msg('Collecting bought and sold cards for: ' + str(account_name))
             purchases_dict[account_name], sold_dict[account_name] = market_info.get_purchased_sold_cards(account_name,
                                                                                                          start_date,
                                                                                                          end_date)
 
             # get last season rewards
-            progress_util.update_season_msg('Collecting last season rewards')
+            progress_util.update_season_msg('Collecting last season reward for: ' + str(account_name))
             last_season_rewards_dict[account_name] = market_info.get_last_season_player_history_rewards(account_name,
                                                                                                         start_date,
                                                                                                         end_date,

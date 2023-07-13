@@ -1,8 +1,7 @@
 import json
-from datetime import datetime
 
 import pandas as pd
-import pytz
+from dateutil import parser
 
 from src.api import spl
 from src.static.static_values_enum import RatingLevel
@@ -13,13 +12,11 @@ def get_tournaments_info(username, start_date, end_date):
     tournaments_ids = spl.get_player_tournaments_ids(username)
     for tournament_id in tournaments_ids:
         tournament = spl.get_tournament(tournament_id)
-        utc = pytz.UTC
 
         if tournament['status'] == 2 and tournament['rounds'][-1]['status'] == 2:
-            date_time = utc.localize(
-                datetime.strptime(tournament['rounds'][-1]['start_date'], "%Y-%m-%dT%H:%M:%S.000Z"))
+            date_time = parser.parse(str(tournament['rounds'][-1]['start_date']))
 
-            if start_date <= date_time <= end_date:
+            if parser.parse(start_date) <= date_time <= parser.parse(end_date):
                 player_data = list(filter(lambda item: item['player'] == username, tournament['players']))
                 # If player did not leave and is found continue
                 if player_data:
