@@ -1,18 +1,15 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
-import pyperclip
 from aio import ThemeSwitchAIO
 from dash import html, Output, Input, ctx, dcc
 from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import Trigger
-from dash_iconify import DashIconify
 
 from main import app
 from src import season_balances_info, season_battle_info, market_info
 from src.configuration import config, store, progress
 from src.graphs import season_graph
 from src.utils import store_util, chart_util, progress_util, hive_blog, tournaments_info
-import dash_mantine_components as dmc
 
 layout = dbc.Container([
     dbc.Row([
@@ -61,11 +58,12 @@ layout = dbc.Container([
                     ),
                     dbc.Row([
                         dbc.Col(dbc.Button('Generate', id='generate-blog', className='mb-3'), width='auto'),
-                        dbc.Col(dmc.Button(children='Copy',
-                                           id='copy-to-clipboard',
-                                           leftIcon=DashIconify(icon="dashicons:clipboard", width=20),
-                                           className='mb-3')
-                                , width='auto'),
+                        dbc.Col(html.Div(id="clipboard-div",
+                                         style={'display': 'none'},
+                                         children=dcc.Clipboard(id="copy-to-clipboard", style={"fontSize": 25})
+                                         ),
+                                )
+
                     ]),
                     dbc.Row([
                         html.Div(id='error-hive-blog'),
@@ -260,24 +258,23 @@ def check_button_status(count):
 
 
 @app.callback(
-    Output('copy-to-clipboard', 'disabled'),
+    Output('copy-to-clipboard', 'content'),
+    Output('clipboard-div', 'style'),
     Input('hive-blog-content', 'data')
 )
 def update_copy_to_clipboard(hive_blog_txt):
     if not hive_blog_txt:
-        return True
+        return "", {'display': 'none'}
     else:
-        return False
+        return hive_blog_txt, {'display': 'block'}
 
 
 @app.callback(
     Output('text-output-temp', 'children'),
-    Input('hive-blog-content', 'data'),
     Input('copy-to-clipboard', 'n_clicks')
 )
-def update_copy_to_clipboard(hive_blog_txt, n_clicks):
+def update_copy_to_clipboard(n_clicks):
     if ctx.triggered_id == 'copy-to-clipboard':
-        pyperclip.copy(hive_blog_txt)
         return html.P("Text is copied to clipboard")
 
 
