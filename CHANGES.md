@@ -1,6 +1,13 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
+## 0.4.0 WIP
+- Use Dash clipboard functionality iso pyperclip, remove pyperclip dependency
+- Update git repository link in hive blog to the new tool
+
+## 0.3.1
+- Fix bug with tournaments (wrong time validation) 
+
 ## 0.3.0
 - Fix crash when no battles are played for a day
 - Separated market_purchases in buy_market_purchases and sell_market_purchases

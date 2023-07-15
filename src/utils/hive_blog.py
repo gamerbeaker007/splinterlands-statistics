@@ -380,7 +380,7 @@ def get_closure_chapter():
 ![Closing notes divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tSMhwJoyukZ42QAed1tFdaMc2XGwQZXAoTga9AByndMur5RT4oj5rMFeNJXwBeXr4tP.png)
 
 ## <div class="phishy"><center>Closing notes</center></div>
-This report is generated with the splinterstats tool from @beaker007 [git-repo](https://github.com/gamerbeaker007/splinterlands-stats). 
+This report is generated with the splinterlands statistics tool from @beaker007 [git-repo](https://github.com/gamerbeaker007/splinterlands-statistics). 
 Any comment/remarks/errors pop me a message on peakd.   
 If you like the content, consider adding @beaker007 as beneficiaries of your post created with the help of this tool. 
 https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23tkhySrnBbRV3iV2aD2jH7uuYJuCsFJF5j8P8EVG1aarjqSR7cRLRmuTDhji5MnTVKSM.png
