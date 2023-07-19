@@ -40,7 +40,10 @@ def load_stores():
     for store_name in get_store_names():
         store_file = get_store_file(store_name)
         if os.path.isfile(store_file):
-            store.__dict__[store_name] = pd.read_csv(store_file, index_col=0)
+            #TODO investigate the low_memory
+            # DtypeWarning: Columns (6,14) have mixed types. Specify dtype option on import or set low_memory=False.
+            #   store.__dict__[store_name] = pd.read_csv(store_file, index_col=0)
+            store.__dict__[store_name] = pd.read_csv(store_file, index_col=0, low_memory=False)
 
 
 def save_stores():

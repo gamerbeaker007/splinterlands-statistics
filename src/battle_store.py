@@ -55,7 +55,7 @@ def update_battle_store_card_specific(account, team, battle):
 
 def add_battle_store_big_my(account, team, battle):
     match_type = battle['match_type']
-    match_format = battle['format']
+    match_format = get_battle_format(battle['format'])
     created_date = battle['created_date']
     mana_cap = battle['mana_cap']
     rulesets = battle['ruleset']
@@ -115,11 +115,7 @@ def add_rating_log(account, battle):
     else:
         final_rating = battle['player_2_rating_final']
 
-    # format = null when wild
-    if battle['format']:
-        match_format = battle['format']
-    else:
-        match_format = Format.WILD.value
+    match_format = get_battle_format(battle['format'])
 
     df = pd.DataFrame({'created_date': battle['created_date'],
                        'account': account,
@@ -129,9 +125,17 @@ def add_rating_log(account, battle):
     store.rating = pd.concat([store.rating, df], ignore_index=True)
 
 
+def get_battle_format(battle_format):
+    # format = null when wild
+    if battle_format:
+        return battle_format
+    else:
+        return Format.WILD.value
+
+
 def add_losing_battle_team(account, team, battle):
     match_type = battle['match_type']
-    match_format = battle['format']
+    match_format = get_battle_format(battle['format'])
     created_date = battle['created_date']
     mana_cap = battle['mana_cap']
     rulesets = battle['ruleset']
