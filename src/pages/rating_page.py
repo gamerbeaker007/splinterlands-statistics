@@ -31,10 +31,7 @@ layout = dbc.Container([
         ),
         dbc.Row([
             dbc.Col(
-                dcc.Graph(id='modern-daily-battle-graph'),
-            ),
-            dbc.Col(
-                dcc.Graph(id='wild-daily-battle-graph'),
+                dcc.Graph(id='daily-battle-graph'),
             ),
         ], className='mb-3'),
 
@@ -54,7 +51,7 @@ layout = dbc.Container([
               Output('filtered-daily-df', 'data'),
               Input('dropdown-user-selection-rating', 'value'),
               )
-def filter_rating_df(account):
+def filter_df(account):
     if account == 'ALL':
         rating_df = store.rating.copy()
         daily_df = store.battle_big.copy()
@@ -89,25 +86,7 @@ def filter_rating_df(account):
     return rating_df.to_json(date_format='iso', orient='split'), result_df.to_json(date_format='iso', orient='split')
 
 
-@app.callback(Output('wild-daily-battle-graph', 'figure'),
-              Input('filtered-daily-df', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
-              )
-def update_wild_battle_graph(filtered_df, toggle):
-    if not filtered_df:
-        raise PreventUpdate
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
-
-    filtered_df = pd.read_json(filtered_df, orient='split')
-    if filtered_df.empty:
-        return chart_util.blank_fig(theme)
-    else:
-        filtered_df = filtered_df.loc[filtered_df['format'] == Format.WILD.value]
-        return rating_graph.plot_daily_stats_battle(filtered_df, theme)
-
-
-@app.callback(Output('modern-daily-battle-graph', 'figure'),
+@app.callback(Output('daily-battle-graph', 'figure'),
               Input('filtered-daily-df', 'data'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
@@ -121,7 +100,6 @@ def update_modern_battle_graph(filtered_df, toggle):
     if filtered_df.empty:
         return chart_util.blank_fig(theme)
     else:
-        filtered_df = filtered_df.loc[filtered_df['format'] == Format.MODERN.value]
         return rating_graph.plot_daily_stats_battle(filtered_df, theme)
 
 

@@ -3,7 +3,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 from src.static import static_values_enum
-from src.static.static_values_enum import RatingLevel
+from src.static.static_values_enum import RatingLevel, Format
 import plotly.graph_objects as go
 
 
@@ -24,42 +24,64 @@ def create_rating_graph(df, theme):
     return fig
 
 
+def get_scatter_trace(df, name, show_legend=False):
+    color = {
+        'win_pct': px.colors.qualitative.Plotly[0],
+        'battles': px.colors.qualitative.Plotly[1],
+        'win': px.colors.qualitative.Plotly[2],
+        'loss': px.colors.qualitative.Plotly[3],
+    }
+
+    return go.Scatter(x=df.created_date,
+                      y=df[name],
+                      mode='lines+markers',
+                      name=name,
+                      legendgroup=name,
+                      line=dict(
+                          color=color[name],
+                      ),
+                      showlegend=show_legend
+                      )
+
+
 def plot_daily_stats_battle(daily_df, theme):
     daily_df['win_pct'] = daily_df.apply(lambda row: (row.win / row.battles * 100), axis=1)
 
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-    trace3 = go.Scatter(x=daily_df.created_date,
-                        y=daily_df.win_pct,
-                        mode='lines+markers',
-                        name='win percentage')
-    trace4 = go.Scatter(x=daily_df.created_date,
-                        y=daily_df.battles,
-                        mode='lines+markers',
-                        name='battles')
-    trace5 = go.Scatter(x=daily_df.created_date,
-                        y=daily_df.win,
-                        mode='lines+markers',
-                        name='win')
-    trace6 = go.Scatter(x=daily_df.created_date,
-                        y=daily_df.loss,
-                        mode='lines+markers',
-                        name='loss')
-    fig.add_trace(trace3, secondary_y=True)
-    fig.add_trace(trace4)
-    fig.add_trace(trace5)
-    fig.add_trace(trace6)
-    fig.update_xaxes(showgrid=True, gridwidth=1)  # , gridcolor=GRID_COLOR)
-    fig.update_yaxes(showgrid=True, gridwidth=1)  # , gridcolor=GRID_COLOR)
+    wild_daily_df = daily_df.loc[daily_df['format'] == Format.WILD.value]
+    modern_daily_df = daily_df.loc[daily_df['format'] == Format.MODERN.value]
+
+    fig = make_subplots(specs=[[{"secondary_y": True}, {"secondary_y": True}]], rows=1, cols=2)
+    modern_pct = get_scatter_trace(modern_daily_df, 'win_pct', show_legend=True)
+    modern_battles = get_scatter_trace(modern_daily_df, 'battles', show_legend=True)
+    modern_win = get_scatter_trace(modern_daily_df, 'win', show_legend=True)
+    modern_loss = get_scatter_trace(modern_daily_df, 'loss', show_legend=True)
+
+    wild_pct = get_scatter_trace(wild_daily_df, 'win_pct')
+    wild_battles = get_scatter_trace(wild_daily_df, 'battles')
+    wild_win = get_scatter_trace(wild_daily_df, 'win')
+    wild_loss = get_scatter_trace(wild_daily_df, 'loss')
+
+    fig.add_trace(modern_pct, secondary_y=True, row=1, col=1)
+    fig.add_trace(modern_battles, row=1, col=1)
+    fig.add_trace(modern_win, row=1, col=1)
+    fig.add_trace(modern_loss, row=1, col=1)
+    fig.add_trace(wild_pct, secondary_y=True, row=1, col=2)
+    fig.add_trace(wild_battles, row=1, col=2)
+    fig.add_trace(wild_win, row=1, col=2)
+    fig.add_trace(wild_loss, row=1, col=2)
+
+    fig.update_xaxes(showgrid=True, gridwidth=0.5)
+    fig.update_yaxes(showgrid=True, gridwidth=0.5)
 
     fig.update_layout(
         template=theme,
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
-        ),
+        # legend=dict(
+        #     orientation="h",
+        #     yanchor="bottom",
+        #     y=1.02,
+        #     xanchor="right",
+        #     x=1
+        # ),
         yaxis1=dict(
             showgrid=False,
             range=[0, daily_df.battles.max() + 20],
@@ -67,11 +89,17 @@ def plot_daily_stats_battle(daily_df, theme):
         ),
         yaxis2=dict(
             showgrid=False,
-            overlaying='y',
-            side='right',
-            anchor='x2',
+            range=[0, 100],
+            title='win (%)'),
+
+        yaxis3=dict(
+            showgrid=False,
+            range=[0, daily_df.battles.max() + 20],
+            title="battles",
+        ),
+        yaxis4=dict(
+            showgrid=False,
             range=[0, 100],
             title='win (%)'),
     )
     return fig
-
