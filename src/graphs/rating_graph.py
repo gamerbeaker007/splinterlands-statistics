@@ -50,7 +50,10 @@ def plot_daily_stats_battle(daily_df, theme):
     wild_daily_df = daily_df.loc[daily_df['format'] == Format.WILD.value]
     modern_daily_df = daily_df.loc[daily_df['format'] == Format.MODERN.value]
 
-    fig = make_subplots(specs=[[{"secondary_y": True}, {"secondary_y": True}]], rows=1, cols=2)
+    fig = make_subplots(specs=[[{"secondary_y": True}, {"secondary_y": True}]],
+                        subplot_titles=("Modern", "Wild"),
+                        rows=1,
+                        cols=2)
     modern_pct = get_scatter_trace(modern_daily_df, 'win_pct', show_legend=True)
     modern_battles = get_scatter_trace(modern_daily_df, 'battles', show_legend=True)
     modern_win = get_scatter_trace(modern_daily_df, 'win', show_legend=True)
@@ -75,6 +78,7 @@ def plot_daily_stats_battle(daily_df, theme):
 
     fig.update_layout(
         template=theme,
+        title_text="Daily battle stats",
         # legend=dict(
         #     orientation="h",
         #     yanchor="bottom",
