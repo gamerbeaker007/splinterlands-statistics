@@ -280,68 +280,79 @@ def display_click_data(filtered_portfolio_df, clickData):
     else:
         target_date = datetime.now().strftime('%Y-%m-%d')
 
-    filtered_portfolio_df.sort_values(by='date', inplace=True)
-    filtered_portfolio_df = filtered_portfolio_df[filtered_portfolio_df['date'] <= target_date]
+    if not filtered_portfolio_df.empty:
+        filtered_portfolio_df.sort_values(by='date', inplace=True)
+        filtered_portfolio_df = filtered_portfolio_df[filtered_portfolio_df['date'] <= target_date]
 
-    # Determine invested amount
-    invested_value = 0
-    if 'total_investment_value' in filtered_portfolio_df.columns.tolist():
-        investment_df = filtered_portfolio_df.loc[(filtered_portfolio_df.total_investment_value.notna())]
-        invested_value = investment_df.iloc[-1].total_investment_value
+        # Determine invested amount
+        invested_value = 0
+        if 'total_investment_value' in filtered_portfolio_df.columns.tolist():
+            investment_df = filtered_portfolio_df.loc[(filtered_portfolio_df.total_investment_value.notna())]
+            if not investment_df.empty:
+                invested_value = investment_df.iloc[-1].total_investment_value
 
-    value_df = filtered_portfolio_df.loc[(filtered_portfolio_df.total_value.notna())]
-    value_row = value_df.iloc[-1]
+        value_df = filtered_portfolio_df.loc[(filtered_portfolio_df.total_value.notna())]
+        value_row = value_df.iloc[-1]
 
-    total_value = value_row.total_value
+        total_value = value_row.total_value
 
-    # For old version there might be an collection_list_value
-    if 'collection_list_value' in value_row.index.to_list() and value_row.collection_list_value > 0:
-        card_list_value_columns = value_row.index[value_row.index.str.startswith('collection_list_value')]
-        card_market_value_columns = value_row.index[value_row.index.str.startswith('collection_market_value')]
-        card_list_value = value_row.collection_list_value
-        card_market_value = value_row.collection_market_value
+        # For old version there might be an collection_list_value
+        if 'collection_list_value' in value_row.index.to_list() and value_row.collection_list_value > 0:
+            card_list_value_columns = value_row.index[value_row.index.str.startswith('collection_list_value')]
+            card_market_value_columns = value_row.index[value_row.index.str.startswith('collection_market_value')]
+            card_list_value = value_row.collection_list_value
+            card_market_value = value_row.collection_market_value
+        else:
+            card_list_value_columns = value_row.index[
+                value_row.index.str.startswith(tuple(list(Edition.list_names()))) &
+                value_row.index.str.endswith("list_value")
+                ]
+            card_market_value_columns = value_row.index[
+                value_row.index.str.startswith(tuple(list(Edition.list_names()))) &
+                value_row.index.str.endswith("market_value")
+                ]
+            card_list_value = value_row[card_list_value_columns].sum()
+            card_market_value = value_row[card_market_value_columns].sum()
+
+        land_columns = value_row.index[
+            value_row.index.str.startswith("deeds_value") |
+            value_row.index.str.startswith("plot_value") |
+            value_row.index.str.startswith("tract_value") |
+            value_row.index.str.startswith("region_value") |
+            (value_row.index.str.startswith("totem") & value_row.index.str.endswith("_value"))
+            ]
+        land_value = value_row[land_columns].sum()
+
+        dec_columns = value_row.index[
+            value_row.index.str.startswith("dec_value")
+        ]
+        dec_value = value_row[dec_columns].sum()
+
+        sps_columns = value_row.index[
+            value_row.index.str.startswith("sps_value") |
+            value_row.index.str.startswith("spsp_value")
+            ]
+        sps_value = value_row[sps_columns].sum()
+
+        other_columns = value_row.index[
+            value_row.index.str.endswith("_value") &
+            ~value_row.index.str.startswith("total_") &
+            ~value_row.index.str.startswith(tuple(card_list_value_columns)) &
+            ~value_row.index.str.startswith(tuple(card_market_value_columns)) &
+            ~value_row.index.str.startswith(tuple(dec_columns)) &
+            ~value_row.index.str.startswith(tuple(sps_columns)) &
+            ~value_row.index.str.startswith(tuple(land_columns))
+            ]
+        other_value = value_row[other_columns].sum()
     else:
-        card_list_value_columns = value_row.index[
-            value_row.index.str.startswith(tuple(list(Edition.list_names()))) &
-            value_row.index.str.endswith("list_value")
-            ]
-        card_market_value_columns = value_row.index[
-            value_row.index.str.startswith(tuple(list(Edition.list_names()))) &
-            value_row.index.str.endswith("market_value")
-            ]
-        card_list_value = value_row[card_list_value_columns].sum()
-        card_market_value = value_row[card_market_value_columns].sum()
-
-    land_columns = value_row.index[
-        value_row.index.str.startswith("deeds_value") |
-        value_row.index.str.startswith("plot_value") |
-        value_row.index.str.startswith("tract_value") |
-        value_row.index.str.startswith("region_value") |
-        (value_row.index.str.startswith("totem") & value_row.index.str.endswith("_value"))
-        ]
-    land_value = value_row[land_columns].sum()
-
-    dec_columns = value_row.index[
-        value_row.index.str.startswith("dec_value")
-    ]
-    dec_value = value_row[dec_columns].sum()
-
-    sps_columns = value_row.index[
-        value_row.index.str.startswith("sps_value") |
-        value_row.index.str.startswith("spsp_value")
-        ]
-    sps_value = value_row[sps_columns].sum()
-
-    other_columns = value_row.index[
-        value_row.index.str.endswith("_value") &
-        ~value_row.index.str.startswith("total_") &
-        ~value_row.index.str.startswith(tuple(card_list_value_columns)) &
-        ~value_row.index.str.startswith(tuple(card_market_value_columns)) &
-        ~value_row.index.str.startswith(tuple(dec_columns)) &
-        ~value_row.index.str.startswith(tuple(sps_columns)) &
-        ~value_row.index.str.startswith(tuple(land_columns))
-        ]
-    other_value = value_row[other_columns].sum()
+        invested_value = 0
+        total_value = 0
+        card_list_value = 0
+        card_market_value = 0
+        dec_value = 0
+        sps_value = 0
+        land_value = 0
+        other_value = 0
 
     cards = [
         create_value_card("Total",
