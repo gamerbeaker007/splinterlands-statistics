@@ -10,55 +10,77 @@ from dash.exceptions import PreventUpdate
 from main import app
 from src.configuration import config, store
 from src.graphs import portfolio_graph
+from src.static import static_values_enum
 from src.static.static_values_enum import Edition
 from src.utils import chart_util, store_util, portfolio_util
 
 layout = dbc.Container([
     dbc.Row([
-        dbc.Accordion(
-            dbc.AccordionItem(
+        html.H1('Portfolio'),
+        dbc.Col(
+            dbc.InputGroup(
                 [
-                    html.P('This deposit or removes an investment on a certain date'),
-                    dcc.DatePickerSingle(
-                        id='my-date-picker-single',
-                        min_date_allowed=date(2015, 8, 5),
-                        initial_visible_month=date.today(),
-                        date=date.today(),
-                        className='dbc',
-                    ),
-                    dbc.Col(dcc.Dropdown(options=store_util.get_account_names(),
-                                         value=store_util.get_first_account_name(),
-                                         id='dropdown-user-selection',
-                                         className='dbc'),
-                            ),
-                    dbc.Input(id='amount', type='number', pattern='[0-9]'),
-                    html.Div([
-                        dbc.Button('Deposit', id='deposit', className='ml-auto'),
-                        dbc.Button('Withdraw', id='withdraw', className='ml-auto')]
-                    ),
-                    html.Div([
-                        html.P(id='error-text')
-                    ])
+                    dbc.InputGroupText('Combine accounts'),
+                    dcc.Dropdown(multi=True,
+                                 id='dropdown-user-selection-portfolio',
+                                 className='dbc',
+                                 style={'min-width': '350px'},
+                                 ),
                 ],
-                title='deposit/withdraw investment',
+                className='mb-3',
             ),
-            start_collapsed=True,
-        )
-
-    ]),
-    dbc.Row([
-        dcc.Dropdown(
-            multi=True,
-            id='dropdown-user-selection-portfolio',
-            className='dbc',
+        ),
+        dbc.Col(
+            dbc.Accordion(
+                dbc.AccordionItem(
+                    [
+                        html.P('This deposit or removes an investment on a certain date'),
+                        dbc.InputGroup(
+                            [
+                                dbc.InputGroupText('Date'),
+                                dcc.DatePickerSingle(
+                                    id='my-date-picker-single',
+                                    min_date_allowed=date(2015, 8, 5),
+                                    initial_visible_month=date.today(),
+                                    date=date.today(),
+                                    className='dbc',
+                                ),
+                            ], className='mb-3'),
+                        dbc.InputGroup(
+                            [
+                                dbc.InputGroupText('account'),
+                                dcc.Dropdown(options=store_util.get_account_names(),
+                                             value=store_util.get_first_account_name(),
+                                             id='dropdown-user-selection',
+                                             style={'min-width': '300px'},
+                                             className='dbc'),
+                            ], className='mb-3', ),
+                        dbc.InputGroup(
+                            [
+                                dbc.InputGroupText('amount'),
+                                dbc.Input(id='amount', type='number', pattern='[0-9]'),
+                            ], className='mb-3'),
+                        dbc.Row(
+                            [
+                                dbc.Col(dbc.Button('Deposit', id='deposit', className='ml-auto'),
+                                        width=2,
+                                        className='mb-3'),
+                                dbc.Col(dbc.Button('Withdraw', id='withdraw', className='ml-auto'),
+                                        width=2,
+                                        className='mb-3')
+                            ]),
+                        html.Div([
+                            html.P(id='error-text')
+                        ])
+                    ],
+                    title='deposit/withdraw investment',
+                ),
+                start_collapsed=True,
+            ),
+            className='mb-3',
         ),
     ]),
-    dbc.Row([
-        dbc.Col([
-            html.H1("Click on points in the graph."),
-            html.Pre(id='click-data'),
-        ])
-    ]),
+    dbc.Row(id='update-values-row'),
     dbc.Row([
         dbc.Col(
             dcc.Graph(id='total-all-portfolio-graph'),
@@ -207,13 +229,44 @@ def validate_buttons(value):
     if not value:
         return '', True, True
     elif str(value).__contains__('-'):
-        return "Error do not use '-'", True, True
+        return html.Div("Only positive numbers are allowed", className='text-warning'), True, True
     else:
         return '', False, False
 
 
+def create_value_card(title, text, image_url):
+    return dbc.Card(
+        [
+            dbc.CardImg(
+                src=image_url,
+                top=True,
+                style={"opacity": 0.3, "height": "100px", "width": "100px"},
+                className="align-self-center",  # Center the image within the card
+            ),
+            dbc.CardImgOverlay(
+                dbc.CardBody(
+                    [
+                        html.H6(title,
+                                className="card-title",
+                                style={"fontSize": 16},
+                                ),
+                        html.P(
+                            text,
+                            className="card-text",
+                            style={"fontSize": 14},
+                        ),
+                    ],
+                    className="align-items-start",  # Align CardBody to the top
+                ),
+                className="d-flex justify-content-center align-items-center",  # Center the overlay content
+            ),
+        ],
+        className="mb-3",
+    )
+
+
 @app.callback(
-    Output('click-data', 'children'),
+    Output('update-values-row', 'children'),
     Input('filtered-portfolio-df', 'data'),
     Input('total-all-portfolio-graph', 'clickData'))
 def display_click_data(filtered_portfolio_df, clickData):
@@ -229,7 +282,6 @@ def display_click_data(filtered_portfolio_df, clickData):
 
     filtered_portfolio_df.sort_values(by='date', inplace=True)
     filtered_portfolio_df = filtered_portfolio_df[filtered_portfolio_df['date'] <= target_date]
-
 
     # Determine invested amount
     invested_value = 0
@@ -264,7 +316,7 @@ def display_click_data(filtered_portfolio_df, clickData):
 
     dec_columns = value_row.index[
         value_row.index.str.startswith("dec_value")
-        ]
+    ]
     dec_value = value_row[dec_columns].sum()
 
     sps_columns = value_row.index[
@@ -274,23 +326,28 @@ def display_click_data(filtered_portfolio_df, clickData):
     sps_value = value_row[sps_columns].sum()
 
     other_columns = value_row.index[
-         value_row.index.str.endswith("_value") &
-         ~value_row.index.str.startswith("total_") &
-         ~value_row.index.str.startswith(tuple(card_list_value_columns)) &
-         ~value_row.index.str.startswith(tuple(card_market_value_columns)) &
-         ~value_row.index.str.startswith(tuple(dec_columns)) &
-         ~value_row.index.str.startswith(tuple(sps_columns)) &
-         ~value_row.index.str.startswith(tuple(land_columns))
-         ]
+        value_row.index.str.endswith("_value") &
+        ~value_row.index.str.startswith("total_") &
+        ~value_row.index.str.startswith(tuple(card_list_value_columns)) &
+        ~value_row.index.str.startswith(tuple(card_market_value_columns)) &
+        ~value_row.index.str.startswith(tuple(dec_columns)) &
+        ~value_row.index.str.startswith(tuple(sps_columns)) &
+        ~value_row.index.str.startswith(tuple(land_columns))
+        ]
     other_value = value_row[other_columns].sum()
 
-    print("Total invested value: " + str(invested_value))
-    print("Total value: " + str(total_value))
-    return "Total invested value: " + str(invested_value) +\
-        "\nTotal value: " + str(total_value) + \
-        "\nLand value: " + str(land_value) + \
-        "\nDEC value: " + str(dec_value) + \
-        "\nSPS (including staked) value: " + str(sps_value) + \
-        "\nCard market value: " + str(card_market_value) + \
-        "\nCard list value: " + str(card_list_value) + \
-        "\nOthers value: " + str(other_value)
+    cards = [
+        create_value_card("Total",
+                          ["Invested: ", str(round(invested_value, 2)) + " $",
+                           html.Br(),
+                           "Value: ", str(round(total_value, 2)) + " $"],
+                          static_values_enum.coins_icon_url),
+        create_value_card("Cards", str(round(dec_value, 2)) + " $", static_values_enum.cards_icon_url),
+        create_value_card("Dec", str(round(dec_value, 2)) + " $", static_values_enum.dec_icon_url),
+        create_value_card("SPS", str(round(dec_value, 2)) + " $", static_values_enum.sps_icon_url),
+        create_value_card("Land", str(round(land_value, 2)) + " $", static_values_enum.land_icon_url),
+        create_value_card("Other", str(round(dec_value, 2)) + " $", static_values_enum.other_icon_url)
+    ]
+
+    return [dbc.Row(html.H4("Values from: " + str(target_date))),
+            dbc.Row([dbc.Col(card, width=1, lg=2) for card in cards])]
