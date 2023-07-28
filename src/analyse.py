@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 
 from src.configuration import store
-from src.static.static_values_enum import Edition, Element, CardType, Rarity, ManaCap
+from src.static.static_values_enum import Edition, Element, CardType, Rarity, ManaCap, MatchType
 
 
 def get_image_url_markdown(card_name, level, edition):
@@ -268,3 +268,27 @@ def sort_by(input_df, sorts):
         else:
             columns.append(sort)
     return input_df.sort_values(columns, ascending=False)
+
+
+def get_daily_battle_stats(daily_df):
+    result_df = pd.DataFrame()
+    if not daily_df.empty:
+        # Select Ranked battle only
+        daily_df = daily_df.loc[(daily_df.match_type == MatchType.RANKED.value)]
+
+        # Select Ranked battles and make dates on day
+        daily_df['created_date'] = pd.to_datetime(daily_df.loc[:, 'created_date']).dt.date
+
+        # First group on battle_id
+        daily_df = daily_df.groupby(['battle_id'], as_index=False).agg({'result': 'first',
+                                                                        'created_date': 'first',
+                                                                        'format': 'first'})
+        # second group on day
+        win_df = daily_df.loc[daily_df.result == 'win'].groupby(
+            ['created_date', 'result', 'format'], as_index=False).agg({'result': 'count'})
+        loss_df = daily_df.loc[daily_df.result == 'loss'].groupby(
+            ['created_date', 'result', 'format'], as_index=False).agg({'result': 'count'})
+        result_df = pd.merge(left=win_df, right=loss_df, on=['created_date', 'format'])
+        result_df.rename(columns={"result_x": "win", "result_y": "loss"}, inplace=True)
+        result_df['battles'] = result_df.win + result_df.loss
+    return result_df

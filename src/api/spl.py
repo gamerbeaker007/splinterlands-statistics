@@ -218,3 +218,8 @@ def get_player_history_rewards(username):
     address = base_url + "players/history?username=" + str(
         username) + "&from_block=-1&limit=500&types=card_award,claim_reward"
     return http.get(address).json()
+
+
+def get_battle(battle_id):
+    address = base_url + "battle/result?id=" + str(battle_id)
+    return http.get(address).json()

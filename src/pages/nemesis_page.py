@@ -40,7 +40,7 @@ def update_user_list(tigger):
               Input('trigger-daily-update', 'data'),
               )
 def update_match_types_list(tigger):
-    return 'ALL', ['ALL'] + static_values_enum.get_list_of_enum(MatchType)
+    return 'ALL', ['ALL'] + MatchType.list_values()
 
 
 @app.callback(
