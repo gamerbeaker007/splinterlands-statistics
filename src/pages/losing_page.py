@@ -4,7 +4,6 @@ from dash import html, Output, Input, dash_table, dcc
 
 from src import analyse
 from src.pages.main_dash import app
-from src.static import static_values_enum
 from src.static.static_values_enum import MatchType, CardType
 from src.utils import store_util
 
@@ -18,11 +17,11 @@ layout = dbc.Container([
                              id='dropdown-user-selection-losing',
                              className='dbc'),
                 ),
-        dbc.Col(dcc.Dropdown(options=['ALL'] + static_values_enum.get_list_of_enum(CardType),
+        dbc.Col(dcc.Dropdown(options=['ALL'] + CardType.list_values(),
                              value='ALL',
                              id='dropdown-type-selection-losing',
                              className='dbc')),
-        dbc.Col(dcc.Dropdown(options=['ALL'] + static_values_enum.get_list_of_enum(MatchType),
+        dbc.Col(dcc.Dropdown(options=['ALL'] + MatchType.list_values(),
                              value='ALL',
                              id='dropdown-match-type-selection-losing',
                              className='dbc'))

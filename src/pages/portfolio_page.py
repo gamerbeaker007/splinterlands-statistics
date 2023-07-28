@@ -48,7 +48,7 @@ layout = dbc.Container([
                             ], className='mb-3'),
                         dbc.InputGroup(
                             [
-                                dbc.InputGroupText('account'),
+                                dbc.InputGroupText('Account'),
                                 dcc.Dropdown(options=store_util.get_account_names(),
                                              value=store_util.get_first_account_name(),
                                              id='dropdown-user-selection',
@@ -57,7 +57,7 @@ layout = dbc.Container([
                             ], className='mb-3', ),
                         dbc.InputGroup(
                             [
-                                dbc.InputGroupText('amount'),
+                                dbc.InputGroupText('Amount'),
                                 dbc.Input(id='amount', type='number', pattern='[0-9]'),
                             ], className='mb-3'),
                         dbc.Row(
@@ -294,16 +294,23 @@ def display_click_data(filtered_portfolio_df, clickData):
 
     total_value = value_row.total_value
 
-    card_list_value_columns = value_row.index[
-        value_row.index.str.startswith(tuple(list(Edition._member_map_))) &
-        value_row.index.str.endswith("list_value")
-        ]
-    card_market_value_columns = value_row.index[
-        value_row.index.str.startswith(tuple(list(Edition._member_map_))) &
-        value_row.index.str.endswith("market_value")
-        ]
-    card_list_value = value_row[card_list_value_columns].sum()
-    card_market_value = value_row[card_market_value_columns].sum()
+    # For old version there might be an collection_list_value
+    if 'collection_list_value' in value_row.index.to_list() and value_row.collection_list_value > 0:
+        card_list_value_columns = value_row.index[value_row.index.str.startswith('collection_list_value')]
+        card_market_value_columns = value_row.index[value_row.index.str.startswith('collection_market_value')]
+        card_list_value = value_row.collection_list_value
+        card_market_value = value_row.collection_market_value
+    else:
+        card_list_value_columns = value_row.index[
+            value_row.index.str.startswith(tuple(list(Edition.list_names()))) &
+            value_row.index.str.endswith("list_value")
+            ]
+        card_market_value_columns = value_row.index[
+            value_row.index.str.startswith(tuple(list(Edition.list_names()))) &
+            value_row.index.str.endswith("market_value")
+            ]
+        card_list_value = value_row[card_list_value_columns].sum()
+        card_market_value = value_row[card_market_value_columns].sum()
 
     land_columns = value_row.index[
         value_row.index.str.startswith("deeds_value") |
@@ -342,11 +349,15 @@ def display_click_data(filtered_portfolio_df, clickData):
                            html.Br(),
                            "Value: ", str(round(total_value, 2)) + " $"],
                           static_values_enum.coins_icon_url),
-        create_value_card("Cards", str(round(dec_value, 2)) + " $", static_values_enum.cards_icon_url),
-        create_value_card("Dec", str(round(dec_value, 2)) + " $", static_values_enum.dec_icon_url),
-        create_value_card("SPS", str(round(dec_value, 2)) + " $", static_values_enum.sps_icon_url),
+        create_value_card("Cards", [
+            "List: " + str(round(card_list_value, 2)) + " $",
+            html.Br(),
+            "Market: " + str(round(card_market_value, 2)) + " $",
+            ], static_values_enum.cards_icon_url),
+        create_value_card("DEC", str(round(dec_value, 2)) + " $", static_values_enum.dec_icon_url),
+        create_value_card("SPS", str(round(sps_value, 2)) + " $", static_values_enum.sps_icon_url),
         create_value_card("Land", str(round(land_value, 2)) + " $", static_values_enum.land_icon_url),
-        create_value_card("Other", str(round(dec_value, 2)) + " $", static_values_enum.other_icon_url)
+        create_value_card("Others", str(round(other_value, 2)) + " $", static_values_enum.other_icon_url)
     ]
 
     return [dbc.Row(html.H4("Values from: " + str(target_date))),
