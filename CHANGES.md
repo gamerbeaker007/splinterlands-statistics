@@ -2,10 +2,12 @@
 All notable changes to this project will be documented in this file.
 
 ## 0.4.0 WIP
+- Remove previous migrations
 - Migrate battle data, add modern or wild format and re-add Zyriel secondary color.
 - Use Dash clipboard functionality iso pyperclip, remove pyperclip dependency
 - Update git repository link in hive blog to the new tool
 - Add daily battle graph 
+- Make portfolio graph clickable to give detail overview of categories 
 
 ## 0.3.1
 - Fix bug with tournaments (wrong time validation) 

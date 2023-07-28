@@ -1,14 +1,16 @@
 import logging
-from datetime import date
+from datetime import date, datetime
 
 import dash_bootstrap_components as dbc
 import pandas as pd
 from aio import ThemeSwitchAIO
 from dash import html, Output, Input, dcc, ctx
+from dash.exceptions import PreventUpdate
 
 from main import app
 from src.configuration import config, store
 from src.graphs import portfolio_graph
+from src.static.static_values_enum import Edition
 from src.utils import chart_util, store_util, portfolio_util
 
 layout = dbc.Container([
@@ -46,10 +48,16 @@ layout = dbc.Container([
     ]),
     dbc.Row([
         dcc.Dropdown(
-                     multi=True,
-                     id='dropdown-user-selection-portfolio',
-                     className='dbc',
-                     ),
+            multi=True,
+            id='dropdown-user-selection-portfolio',
+            className='dbc',
+        ),
+    ]),
+    dbc.Row([
+        dbc.Col([
+            html.H1("Click on points in the graph."),
+            html.Pre(id='click-data'),
+        ])
     ]),
     dbc.Row([
         dbc.Col(
@@ -183,7 +191,7 @@ def deposit_action(deposit_clicks, account, my_date, amount):
 )
 def withdraw_action(withdraw_clicks, account, my_date, amount):
     if ctx.triggered_id == 'withdraw':
-        portfolio_util.update_investment(account, amount*-1, my_date)
+        portfolio_util.update_investment(account, amount * -1, my_date)
         logging.info('Withdraw: ' + str(my_date) + ' amount: ' + str(amount))
         return True
     return False
@@ -199,6 +207,90 @@ def validate_buttons(value):
     if not value:
         return '', True, True
     elif str(value).__contains__('-'):
-        return 'Error do not use '-'', True, True
+        return "Error do not use '-'", True, True
     else:
         return '', False, False
+
+
+@app.callback(
+    Output('click-data', 'children'),
+    Input('filtered-portfolio-df', 'data'),
+    Input('total-all-portfolio-graph', 'clickData'))
+def display_click_data(filtered_portfolio_df, clickData):
+    if not filtered_portfolio_df:
+        raise PreventUpdate
+    else:
+        filtered_portfolio_df = pd.read_json(filtered_portfolio_df, orient='split')
+
+    if clickData:
+        target_date = clickData['points'][0]['x']
+    else:
+        target_date = datetime.now().strftime('%Y-%m-%d')
+
+    filtered_portfolio_df.sort_values(by='date', inplace=True)
+    filtered_portfolio_df = filtered_portfolio_df[filtered_portfolio_df['date'] <= target_date]
+
+
+    # Determine invested amount
+    invested_value = 0
+    if 'total_investment_value' in filtered_portfolio_df.columns.tolist():
+        investment_df = filtered_portfolio_df.loc[(filtered_portfolio_df.total_investment_value.notna())]
+        invested_value = investment_df.iloc[-1].total_investment_value
+
+    value_df = filtered_portfolio_df.loc[(filtered_portfolio_df.total_value.notna())]
+    value_row = value_df.iloc[-1]
+
+    total_value = value_row.total_value
+
+    card_list_value_columns = value_row.index[
+        value_row.index.str.startswith(tuple(list(Edition._member_map_))) &
+        value_row.index.str.endswith("list_value")
+        ]
+    card_market_value_columns = value_row.index[
+        value_row.index.str.startswith(tuple(list(Edition._member_map_))) &
+        value_row.index.str.endswith("market_value")
+        ]
+    card_list_value = value_row[card_list_value_columns].sum()
+    card_market_value = value_row[card_market_value_columns].sum()
+
+    land_columns = value_row.index[
+        value_row.index.str.startswith("deeds_value") |
+        value_row.index.str.startswith("plot_value") |
+        value_row.index.str.startswith("tract_value") |
+        value_row.index.str.startswith("region_value") |
+        (value_row.index.str.startswith("totem") & value_row.index.str.endswith("_value"))
+        ]
+    land_value = value_row[land_columns].sum()
+
+    dec_columns = value_row.index[
+        value_row.index.str.startswith("dec_value")
+        ]
+    dec_value = value_row[dec_columns].sum()
+
+    sps_columns = value_row.index[
+        value_row.index.str.startswith("sps_value") |
+        value_row.index.str.startswith("spsp_value")
+        ]
+    sps_value = value_row[sps_columns].sum()
+
+    other_columns = value_row.index[
+         value_row.index.str.endswith("_value") &
+         ~value_row.index.str.startswith("total_") &
+         ~value_row.index.str.startswith(tuple(card_list_value_columns)) &
+         ~value_row.index.str.startswith(tuple(card_market_value_columns)) &
+         ~value_row.index.str.startswith(tuple(dec_columns)) &
+         ~value_row.index.str.startswith(tuple(sps_columns)) &
+         ~value_row.index.str.startswith(tuple(land_columns))
+         ]
+    other_value = value_row[other_columns].sum()
+
+    print("Total invested value: " + str(invested_value))
+    print("Total value: " + str(total_value))
+    return "Total invested value: " + str(invested_value) +\
+        "\nTotal value: " + str(total_value) + \
+        "\nLand value: " + str(land_value) + \
+        "\nDEC value: " + str(dec_value) + \
+        "\nSPS (including staked) value: " + str(sps_value) + \
+        "\nCard market value: " + str(card_market_value) + \
+        "\nCard list value: " + str(card_list_value) + \
+        "\nOthers value: " + str(other_value)

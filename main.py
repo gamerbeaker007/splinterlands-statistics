@@ -13,10 +13,9 @@ store_util.update_season_end_dates()
 
 def migrate_data():
 
-    store.battle_big.loc[store.battle_big.card_name == 'Zyriel', 'secondary_color'] = 'Black'
-    store.losing_big.loc[store.losing_big.card_name == 'Zyriel', 'secondary_color'] = 'Black'
-
     if not store.battle_big.empty:
+        store.battle_big.loc[store.battle_big.card_name == 'Zyriel', 'secondary_color'] = 'Black'
+
         battle_id_to_process = store.battle_big.loc[(store.battle_big['format'].isna())].battle_id.unique().tolist()
         counter = 0
         for battle_id in battle_id_to_process:
@@ -29,7 +28,9 @@ def migrate_data():
                 counter += 1
                 store.battle_big.loc[store.battle_big.battle_id == battle_id, 'format'] = battle_format
 
-        if not store.battle_big.empty:
+        if not store.losing_big.empty:
+            store.losing_big.loc[store.losing_big.card_name == 'Zyriel', 'secondary_color'] = 'Black'
+
             battle_id_to_process = store.losing_big.loc[(store.losing_big['format'].isna())].battle_id.unique().tolist()
             counter = 0
             for battle_id in battle_id_to_process:
