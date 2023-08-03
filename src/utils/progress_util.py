@@ -16,6 +16,9 @@ def set_daily_title(title):
     progress.progress_daily_title = title
 
 
-def update_daily_msg(msg):
-    logging.info(msg)
+def update_daily_msg(msg, error=False):
+    if error:
+        logging.error(msg)
+    else:
+        logging.info(msg)
     progress.progress_daily_txt = msg

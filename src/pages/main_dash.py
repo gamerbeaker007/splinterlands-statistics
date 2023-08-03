@@ -10,5 +10,5 @@ load_figure_template([config.dark_theme, config.light_theme])
 app = DashProxy(transforms=[LogTransform()],
                 external_stylesheets=[dbc.themes.CYBORG, dbc_css],
                 meta_tags=[{'name': 'viewport', 'content': 'width=device-width'}],
-                suppress_callback_exceptions=True
+                # suppress_callback_exceptions=True
                 )

@@ -277,7 +277,7 @@ def get_daily_battle_stats(daily_df):
         daily_df = daily_df.loc[(daily_df.match_type == MatchType.RANKED.value)]
 
         # Select Ranked battles and make dates on day
-        daily_df['created_date'] = pd.to_datetime(daily_df.loc[:, 'created_date']).dt.date
+        daily_df.loc[:, 'created_date'] = pd.to_datetime(daily_df.loc[:, 'created_date']).dt.date
 
         # First group on battle_id
         daily_df = daily_df.groupby(['battle_id'], as_index=False).agg({'result': 'first',

@@ -1,37 +1,60 @@
 import json
+import logging
 from datetime import datetime
 
 import pytz
 import requests
+from hiveengine.api import Api
+from hiveengine.market import Market
+from hiveengine.rpc import RPCErrorDoRetry
 
-url = 'https://api.hive-engine.com/rpc/contracts'
+from src.utils import progress_util
+
+BACKUP_URL = 'https://api2.hive-engine.com/rpc/'
+
 hive_blog_url = 'https://api.hive.blog'
 
 
 def get_liquidity_positions(account, token_pair):
     query = {"account": account, "tokenPair": token_pair}
-    params = {'contract': 'marketpools', 'table': "liquidityPositions", 'query': query}
-    j = {'jsonrpc': '2.0', 'id': 1, 'method': 'find', 'params': params}
-    with requests.post(url, json=j) as r:
-        data = r.json()
-        result = data['result']
-        if len(result) > 0:
-            return float(result[0]['shares'])
-        else:
-            # no liquidity pool found return 0, 0, 0
-            return None
+    try:
+        api = Api()
+        result = api.find_one(contract_name='marketpools', table_name='liquidityPositions', query=query)
+    except RPCErrorDoRetry:
+        logging.warning("Default hive node 'https://api.hive-engine.com/' down, retry on backup node: " + str(BACKUP_URL))
+        try:
+            # Retry with other hive node
+            api = Api(url=BACKUP_URL)
+            result = api.find_one(contract_name='marketpools', table_name='liquidityPositions', query=query)
+        except RPCErrorDoRetry:
+            progress_util.update_daily_msg("ERROR: Hive market down stop update portfolio", error=True)
+            raise RPCErrorDoRetry("Hive market down stop update portfolio")
+
+    if len(result) > 0 and result[0]:
+        return float(result[0]['shares'])
+    else:
+        # no liquidity pool found return 0, 0, 0
+        return None
 
 
 def get_quantity(token_pair):
     query = {"tokenPair": token_pair}
-    params = {'contract': 'marketpools', 'table': "pools", 'query': query}
-    j = {'jsonrpc': '2.0', 'id': 1, 'method': 'find', 'params': params}
-    with requests.post(url, json=j) as r:
-        data = r.json()
-        result = data['result']
-        return float(result[0]['baseQuantity']), \
-            float(result[0]['quoteQuantity']), \
-            float(result[0]['totalShares'])
+    try:
+        api = Api()
+        result = api.find_one(contract_name='marketpools', table_name='pools', query=query)
+    except RPCErrorDoRetry:
+        logging.warning("Default hive node 'https://api.hive-engine.com/' down, retry on backup node: " + str(BACKUP_URL))
+        try:
+            # Retry with other hive node
+            api = Api(url=BACKUP_URL)
+            result = api.find_one(contract_name='marketpools', table_name='pools', query=query)
+        except RPCErrorDoRetry:
+            progress_util.update_daily_msg("ERROR: Hive market down stop update portfolio", error=True)
+            raise RPCErrorDoRetry("Hive market down stop update portfolio")
+
+    return float(result[0]['baseQuantity']), \
+        float(result[0]['quoteQuantity']), \
+        float(result[0]['totalShares'])
 
 
 def get_hive_transactions(account_name, from_date, till_date, last_id, results):
@@ -62,3 +85,18 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
 
             get_hive_transactions(account_name, from_date, till_date, last_id-1, results)
     return results
+
+
+def get_market():
+    try:
+        market = Market()
+    except RPCErrorDoRetry:
+        logging.warning("Default hive node 'https://api.hive-engine.com/' down, retry on backup node: " + str(BACKUP_URL))
+        try:
+            # Retry with other hive node
+            api = Api(url=BACKUP_URL)
+            market = Market(api=api)
+        except RPCErrorDoRetry:
+            progress_util.update_daily_msg("ERROR: Hive market down stop update portfolio", error=True)
+            raise RPCErrorDoRetry("Hive market down stop update portfolio")
+    return market

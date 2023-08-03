@@ -161,6 +161,25 @@ def determine_notification(daily=False):
             autoClose=True,
             icon=DashIconify(icon='akar-icons:circle-check'),
         )
+    elif value.startswith('ERROR'):
+        if daily:
+            progress.progress_daily_txt = None
+        else:
+            progress.progress_season_txt = None
+        if daily:
+            progress.progress_daily_first = True
+        else:
+            progress.progress_season_first = True
+
+        return dmc.Notification(
+            id=notification_id,
+            title=str(title),
+            message=str(value),
+            color='red',
+            action=action,
+            autoClose=False,
+            icon=DashIconify(icon='akar-icons:circle-x'),
+        )
     else:
         if first:
             if daily:

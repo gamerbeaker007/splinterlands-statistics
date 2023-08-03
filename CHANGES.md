@@ -1,6 +1,9 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
+## 0.5.0 WIP
+- add break update portfolio when hive market is down
+
 ## 0.4.0
 - Remove previous migrations
 - Migrate battle data, add modern or wild format and re-add Zyriel secondary color.
