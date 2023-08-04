@@ -9,7 +9,7 @@ from dash.exceptions import PreventUpdate
 from main import app
 from src.configuration import config, store
 from src.graphs import portfolio_graph
-from src.pages.portfolio_pages import portfolio_deposit, portfolio_editions
+from src.pages.portfolio_pages import portfolio_deposit, portfolio_editions, portfolio_sps
 from src.static import static_values_enum
 from src.static.static_values_enum import Edition
 from src.utils import chart_util, store_util
@@ -39,7 +39,12 @@ layout = dbc.Container([
     dbc.Row(id='update-values-row', className='mb-3'),
     dbc.Row(dcc.Graph(id='total-all-portfolio-graph'), className='mb-3'),
 
-    dbc.Row(portfolio_editions.get_edition_layout(), className='mb-3'),
+    dbc.Row([
+        dbc.Col(portfolio_editions.get_edition_layout(), className='mb-3'),
+        dbc.Col(portfolio_sps.get_sps_layout(), className='mb-3'),
+
+]
+),
 
     dbc.Row(dcc.Graph(id='all-portfolio-graph'),className='mb-3'),
 ])
