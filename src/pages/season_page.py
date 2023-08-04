@@ -1,13 +1,12 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
-from aio import ThemeSwitchAIO
 from dash import html, Output, Input, ctx, dcc
 from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import Trigger
 
 from main import app
 from src import season_balances_info, season_battle_info, market_info
-from src.configuration import config, store, progress
+from src.configuration import store, progress
 from src.graphs import season_graph
 from src.utils import store_util, chart_util, progress_util, hive_blog, tournaments_info
 
@@ -246,7 +245,7 @@ def validate_buttons(n_clicks_generate_blog, n_clicks_update_season_btn):
     Output('update-season-btn', 'disabled'),
     Trigger('interval-global', 'n_intervals')
 )
-def check_button_status(count):
+def check_button_status():
     if progress.progress_season_txt:
         return True, True
     else:
@@ -281,11 +280,9 @@ def update_copy_to_clipboard(n_clicks):
 @app.callback(Output('modern-season-rating-graph', 'figure'),
               Input('dropdown-user-selection', 'value'),
               Input('trigger-season-update', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              Input('theme-store', 'data'),
               )
-def update_modern_graph(account, season_tigger, toggle):
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
+def update_modern_graph(account, season_tigger, theme):
     if store.season_modern_battle_info.empty or \
             store.season_modern_battle_info.loc[(store.season_modern_battle_info.player == account)].empty:
         return chart_util.blank_fig(theme)
@@ -298,11 +295,9 @@ def update_modern_graph(account, season_tigger, toggle):
 @app.callback(Output('wild-season-battle-graph', 'figure'),
               Input('dropdown-user-selection', 'value'),
               Input('trigger-season-update', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              Input('theme-store', 'data'),
               )
-def update_wild_battle_graph(account, season_trigger, toggle):
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
+def update_wild_battle_graph(account, season_trigger, theme):
     if store.season_wild_battle_info.empty or \
             store.season_wild_battle_info.loc[(store.season_wild_battle_info.player == account)].empty:
         return chart_util.blank_fig(theme)
@@ -315,11 +310,9 @@ def update_wild_battle_graph(account, season_trigger, toggle):
 @app.callback(Output('modern-season-battle-graph', 'figure'),
               Input('dropdown-user-selection', 'value'),
               Input('trigger-season-update', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              Input('theme-store', 'data'),
               )
-def update_modern_battle_graph(account, season_tigger, toggle):
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
+def update_modern_battle_graph(account, season_tigger, theme):
     if store.season_modern_battle_info.empty or \
             store.season_modern_battle_info.loc[(store.season_modern_battle_info.player == account)].empty:
         return chart_util.blank_fig(theme)
@@ -332,11 +325,9 @@ def update_modern_battle_graph(account, season_tigger, toggle):
 @app.callback(Output('wild-season-rating-graph', 'figure'),
               Input('dropdown-user-selection', 'value'),
               Input('trigger-season-update', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              Input('theme-store', 'data'),
               )
-def update_wild_graph(account, season_trigger, toggle):
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
+def update_wild_graph(account, season_trigger, theme):
     if store.season_wild_battle_info.empty or \
             store.season_wild_battle_info.loc[(store.season_wild_battle_info.player == account)].empty:
         return chart_util.blank_fig(theme)
@@ -348,11 +339,9 @@ def update_wild_graph(account, season_trigger, toggle):
 @app.callback(Output('total-balance-graph', 'figure'),
               Input('dropdown-user-selection', 'value'),
               Input('trigger-season-update', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              Input('theme-store', 'data'),
               )
-def update_earnings_graph(account, season_trigger, toggle):
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
+def update_earnings_graph(account, season_trigger, theme):
     if store.season_sps.empty or \
             store.season_sps.loc[(store.season_sps.player == account)].empty:
         return chart_util.blank_fig(theme)
@@ -380,16 +369,14 @@ def update_earnings_graph(account, season_trigger, toggle):
               Input('dropdown-token-selection', 'value'),
               Input('dropdown-skip-zero-selection', 'value'),
               Input('trigger-season-update', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              Input('theme-store', 'data'),
               )
-def update_earnings_all_graph(account, token, skip_zero, season_trigger, toggle):
+def update_earnings_all_graph(account, token, skip_zero, season_trigger, theme):
     if skip_zero == 'Skip Zeros':
         skip_zero = True
     else:
         skip_zero = False
 
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
     if token == 'SPS':
         if store.season_sps.empty or store.season_sps.loc[(store.season_sps.player == account)].empty:
             return chart_util.blank_fig(theme)

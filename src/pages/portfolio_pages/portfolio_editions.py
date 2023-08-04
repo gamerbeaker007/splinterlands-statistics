@@ -1,8 +1,6 @@
 import pandas as pd
-from aio import ThemeSwitchAIO
 from dash import Output, Input, dcc
 
-from src.configuration import config
 from src.graphs import portfolio_graph
 from src.pages.main_dash import app
 from src.static.static_values_enum import Edition
@@ -15,12 +13,9 @@ def get_edition_layout():
 
 @app.callback(Output('portfolio-editions-graph', 'figure'),
               Input('filtered-portfolio-df', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              Input('theme-store', 'data'),
               )
-def update_portfolio_editions_graph(filtered_df, toggle):
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
-
+def update_portfolio_editions_graph(filtered_df, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
     else:
@@ -39,6 +34,7 @@ def update_portfolio_editions_graph(filtered_df, toggle):
 
         # drop empty rows
         editions_df = editions_df.set_index('date').dropna(how='all')
+        editions_df = editions_df.loc[(editions_df.sum(axis=1) != 0)]
 
         # drop columns that have a sum of 0 bxc and market_value
         for edition in Edition.list_names():

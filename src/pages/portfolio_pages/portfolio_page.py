@@ -2,12 +2,11 @@ from datetime import datetime
 
 import dash_bootstrap_components as dbc
 import pandas as pd
-from aio import ThemeSwitchAIO
 from dash import html, Output, Input, dcc
 from dash.exceptions import PreventUpdate
 
 from main import app
-from src.configuration import config, store
+from src.configuration import store
 from src.graphs import portfolio_graph
 from src.pages.portfolio_pages import portfolio_deposit, portfolio_editions, portfolio_sps
 from src.static import static_values_enum
@@ -62,9 +61,8 @@ def update_user_list(tigger):
               Input('dropdown-user-selection-portfolio', 'value'),
               Input('trigger-portfolio-update', 'data'),
               Input('trigger-daily-update', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
-def update_filter_data(combine_users, trigger_portfolio, trigger_daily, toggle):
+def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
     filtered_users = []
     for user in combine_users:
         if not store.portfolio.empty and not store.portfolio.loc[(store.portfolio.account_name == user)].empty:
@@ -104,11 +102,9 @@ def update_filter_data(combine_users, trigger_portfolio, trigger_daily, toggle):
 @app.callback(Output('total-all-portfolio-graph', 'figure'),
               Input('filtered-portfolio-df', 'data'),
               Input('dropdown-user-selection-portfolio', 'value'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              Input('theme-store', 'data'),
               )
-def update_portfolio_total_graph(filtered_df, combined_users, toggle):
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
+def update_portfolio_total_graph(filtered_df, combined_users, theme):
 
     if not filtered_df:
         return chart_util.blank_fig(theme)
@@ -123,12 +119,9 @@ def update_portfolio_total_graph(filtered_df, combined_users, toggle):
 
 @app.callback(Output('all-portfolio-graph', 'figure'),
               Input('filtered-portfolio-df', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              Input('theme-store', 'data'),
               )
-def update_portfolio_all_graph(filtered_df, toggle):
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
-
+def update_portfolio_all_graph(filtered_df, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
     else:
