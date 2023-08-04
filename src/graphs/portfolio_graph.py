@@ -1,19 +1,17 @@
 import plotly.express as px
 
 
-def plot_portfolio_total(temp_df,
-                         account_names,
-                         theme):
-    temp_df.sort_values('date', inplace=True)
-    if 'total_investment_value' in temp_df.columns.tolist():
-        column_data = temp_df[['total_value', 'total_investment_value']].columns
+def plot_portfolio_total(portfolio_df, combined_users, theme):
+    portfolio_df.sort_values('date', inplace=True)
+    if 'total_investment_value' in portfolio_df.columns.tolist():
+        column_data = portfolio_df[['total_value', 'total_investment_value']].columns
     else:
-        column_data = temp_df[['total_value']].columns
+        column_data = portfolio_df[['total_value']].columns
 
-    fig = px.line(temp_df,
+    fig = px.line(portfolio_df,
                   x='date',
                   y=column_data,
-                  title="Total portfolio values of '" + ",".join(account_names) + "' combined",
+                  title="Total portfolio values of '" + ",".join(combined_users) + "' combined",
                   markers=True)
     fig.update_traces(connectgaps=True)
     fig.update_layout(

@@ -8,7 +8,8 @@ from dash_iconify import DashIconify
 from main import app
 from src import battle_store, collection_store, portfolio
 from src.configuration import progress
-from src.pages import main_page, rating_page, nemesis_page, losing_page, season_page, config_page, portfolio_page
+from src.pages import main_page, rating_page, nemesis_page, losing_page, season_page, config_page
+from src.pages.portfolio_pages import portfolio_page
 from src.utils import store_util, progress_util
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'

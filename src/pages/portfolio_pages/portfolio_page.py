@@ -1,20 +1,24 @@
-import logging
-from datetime import date, datetime
+from datetime import datetime
 
 import dash_bootstrap_components as dbc
 import pandas as pd
 from aio import ThemeSwitchAIO
-from dash import html, Output, Input, dcc, ctx
+from dash import html, Output, Input, dcc
 from dash.exceptions import PreventUpdate
 
 from main import app
 from src.configuration import config, store
 from src.graphs import portfolio_graph
+from src.pages.portfolio_pages import portfolio_deposit, portfolio_editions
 from src.static import static_values_enum
 from src.static.static_values_enum import Edition
-from src.utils import chart_util, store_util, portfolio_util
+from src.utils import chart_util, store_util
 
 layout = dbc.Container([
+    dcc.Store(id='combined-users'),
+    dcc.Store(id='filtered-portfolio-df'),
+    dcc.Store(id='trigger-portfolio-update'),
+
     dbc.Row([
         html.H1('Portfolio'),
         dbc.Col(
@@ -30,71 +34,14 @@ layout = dbc.Container([
                 className='mb-3',
             ),
         ),
-        dbc.Col(
-            dbc.Accordion(
-                dbc.AccordionItem(
-                    [
-                        html.P('This deposit or removes an investment on a certain date'),
-                        dbc.InputGroup(
-                            [
-                                dbc.InputGroupText('Date'),
-                                dcc.DatePickerSingle(
-                                    id='my-date-picker-single',
-                                    min_date_allowed=date(2015, 8, 5),
-                                    initial_visible_month=date.today(),
-                                    date=date.today(),
-                                    className='dbc',
-                                ),
-                            ], className='mb-3'),
-                        dbc.InputGroup(
-                            [
-                                dbc.InputGroupText('Account'),
-                                dcc.Dropdown(options=store_util.get_account_names(),
-                                             value=store_util.get_first_account_name(),
-                                             id='dropdown-user-selection',
-                                             style={'min-width': '300px'},
-                                             className='dbc'),
-                            ], className='mb-3', ),
-                        dbc.InputGroup(
-                            [
-                                dbc.InputGroupText('Amount'),
-                                dbc.Input(id='amount', type='number', pattern='[0-9]'),
-                            ], className='mb-3'),
-                        dbc.Row(
-                            [
-                                dbc.Col(dbc.Button('Deposit', id='deposit', className='ml-auto'),
-                                        width=2,
-                                        className='mb-3'),
-                                dbc.Col(dbc.Button('Withdraw', id='withdraw', className='ml-auto'),
-                                        width=2,
-                                        className='mb-3')
-                            ]),
-                        html.Div([
-                            html.P(id='error-text')
-                        ])
-                    ],
-                    title='deposit/withdraw investment',
-                ),
-                start_collapsed=True,
-            ),
-            className='mb-3',
-        ),
+        dbc.Col(portfolio_deposit.get_deposit_layout(),className='mb-3'),
     ]),
-    dbc.Row(id='update-values-row'),
-    dbc.Row([
-        dbc.Col(
-            dcc.Graph(id='total-all-portfolio-graph'),
-        ),
-    ]),
-    dbc.Row([
-        dbc.Col(
-            dcc.Graph(id='all-portfolio-graph'),
-        ),
-    ]),
+    dbc.Row(id='update-values-row', className='mb-3'),
+    dbc.Row(dcc.Graph(id='total-all-portfolio-graph'), className='mb-3'),
 
-    dcc.Store(id='combined-users'),
-    dcc.Store(id='filtered-portfolio-df'),
-    dcc.Store(id='trigger-portfolio-update')
+    dbc.Row(portfolio_editions.get_edition_layout(), className='mb-3'),
+
+    dbc.Row(dcc.Graph(id='all-portfolio-graph'),className='mb-3'),
 ])
 
 
@@ -154,7 +101,7 @@ def update_filter_data(combine_users, trigger_portfolio, trigger_daily, toggle):
               Input('dropdown-user-selection-portfolio', 'value'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
-def update_portfolio_total_graph(filtered_df, combine_users, toggle):
+def update_portfolio_total_graph(filtered_df, combined_users, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
 
@@ -163,18 +110,17 @@ def update_portfolio_total_graph(filtered_df, combine_users, toggle):
     else:
         temp_df = pd.read_json(filtered_df, orient='split')
 
-    if temp_df.empty or len(combine_users) == 0:
+    if temp_df.empty:
         return chart_util.blank_fig(theme)
     else:
-        return portfolio_graph.plot_portfolio_total(temp_df, combine_users, theme)
+        return portfolio_graph.plot_portfolio_total(temp_df, combined_users, theme)
 
 
 @app.callback(Output('all-portfolio-graph', 'figure'),
               Input('filtered-portfolio-df', 'data'),
-              Input('dropdown-user-selection-portfolio', 'value'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
-def update_portfolio_all_graph(filtered_df, combine_users, toggle):
+def update_portfolio_all_graph(filtered_df, toggle):
     # TODO check which order callbacks are done
     theme = config.light_theme if toggle else config.dark_theme
 
@@ -183,55 +129,10 @@ def update_portfolio_all_graph(filtered_df, combine_users, toggle):
     else:
         temp_df = pd.read_json(filtered_df, orient='split')
 
-    if temp_df.empty or len(combine_users) == 0:
+    if temp_df.empty:
         return chart_util.blank_fig(theme)
     else:
         return portfolio_graph.plot_portfolio_all(temp_df, theme)
-
-
-@app.callback(
-    Output('trigger-portfolio-update', 'data'),
-    [Input('deposit', 'n_clicks'),
-     Input('dropdown-user-selection', 'value'),
-     Input('my-date-picker-single', 'date'),
-     Input('amount', 'value')],
-)
-def deposit_action(deposit_clicks, account, my_date, amount):
-    if ctx.triggered_id == 'deposit':
-        portfolio_util.update_investment(account, amount, my_date)
-        logging.info('Deposit: ' + str(my_date) + ' amount: ' + str(amount))
-        return True
-    return False
-
-
-@app.callback(
-    Output('trigger-portfolio-update', 'data'),
-    [Input('withdraw', 'n_clicks'),
-     Input('dropdown-user-selection', 'value'),
-     Input('my-date-picker-single', 'date'),
-     Input('amount', 'value')],
-)
-def withdraw_action(withdraw_clicks, account, my_date, amount):
-    if ctx.triggered_id == 'withdraw':
-        portfolio_util.update_investment(account, amount * -1, my_date)
-        logging.info('Withdraw: ' + str(my_date) + ' amount: ' + str(amount))
-        return True
-    return False
-
-
-@app.callback(
-    Output('error-text', 'children'),
-    Output('deposit', 'disabled'),
-    Output('withdraw', 'disabled'),
-    Input('amount', 'value')
-)
-def validate_buttons(value):
-    if not value:
-        return '', True, True
-    elif str(value).__contains__('-'):
-        return html.Div("Only positive numbers are allowed", className='text-warning'), True, True
-    else:
-        return '', False, False
 
 
 def create_value_card(title, text, image_url):
@@ -269,14 +170,14 @@ def create_value_card(title, text, image_url):
     Output('update-values-row', 'children'),
     Input('filtered-portfolio-df', 'data'),
     Input('total-all-portfolio-graph', 'clickData'))
-def display_click_data(filtered_portfolio_df, clickData):
+def display_click_data(filtered_portfolio_df, click_data):
     if not filtered_portfolio_df:
         raise PreventUpdate
     else:
         filtered_portfolio_df = pd.read_json(filtered_portfolio_df, orient='split')
 
-    if clickData:
-        target_date = clickData['points'][0]['x']
+    if click_data:
+        target_date = click_data['points'][0]['x']
     else:
         target_date = datetime.now().strftime('%Y-%m-%d')
 
@@ -296,7 +197,7 @@ def display_click_data(filtered_portfolio_df, clickData):
 
         total_value = value_row.total_value
 
-        # For old version there might be an collection_list_value
+        # For old version there might be a collection_list_value
         if 'collection_list_value' in value_row.index.to_list() and value_row.collection_list_value > 0:
             card_list_value_columns = value_row.index[value_row.index.str.startswith('collection_list_value')]
             card_market_value_columns = value_row.index[value_row.index.str.startswith('collection_market_value')]
