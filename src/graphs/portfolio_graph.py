@@ -116,3 +116,67 @@ def get_editions_fig(editions_df, theme):
     )
 
     return fig
+
+
+def get_sps_fig(sps_df, theme):
+    fig = go.Figure()
+    max_value = sps_df.loc[:, sps_df.columns.str.endswith("_value")].max().max()
+    max_qty = sps_df.loc[:, sps_df.columns.str.endswith("_qty")].max().max()
+
+    # Get a discrete color palette from Plotly
+    color_palette = pc.qualitative.Plotly
+    color_index = 0  # Initialize the index for cycling colors
+
+    for column in sps_df.columns.tolist():
+        current_color = color_palette[color_index]
+        legend_group = 'spsp' if 'spsp' in column else 'sps'
+
+        if '_qty' in column:
+            trace = go.Scatter(x=sps_df.index,
+                                    y=sps_df[column],
+                                    mode='lines',
+                                    legendgroup=legend_group,
+                                    showlegend=False,
+                                    line=dict(color=current_color, dash='dash'),
+                                    name=legend_group + ' qty ',
+                                    yaxis='y2')
+        else:
+            trace = go.Scatter(x=sps_df.index,
+                                            y=sps_df[column],
+                                            mode='lines',
+                                            legendgroup=legend_group,
+                                            line=dict(color=current_color),  # Set line color
+                                            name=legend_group)
+        fig.add_trace(trace)
+        color_index = (color_index + 1) % len(color_palette)  # Move to the next color
+
+    fig.update_layout(
+        template=theme,
+        title_text="SPS",
+        hovermode="x unified",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
+        xaxis=dict(
+            title='date'
+        ),
+
+        yaxis2=dict(
+            overlaying='y',
+            side='right',
+            position=1.0,  # Adjust the position of the secondary y-axis
+            range=[0, max_qty * 1.05],
+            title='qty',
+        ),
+        yaxis1=dict(
+            showgrid=False,
+            range=[0, max_value * 1.05],
+            title="value $",
+        ),
+    )
+
+    return fig
