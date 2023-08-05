@@ -30,6 +30,8 @@ def plot_portfolio_total(portfolio_df, combined_users, theme):
 
 
 def plot_portfolio_all(df, theme, skip_zero=True):
+    fig = go.Figure()
+
     temp_df = df.drop('account_name', axis=1)
 
     if skip_zero:
@@ -37,27 +39,76 @@ def plot_portfolio_all(df, theme, skip_zero=True):
         temp_df = temp_df.loc[:, (temp_df.sum(axis=0) != 0.0)]
         temp_df['date'] = df[['date']]
 
-    fig = px.line(temp_df,
-                  x=temp_df.date,
-                  y=temp_df.columns,
-                  title="All items",
-                  markers=True)
-    fig.update_traces(connectgaps=True)
+    temp_df = temp_df.set_index('date')
+    max_value = temp_df.loc[:, temp_df.columns.str.endswith("_value")].max().max()
+    max_qty = temp_df.loc[:, ~temp_df.columns.str.endswith("_value")].max().max()
+
+    # Get a discrete color palette from Plotly
+    color_palette = pc.qualitative.Plotly
+    color_index = 0  # Initialize the index for cycling colors
+
+    for column in temp_df.columns.tolist():
+        current_color = color_palette[color_index]
+
+        if '_value' in column:
+            trace = go.Scatter(x=temp_df.index,
+                               y=temp_df[column],
+                               mode='lines',
+                               connectgaps=True,
+                               # legendgroup=legend_group,
+                               # showlegend=False,
+                               line=dict(color=current_color),
+                               name=column)
+        else:
+            trace = go.Scatter(x=temp_df.index,
+                               y=temp_df[column],
+                               mode='lines',
+                               connectgaps=True,
+                               # legendgroup=legend_group,
+                               line=dict(color=current_color, dash='dash'),
+                               name=column,
+                               yaxis='y2')
+        fig.add_trace(trace)
+        color_index = (color_index + 1) % len(color_palette)  # Move to the next color
+
     fig.update_layout(
         template=theme,
+        title_text="All",
+        legend=dict(
+            orientation="v",
+            x=1.1,
+            xanchor='left',
+            y=1,
+            font=dict(
+                size=10
+            ),
+            borderwidth=1,
+        ),
         xaxis=dict(
-            showgrid=True,
-            gridwidth=1,
+            title='date'
         ),
 
+        yaxis2=dict(
+            overlaying='y',
+            side='right',
+            position=1.0,  # Adjust the position of the secondary y-axis
+            range=[0, max_qty * 1.05],
+            title='qty/bcx/count',
+        ),
+        yaxis1=dict(
+            showgrid=False,
+            range=[0, max_value * 1.05],
+            title="value $",
+        ),
     )
+
     return fig
 
 
 def get_editions_fig(editions_df, theme):
     fig = go.Figure()
-    max_value = editions_df.loc[:, editions_df.columns.str.endswith("_market_value")].max().max()
-    max_bcx = editions_df.loc[:, editions_df.columns.str.endswith("_bcx")].max().max()
+    # max_value = editions_df.loc[:, editions_df.columns.str.endswith("_market_value")].max().max()
+    # max_bcx = editions_df.loc[:, editions_df.columns.str.endswith("_bcx")].max().max()
 
     # Get a discrete color palette from Plotly
     color_palette = pc.qualitative.Plotly
@@ -86,6 +137,28 @@ def get_editions_fig(editions_df, theme):
             fig.add_trace(bcx__trace)
             color_index = (color_index + 1) % len(color_palette)  # Move to the next color
 
+    current_color = color_palette[color_index]
+    temp_df = editions_df.copy()
+    temp_df['all_value'] = temp_df.loc[:, temp_df.columns.str.endswith("_market_value")].sum(axis=1)
+    temp_df['all_bcx'] = temp_df.loc[:, temp_df.columns.str.endswith("_bcx")].sum(axis=1)
+    legend_group = 'combined'
+    market_value_trace = go.Scatter(x=temp_df.index,
+                                    y=temp_df.all_value,
+                                    mode='lines',
+                                    legendgroup=legend_group,
+                                    line=dict(color=current_color),  # Set line color
+                                    name=legend_group)
+    fig.add_trace(market_value_trace)
+    bcx__trace = go.Scatter(x=temp_df.index,
+                            y=temp_df.all_bcx,
+                            mode='lines',
+                            legendgroup=legend_group,
+                            showlegend=False,
+                            line=dict(color=current_color, dash='dash'),
+                            name=legend_group + ' bcx',
+                            yaxis='y2')
+    fig.add_trace(bcx__trace)
+
     fig.update_layout(
         template=theme,
         title_text="Editions",
@@ -105,12 +178,12 @@ def get_editions_fig(editions_df, theme):
             overlaying='y',
             side='right',
             position=1.0,  # Adjust the position of the secondary y-axis
-            range=[0, max_bcx * 1.05],
+            # range=[0, max_bcx * 1.05],
             title='bcx',
         ),
         yaxis1=dict(
             showgrid=False,
-            range=[0, max_value * 1.05],
+            # range=[0, max_value * 1.05],
             title="value $",
         ),
     )
@@ -133,20 +206,20 @@ def get_sps_fig(sps_df, theme):
 
         if '_qty' in column:
             trace = go.Scatter(x=sps_df.index,
-                                    y=sps_df[column],
-                                    mode='lines',
-                                    legendgroup=legend_group,
-                                    showlegend=False,
-                                    line=dict(color=current_color, dash='dash'),
-                                    name=legend_group + ' qty ',
-                                    yaxis='y2')
+                               y=sps_df[column],
+                               mode='lines',
+                               legendgroup=legend_group,
+                               showlegend=False,
+                               line=dict(color=current_color, dash='dash'),
+                               name=legend_group + ' qty ',
+                               yaxis='y2')
         else:
             trace = go.Scatter(x=sps_df.index,
-                                            y=sps_df[column],
-                                            mode='lines',
-                                            legendgroup=legend_group,
-                                            line=dict(color=current_color),  # Set line color
-                                            name=legend_group)
+                               y=sps_df[column],
+                               mode='lines',
+                               legendgroup=legend_group,
+                               line=dict(color=current_color),  # Set line color
+                               name=legend_group)
         fig.add_trace(trace)
         color_index = (color_index + 1) % len(color_palette)  # Move to the next color
 
