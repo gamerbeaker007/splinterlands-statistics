@@ -52,6 +52,11 @@ layout = dbc.Container([
               Input('dropdown-user-selection-rating', 'value'),
               )
 def filter_df(account):
+    if store.rating.empty or store.battle_big.empty:
+        empty_df = pd.DataFrame()
+        return empty_df.to_json(date_format='iso', orient='split'), \
+            empty_df.to_json(date_format='iso', orient='split')
+
     if account == 'ALL':
         rating_df = store.rating.copy()
         daily_df = store.battle_big.copy()

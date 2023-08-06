@@ -102,6 +102,9 @@ def get_last_season_costs_table(account, season_info_store, skip_zeros):
     dec_df = dec_df.loc[(dec_df.player == account)].fillna(0)
     if not dec_df.empty:
         dec_df = dec_df.iloc[0]
+        if 'cost_rental_payment' in dec_df:
+            costs_rows += cost_earning_row("DEC rental payments", dec_icon, dec_df.cost_rental_payment, skip_zeros)
+
         if 'rental_payment_fees' in dec_df:
             costs_rows += cost_earning_row("DEC rental fees", dec_icon, dec_df.rental_payment_fees, skip_zeros)
         if 'enter_tournament' in dec_df:
@@ -163,8 +166,8 @@ def get_last_season_earnings_table(account, season_info_store, last_season_rewar
     dec_df = dec_df.loc[(dec_df.player == account)].fillna(0)
     if not dec_df.empty:
         dec_df = dec_df.iloc[0]
-        if 'rental_payment' in dec_df:
-            earning_rows += cost_earning_row("DEC rental payments", dec_icon, dec_df.rental_payment, skip_zeros)
+        if 'earn_rental_payment' in dec_df:
+            earning_rows += cost_earning_row("DEC rental payments", dec_icon, dec_df.earn_rental_payment, skip_zeros)
         if 'sell_market_purchase' in dec_df:
             earning_rows += cost_earning_row("DEC market sell", dec_icon, dec_df.sell_market_purchase, skip_zeros)
         if 'tournament_prize' in dec_df:
@@ -181,9 +184,13 @@ def get_last_season_earnings_table(account, season_info_store, last_season_rewar
     sps_df = sps_df.loc[(sps_df.player == account)].fillna(0)
     if not sps_df.empty:
         sps_df = sps_df.iloc[0]
-        if 'token_transfer_multi' in sps_df:
+        if 'tournament_prize' in sps_df:
             earning_rows += cost_earning_row("SPS tournament rewards", sps_icon,
-                                             sps_df.tournament_prize + sps_df.token_transfer_multi,
+                                             sps_df.tournament_prize,
+                                             skip_zeros)
+        if 'token_transfer_multi' in sps_df:
+            earning_rows += cost_earning_row("SPS tournament rewards (multi token)", sps_icon,
+                                             sps_df.token_transfer_multi,
                                              skip_zeros)
         if 'claim_staking_rewards' in sps_df:
             earning_rows += cost_earning_row("SPS staking reward", sps_icon, sps_df.claim_staking_rewards,

@@ -153,13 +153,15 @@ def plot_season_stats_earnings(season_df_sps,
                                season_df_merits,
                                season_df_unclaimed_sps,
                                theme,
-                               skip_zeros=True):
+                               skip_zeros=False):
     # Data consistency
     columns_dec = [
         'reward',
         'quest_rewards',
         'season_rewards',
         'rental_payment',
+        'earn_rental_payment',
+        'cost_rental_payment',
         'rental_payment_fees',
         'market_rental',
         'rental_refund',

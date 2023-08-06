@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## 0.5.0 WIP
 - add break update portfolio when hive market is down
+- separate DEC rental payments in cost and earning
+  - NOTE best to remove all season_* files and re-capture all seasonal information
 
 ## 0.4.0
 - Remove previous migrations
