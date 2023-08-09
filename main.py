@@ -23,7 +23,7 @@ def migrate_data():
             if 'format' in battle:
                 battle_format = battle['format']
                 if not battle_format:
-                    battle_format = Format.WILD.value
+                    battle_format = Format.wild.value
                 print("Migrate battles (format) " + str(counter) + " / " + str(len(battle_id_to_process)))
                 counter += 1
                 store.battle_big.loc[store.battle_big.battle_id == battle_id, 'format'] = battle_format
@@ -38,7 +38,7 @@ def migrate_data():
                 if 'format' in battle:
                     battle_format = battle['format']
                     if not battle_format:
-                        battle_format = Format.WILD.value
+                        battle_format = Format.wild.value
                     print("Migrate losing battles (format) " + str(counter) + " / " + str(len(battle_id_to_process)))
                     counter += 1
                     store.losing_big.loc[store.losing_big.battle_id == battle_id, 'format'] = battle_format

@@ -47,6 +47,6 @@ def get_season_battles(account_name, store_df, mode):
 
 def update_season_battle_store():
     for account in store_util.get_account_names():
-        store.season_modern_battle_info = get_season_battles(account, store.season_modern_battle_info.copy(), Format.MODERN)
-        store.season_wild_battle_info = get_season_battles(account, store.season_wild_battle_info.copy(), Format.WILD)
+        store.season_modern_battle_info = get_season_battles(account, store.season_modern_battle_info.copy(), Format.modern)
+        store.season_wild_battle_info = get_season_battles(account, store.season_wild_battle_info.copy(), Format.wild)
     store_util.save_stores()

@@ -97,7 +97,7 @@ def update_modern_graph(filtered_df, theme):
 
     filtered_df = pd.read_json(filtered_df, orient='split')
     if not filtered_df.empty:
-        df = filtered_df.loc[(store.rating.format == Format.MODERN.value)]
+        df = filtered_df.loc[(store.rating.format == Format.modern.value)]
         return rating_graph.create_rating_graph(df, theme)
 
     return chart_util.blank_fig(theme)
@@ -113,7 +113,7 @@ def update_wild_graph(filtered_df, theme):
 
     filtered_df = pd.read_json(filtered_df, orient='split')
     if not filtered_df.empty:
-        df = filtered_df.loc[(store.rating.format == Format.WILD.value)]
+        df = filtered_df.loc[(store.rating.format == Format.wild.value)]
         return rating_graph.create_rating_graph(df, theme)
 
     return chart_util.blank_fig(theme)

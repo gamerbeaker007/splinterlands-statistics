@@ -397,7 +397,7 @@ for battle_format in Format:
     def on_click(n_clicks, style):
         style = update_style(n_clicks, style)
         setting = ctx.inputs_list[0]['id'].split('-')[0]
-        filter_settings[setting.lower()] = is_active(n_clicks)
+        filter_settings[setting] = is_active(n_clicks)
         return style, filter_settings
 
 

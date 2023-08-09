@@ -24,8 +24,8 @@ class ExtendedEnum(Enum):
 
 
 class Format(ExtendedEnum):
-    MODERN = 'modern'
-    WILD = 'wild'
+    modern = 'modern'
+    wild = 'wild'
 
 
 class MatchType(ExtendedEnum):
