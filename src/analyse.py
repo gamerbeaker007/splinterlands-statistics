@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 
 from src.configuration import store
-from src.static.static_values_enum import Edition, Element, CardType, Rarity, ManaCap, MatchType
+from src.static.static_values_enum import Edition, Element, CardType, Rarity, ManaCap, MatchType, Format
 
 
 def get_image_url_markdown(card_name, level, edition):
@@ -228,6 +228,28 @@ def filter_mana_cap(input_df, filter_settings):
             max_value = int(mana_cap.value.split('-')[1])
 
             temp_df = input_df.loc[(input_df.mana_cap >= min_value) & (input_df.mana_cap <= max_value)]
+            total_df = pd.concat([total_df, temp_df])
+        else:
+            all_true = False
+    if all_true or all_false:
+        return input_df
+    else:
+        return total_df
+
+
+def filter_format(input_df, filter_settings):
+    if input_df.empty:
+        return input_df
+
+    total_df = pd.DataFrame()
+    all_true = True
+    all_false = True
+    for battle_format in Format:
+        active = filter_settings[battle_format.value]
+        if active:
+            all_false = False
+
+            temp_df = input_df.loc[(input_df.format == battle_format.value)]
             total_df = pd.concat([total_df, temp_df])
         else:
             all_true = False

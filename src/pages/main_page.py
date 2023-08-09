@@ -10,7 +10,7 @@ from main import app
 from src import analyse
 from src.configuration import store
 from src.pages import filter_page
-from src.static.static_values_enum import Element, Edition, CardType, Rarity, ManaCap
+from src.static.static_values_enum import Element, Edition, CardType, Rarity, ManaCap, Format
 from src.utils import store_util
 
 btn_active_color = '#222'
@@ -27,6 +27,8 @@ for rarity in Rarity:
     filter_settings[rarity.name] = False
 for mana_cap in ManaCap:
     filter_settings[mana_cap.name] = False
+for battle_format in Format:
+    filter_settings[battle_format.value] = False
 
 filter_settings['minimal-battles'] = 0
 filter_settings['from_date'] = datetime.datetime(2000, 1, 1)
@@ -118,6 +120,15 @@ layout = dbc.Container([
                 className='mb-3',
             ),
         ),
+        dbc.Col(
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText('Format'),
+                    dbc.ButtonGroup(filter_page.get_filter_buttons_text(Format)),
+                ],
+                className='mb-3',
+            )
+),
     ]),
 
     dbc.Row([
@@ -245,6 +256,7 @@ def filter_battle_df(store_filter_settings):
     df = analyse.filter_date(df, filter_settings)
     df = analyse.filter_mana_cap(df, filter_settings)
     df = analyse.filter_rule_sets(df, filter_settings)
+    df = analyse.filter_format(df, filter_settings)
 
     # Processing
     df = analyse.process_battles_win_percentage(df)
@@ -373,6 +385,19 @@ for mana_cap in ManaCap:
         style = update_style(n_clicks, style)
         setting = ctx.inputs_list[0]['id'].split('-')[0]
         filter_settings[setting] = is_active(n_clicks)
+        return style, filter_settings
+
+
+for battle_format in Format:
+    @app.callback(Output('{}-filter-button'.format(battle_format.name), 'style'),
+                  Output('filter-settings', 'data'),
+                  Input('{}-filter-button'.format(battle_format.name), 'n_clicks'),
+                  State('{}-filter-button'.format(battle_format.name), 'style')
+                  )
+    def on_click(n_clicks, style):
+        style = update_style(n_clicks, style)
+        setting = ctx.inputs_list[0]['id'].split('-')[0]
+        filter_settings[setting.lower()] = is_active(n_clicks)
         return style, filter_settings
 
 
