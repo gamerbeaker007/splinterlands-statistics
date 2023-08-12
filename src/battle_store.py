@@ -130,7 +130,7 @@ def get_battle_format(battle_format):
     if battle_format:
         return battle_format
     else:
-        return Format.WILD.value
+        return Format.wild.value
 
 
 def add_losing_battle_team(account, team, battle):

@@ -47,8 +47,8 @@ def get_scatter_trace(df, name, show_legend=False):
 def plot_daily_stats_battle(daily_df, theme):
     daily_df['win_pct'] = daily_df.apply(lambda row: (row.win / row.battles * 100), axis=1)
 
-    wild_daily_df = daily_df.loc[daily_df['format'] == Format.WILD.value]
-    modern_daily_df = daily_df.loc[daily_df['format'] == Format.MODERN.value]
+    wild_daily_df = daily_df.loc[daily_df['format'] == Format.wild.value]
+    modern_daily_df = daily_df.loc[daily_df['format'] == Format.modern.value]
 
     fig = make_subplots(specs=[[{"secondary_y": True}, {"secondary_y": True}]],
                         subplot_titles=("Modern", "Wild"),

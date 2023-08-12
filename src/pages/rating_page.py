@@ -2,11 +2,10 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, dcc, Output, Input
 from dash.exceptions import PreventUpdate
-from dash_bootstrap_templates import ThemeSwitchAIO
 
 from main import app
 from src import analyse
-from src.configuration import config, store
+from src.configuration import store
 from src.graphs import rating_graph
 from src.static.static_values_enum import Format
 from src.utils import store_util, chart_util
@@ -53,6 +52,11 @@ layout = dbc.Container([
               Input('dropdown-user-selection-rating', 'value'),
               )
 def filter_df(account):
+    if store.rating.empty or store.battle_big.empty:
+        empty_df = pd.DataFrame()
+        return empty_df.to_json(date_format='iso', orient='split'), \
+            empty_df.to_json(date_format='iso', orient='split')
+
     if account == 'ALL':
         rating_df = store.rating.copy()
         daily_df = store.battle_big.copy()
@@ -70,13 +74,11 @@ def filter_df(account):
 
 @app.callback(Output('daily-battle-graph', 'figure'),
               Input('filtered-daily-df', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              Input('theme-store', 'data'),
               )
-def update_modern_battle_graph(filtered_df, toggle):
+def update_modern_battle_graph(filtered_df, theme):
     if not filtered_df:
         raise PreventUpdate
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
 
     filtered_df = pd.read_json(filtered_df, orient='split')
     if filtered_df.empty:
@@ -87,17 +89,15 @@ def update_modern_battle_graph(filtered_df, toggle):
 
 @app.callback(Output('modern-rating-graph', 'figure'),
               Input('filtered-rating-df', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              Input('theme-store', 'data'),
               )
-def update_modern_graph(filtered_df, toggle):
+def update_modern_graph(filtered_df, theme):
     if not filtered_df:
         raise PreventUpdate
 
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
     filtered_df = pd.read_json(filtered_df, orient='split')
     if not filtered_df.empty:
-        df = filtered_df.loc[(store.rating.format == Format.MODERN.value)]
+        df = filtered_df.loc[(store.rating.format == Format.modern.value)]
         return rating_graph.create_rating_graph(df, theme)
 
     return chart_util.blank_fig(theme)
@@ -105,17 +105,15 @@ def update_modern_graph(filtered_df, toggle):
 
 @app.callback(Output('wild-rating-graph', 'figure'),
               Input('filtered-rating-df', 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              Input('theme-store', 'data'),
               )
-def update_wild_graph(filtered_df, toggle):
+def update_wild_graph(filtered_df, theme):
     if not filtered_df:
         raise PreventUpdate
 
-    # TODO check which order callbacks are done
-    theme = config.light_theme if toggle else config.dark_theme
     filtered_df = pd.read_json(filtered_df, orient='split')
     if not filtered_df.empty:
-        df = filtered_df.loc[(store.rating.format == Format.WILD.value)]
+        df = filtered_df.loc[(store.rating.format == Format.wild.value)]
         return rating_graph.create_rating_graph(df, theme)
 
     return chart_util.blank_fig(theme)

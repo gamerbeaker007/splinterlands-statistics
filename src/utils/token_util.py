@@ -2,9 +2,9 @@ from datetime import datetime
 from time import sleep
 
 import pandas as pd
+from hiveengine.market import Market
 
 from src.api import spl, coingecko, hive
-from hiveengine.market import Market
 
 
 def calculate_value(all_tokens, hive_in_dollar, token, highest_bid):
@@ -25,7 +25,9 @@ def get_all_tokens(account_name):
 
 
 def calculate_prices(df, all_tokens, hive_in_dollar):
-    for token in Market():
+    market = hive.get_market()
+
+    for token in market:
         if token["symbol"] == "SPS":
             quantity, value = calculate_value(all_tokens, hive_in_dollar, "SPSP", token["highestBid"])
             if quantity:

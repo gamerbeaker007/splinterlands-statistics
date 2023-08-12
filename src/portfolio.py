@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 import pandas as pd
+from hiveengine.rpc import RPCErrorDoRetry
 
 from src.api import spl, peakmonsters
 from src.configuration import store
@@ -36,7 +37,11 @@ def update_portfolios():
 
     for account in store_util.get_account_names():
         progress_util.update_daily_msg("...update portfolio for: " + str(account))
-        store.portfolio = update_portfolio(account, store.portfolio.copy(), list_prices_df, market_prices_df)
+        try:
+            store.portfolio = update_portfolio(account, store.portfolio.copy(), list_prices_df, market_prices_df)
+        except RPCErrorDoRetry:
+            progress_util.update_daily_msg("ERROR: Hive market down stop update portfolio", error=True)
+            raise RPCErrorDoRetry("Hive market down stop update portfolio")
 
     store.portfolio.fillna(0, inplace=True)
     store_util.save_stores()

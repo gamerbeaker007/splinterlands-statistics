@@ -1,6 +1,14 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
+## 0.5.0
+- FIX: Break update portfolio when hive market is down
+- Separate DEC rental payments in cost and earning
+  - NOTE best to remove all season_* files and re-capture all seasonal information
+- Add Modern/Wild filter to main page
+- Separate overall quantity and value in portfolio tab
+- Add Edition and SPS overview in portfolio
+
 ## 0.4.0
 - Remove previous migrations
 - Migrate battle data, add modern or wild format and re-add Zyriel secondary color.

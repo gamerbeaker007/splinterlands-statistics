@@ -29,9 +29,9 @@ debug_env = os.environ.get("DEBUG")
 store_prefix_env = os.environ.get("STORE")
 
 debug = False
-if debug_env:
+if bool(debug_env):
     logging.info("Debug environment variable found using debug: " + str(debug_env))
-    debug = debug_env
+    debug = bool(debug_env)
 
 file_dir_prefix = ""
 if store_prefix_env:

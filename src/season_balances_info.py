@@ -173,6 +173,15 @@ def process_season_balances(balance_df, store_copy, account_name, season_array, 
                                        & (store_copy.player == account_name),
                                        'buy_' + search_type] = balance_df.loc[
                             balance_mask & (pd.to_numeric(balance_df.amount) < 0)].amount.sum()
+                    elif search_type == 'rental_payment':
+                        store_copy.loc[(store_copy.season_id == season_id)
+                                       & (store_copy.player == account_name),
+                                       'earn_' + search_type] = balance_df.loc[
+                            balance_mask & (pd.to_numeric(balance_df.amount) > 0)].amount.sum()
+                        store_copy.loc[(store_copy.season_id == season_id)
+                                       & (store_copy.player == account_name),
+                                       'cost_' + search_type] = balance_df.loc[
+                            balance_mask & (pd.to_numeric(balance_df.amount) < 0)].amount.sum()
 
                     else:
                         store_copy.loc[(store_copy.season_id == season_id)

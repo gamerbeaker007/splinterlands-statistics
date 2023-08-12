@@ -1,37 +1,61 @@
 import json
+import logging
 from datetime import datetime
 
 import pytz
 import requests
+from hiveengine.api import Api
+from hiveengine.market import Market
+from hiveengine.rpc import RPCErrorDoRetry
 
-url = 'https://api.hive-engine.com/rpc/contracts'
-hive_blog_url = 'https://api.hive.blog'
+BACKUP_URL = 'https://api2.hive-engine.com/rpc/'
+HIVE_BLOG_URL = 'https://api.hive.blog'
+
+hive_down_message = "Default hive node 'https://api.hive-engine.com/' down, retry on backup node: " + str(BACKUP_URL)
 
 
 def get_liquidity_positions(account, token_pair):
     query = {"account": account, "tokenPair": token_pair}
-    params = {'contract': 'marketpools', 'table': "liquidityPositions", 'query': query}
-    j = {'jsonrpc': '2.0', 'id': 1, 'method': 'find', 'params': params}
-    with requests.post(url, json=j) as r:
-        data = r.json()
-        result = data['result']
-        if len(result) > 0:
-            return float(result[0]['shares'])
-        else:
-            # no liquidity pool found return 0, 0, 0
-            return None
+    result = find_one_with_retry('marketpools', 'liquidityPositions', query)
+
+    if len(result) > 0 and result[0]:
+        return float(result[0]['shares'])
+    else:
+        # no liquidity pool found
+        return None
 
 
 def get_quantity(token_pair):
     query = {"tokenPair": token_pair}
-    params = {'contract': 'marketpools', 'table': "pools", 'query': query}
-    j = {'jsonrpc': '2.0', 'id': 1, 'method': 'find', 'params': params}
-    with requests.post(url, json=j) as r:
-        data = r.json()
-        result = data['result']
-        return float(result[0]['baseQuantity']), \
-            float(result[0]['quoteQuantity']), \
-            float(result[0]['totalShares'])
+    result = find_one_with_retry('marketpools', 'pools', query)
+
+    return float(result[0]['baseQuantity']), \
+        float(result[0]['quoteQuantity']), \
+        float(result[0]['totalShares'])
+
+
+def find_one_with_retry(contract_name, table_name, query):
+    try:
+        api = Api()
+        result = api.find_one(contract_name=contract_name, table_name=table_name, query=query)
+    except RPCErrorDoRetry:
+        logging.warning(
+            hive_down_message)
+        # Retry with other hive node
+        api = Api(url=BACKUP_URL)
+        result = api.find_one(contract_name='marketpools', table_name='liquidityPositions', query=query)
+    return result
+
+
+def get_market():
+    try:
+        market = Market()
+    except RPCErrorDoRetry:
+        logging.warning(hive_down_message)
+        # Retry with other hive node
+        api = Api(url=BACKUP_URL)
+        market = Market(api=api)
+    return market
 
 
 def get_hive_transactions(account_name, from_date, till_date, last_id, results):
@@ -43,7 +67,7 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
            + str(last_id) + ', ' \
            + str(limit) + ', 262144], "id":1}'
 
-    response = requests.post(hive_blog_url, headers=headers, data=data)
+    response = requests.post(HIVE_BLOG_URL, headers=headers, data=data)
     if response.status_code == 200:
         transactions = json.loads(response.text)['result']
         for transaction in transactions:

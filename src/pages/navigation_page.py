@@ -7,8 +7,9 @@ from dash_iconify import DashIconify
 
 from main import app
 from src import battle_store, collection_store, portfolio
-from src.configuration import progress
-from src.pages import main_page, rating_page, nemesis_page, losing_page, season_page, config_page, portfolio_page
+from src.configuration import progress, config
+from src.pages import main_page, rating_page, nemesis_page, losing_page, season_page, config_page
+from src.pages.portfolio_pages import portfolio_page
 from src.utils import store_util, progress_util
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
@@ -65,10 +66,18 @@ navbar = dbc.Navbar(
 )
 
 layout = html.Div([
+    dcc.Store(id='theme-store', storage_type='session'),
     dcc.Location(id='url', refresh=False),
     navbar,
     html.Div(id='page-content', children=[]),
 ])
+
+
+@app.callback(Output('theme-store', 'data'),
+              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+              )
+def update_theme(toggle):
+    return config.light_theme if toggle else config.dark_theme
 
 
 @app.callback(Output('page-content', 'children'),
@@ -116,7 +125,7 @@ def update__output(n_clicks):
 @app.callback(Output('progress-daily', 'children'),
               Output('progress-season', 'children'),
               Trigger('interval-global', 'n_intervals'))
-def update_progress(interval):
+def update_progress():
     ret_val_daily = determine_notification(daily=True)
     ret_val_season = determine_notification()
 
@@ -160,6 +169,25 @@ def determine_notification(daily=False):
             action=action,
             autoClose=True,
             icon=DashIconify(icon='akar-icons:circle-check'),
+        )
+    elif value.startswith('ERROR'):
+        if daily:
+            progress.progress_daily_txt = None
+        else:
+            progress.progress_season_txt = None
+        if daily:
+            progress.progress_daily_first = True
+        else:
+            progress.progress_season_first = True
+
+        return dmc.Notification(
+            id=notification_id,
+            title=str(title),
+            message=str(value),
+            color='red',
+            action=action,
+            autoClose=False,
+            icon=DashIconify(icon='akar-icons:circle-x'),
         )
     else:
         if first:
