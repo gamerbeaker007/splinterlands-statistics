@@ -59,12 +59,12 @@ class Leagues(ExtendedEnum):
 
 
 class RatingLevel(ExtendedEnum):
-  Novice = 0
-  Bronze = 1
-  Silver =2
-  Gold = 3
-  Diamond = 4
-  Champion = 5
+    Novice = 0
+    Bronze = 1
+    Silver = 2
+    Gold = 3
+    Diamond = 4
+    Champion = 5
 
 
 class Edition(ExtendedEnum):
