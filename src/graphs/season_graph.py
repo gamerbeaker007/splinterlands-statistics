@@ -153,7 +153,7 @@ def plot_season_stats_earnings(season_df_sps,
                                season_df_merits,
                                season_df_unclaimed_sps,
                                theme,
-                               skip_zeros=False):
+                               skip_zeros=True):
     # Data consistency
     columns_dec = [
         'reward',
@@ -237,13 +237,13 @@ def plot_season_stats_earnings(season_df_sps,
     else:
         total_rows = 0
         row_heights = []
-        if season_df_dec.total.sum() > 0:
+        if season_df_dec.total.sum() != 0:
             total_rows += 1
             row_heights.append(800)
-        if season_df_merits.total.sum() > 0:
+        if season_df_merits.total.sum() != 0:
             total_rows += 1
             row_heights.append(800)
-        if season_df_sps_combined.total.sum() > 0:
+        if season_df_sps_combined.total.sum() != 0:
             total_rows += 1
             row_heights.append(800)
 

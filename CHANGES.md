@@ -1,6 +1,10 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
+## 0.6.0 WIP
+- FIX: skip zero now only skips when sum of DEC/MERIT/SPS == 0, not >0
+
+
 ## 0.5.0
 - FIX: Break update portfolio when hive market is down
 - Separate DEC rental payments in cost and earning
