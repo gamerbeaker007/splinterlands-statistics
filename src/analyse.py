@@ -314,3 +314,22 @@ def get_daily_battle_stats(daily_df):
         result_df.rename(columns={"result_x": "win", "result_y": "loss"}, inplace=True)
         result_df['battles'] = result_df.win + result_df.loss
     return result_df
+
+
+def get_battles_with_used_card(df, card_name):
+    result_df = pd.DataFrame()
+    if not df.empty:
+        battle_ids = df.loc[(df.card_name == card_name)].battle_id.tolist()
+        result_df = df.loc[df.battle_id.isin(battle_ids)]
+
+        # remove unit that is being searched for
+        result_df = result_df.loc[(df.card_name != card_name)]
+    return result_df
+
+
+def get_losing_battles(df, battle_ids):
+    result_df = pd.DataFrame()
+    if not df.empty:
+        result_df = df.loc[df.battle_id.isin(battle_ids)]
+
+    return result_df

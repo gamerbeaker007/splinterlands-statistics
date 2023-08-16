@@ -9,6 +9,7 @@ from main import app
 from src import battle_store, collection_store, portfolio
 from src.configuration import progress, config
 from src.pages import main_page, rating_page, nemesis_page, losing_page, season_page, config_page
+from src.pages.card_pages import card_page
 from src.pages.portfolio_pages import portfolio_page
 from src.utils import store_util, progress_util
 
@@ -35,6 +36,7 @@ navbar = dbc.Navbar(
                     children=[
                         dbc.NavItem(dbc.NavLink('Home', href='/')),
                         dbc.NavItem(dbc.NavLink('Losing', href='/losing')),
+                        dbc.NavItem(dbc.NavLink('Card', href='/card')),
                         dbc.NavItem(dbc.NavLink('Rating', href='/rating')),
                         dbc.NavItem(dbc.NavLink('Nemesis', href='/nemesis')),
                         dbc.NavItem(dbc.NavLink('Season', href='/season')),
@@ -87,6 +89,8 @@ def display_page(pathname):
         return main_page.layout
     if pathname == '/losing':
         return losing_page.layout
+    if pathname == '/card':
+        return card_page.layout
     if pathname == '/rating':
         return rating_page.layout
     if pathname == '/nemesis':
