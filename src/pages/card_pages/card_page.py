@@ -50,6 +50,11 @@ layout = dbc.Container([
         ),
 
     ]),
+    dbc.Row([
+        dbc.Col(html.H1('Col1 (detailed)')),
+        dbc.Col(html.H1('Col2 (image)')),
+        dbc.Col(html.H1('Col3 (ruleset)')),
+    ]),
 
     dbc.Row(id='top-paired-cards'),
     dbc.Row(id='weakest-against-cards'),
@@ -123,7 +128,7 @@ def update_top_cards(filtered_df):
                     [
                         dbc.CardImg(src=row.url, top=True, style={'height': '200px', 'object-fit': 'contain'}),
                         dbc.CardBody([
-                            html.P(str(row.card_name) + '\t\t★' + str(row.level), className='card-text'),
+                            html.P(str(row.card_name) + '\t\t★ combined', className='card-text'),
                             html.P('Battles (W-L): ' + str(int(row.win)) + '-' + str(int(row.loss)),
                                    className='card-text'),
                             html.P('Battle count: ' + str(int(row.battles)), className='card-text'),
@@ -158,7 +163,7 @@ def update_weakest_cards(filtered_df):
                     [
                         dbc.CardImg(src=row.url, top=True, style={'height': '200px', 'object-fit': 'contain'}),
                         dbc.CardBody([
-                            html.P(str(row.card_name) + '\t\t★' + str(row.level), className='card-text'),
+                            html.P(str(row.card_name) + '\t\t★ combined', className='card-text'),
                             html.P('Battle count: ' + str(int(row.battles)), className='card-text'),
                         ]
                         ),
@@ -184,14 +189,14 @@ def filter_cards_df(store_filter_settings):
     battle_ids = my_team.battle_id.tolist()
 
     # Processing
-    my_team = analyse.process_battles_win_percentage(my_team)
+    my_team = analyse.process_battles_win_percentage(my_team, group_by_including_level=False)
 
     losing_against = analyse.filter_battles(store.losing_big, filter_account=store_filter_settings['account'])
     losing_against = analyse.get_losing_battles(losing_against, battle_ids)
 
     # Processing
     losing_against['result'] = 'loss'
-    losing_against = analyse.process_battles_win_percentage(losing_against)
+    losing_against = analyse.process_battles_win_percentage(losing_against, group_by_including_level=False)
 
     # TODO sort by?
 
