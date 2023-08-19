@@ -1,13 +1,14 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dash_table, dcc
+from dash_bootstrap_components import Container
 
 from src import analyse
 from src.pages.main_dash import app
 from src.static.static_values_enum import MatchType, CardType
 from src.utils import store_util
 
-layout = dbc.Container([
+layout: Container = dbc.Container([
     dbc.Row([
         html.H1('Statistics losing battles'),
         html.P('Summoners and monster you lose most against'),

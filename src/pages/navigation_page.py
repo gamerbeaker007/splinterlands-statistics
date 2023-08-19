@@ -1,3 +1,6 @@
+import json
+import urllib
+
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
 from dash import html, Output, Input, dcc, ctx
@@ -9,7 +12,7 @@ from main import app
 from src import battle_store, collection_store, portfolio
 from src.configuration import progress, config
 from src.pages import main_page, rating_page, nemesis_page, losing_page, season_page, config_page
-from src.pages.card_pages import card_page
+from src.pages.card_pages import card_page, card_page_filter
 from src.pages.portfolio_pages import portfolio_page
 from src.utils import store_util, progress_util
 
@@ -83,13 +86,20 @@ def update_theme(toggle):
 
 
 @app.callback(Output('page-content', 'children'),
-              [Input('url', 'pathname')])
-def display_page(pathname):
+              Input('url', 'pathname'),
+              Input('url', 'search'),
+              Input('url', 'hash'))
+def display_page(pathname, search, search_hash):
     if pathname == '/':
         return main_page.layout
     if pathname == '/losing':
         return losing_page.layout
     if pathname == '/card':
+        if search and search_hash:
+            print(search.split('=')[-1])
+            print(search_hash.split('=')[-1])
+            card_page_filter.load_with_card_id = search.split('=')[-1]
+            card_page_filter.load_with_account_name = search_hash.split('=')[-1]
         return card_page.layout
     if pathname == '/rating':
         return rating_page.layout

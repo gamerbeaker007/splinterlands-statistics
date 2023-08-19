@@ -128,7 +128,7 @@ layout = dbc.Container([
                 ],
                 className='mb-3',
             )
-),
+        ),
     ]),
 
     dbc.Row([
@@ -153,12 +153,13 @@ layout = dbc.Container([
     dbc.Row(id='top-cards'),
     dbc.Row([
         dbc.Accordion(
-            dbc.AccordionItem(html.Div(id='main-table', className='dbc'),
+            dbc.AccordionItem(html.Div(id='main-table-div', className='dbc'),
                               title='Complete table',
                               ),
             start_collapsed=True,
         )
     ]),
+    html.Div(id='redirect-div'),
     dcc.Store(id='filtered-battle-df'),
     dcc.Store(id='filter-settings'),
 ])
@@ -174,8 +175,9 @@ def update_seasons_played_list(tigger):
         first_played_season = season_played[-1]
     return season_played, first_played_season
 
+
 @app.callback(
-    Output('main-table', 'children'),
+    Output('main-table-div', 'children'),
     Input('filtered-battle-df', 'data'),
 )
 def update_main_table(filtered_df):
@@ -185,48 +187,67 @@ def update_main_table(filtered_df):
     filtered_df = pd.read_json(filtered_df, orient='split')
 
     if not filtered_df.empty:
-        return dash_table.DataTable(
-            # columns=[{'name': i, 'id': i} for i in df.columns],
-            columns=[
-                {'id': 'url_markdown', 'name': 'Card', 'presentation': 'markdown'},
-                {'id': 'card_name', 'name': 'Name'},
-                {'id': 'level', 'name': 'Level'},
-                # {'id': 'win_to_loss_ratio', 'name': 'win_to_loss_ratio'},
-                {'id': 'battles', 'name': 'Battles'},
-                # {'id': 'win_ratio', 'name': 'win_ratio'},
-                {'id': 'win_percentage', 'name': 'Win Percentage'},
-            ],
-            data=filtered_df.to_dict('records'),
-            row_selectable=False,
-            row_deletable=False,
-            editable=False,
-            filter_action='native',
-            sort_action='native',
-            style_table={'overflowX': 'auto'},
-            style_cell_conditional=[{'if': {'column_id': 'url'}, 'width': '200px'}, ],
-            page_size=10,
-        ),
+        return dash_table.DataTable(id='top-cards-table',
+                                    # columns=[{'name': i, 'id': i} for i in df.columns],
+                                    columns=[
+                                        {'id': 'url_markdown', 'name': 'Card', 'presentation': 'markdown'},
+                                        {'id': 'card_name', 'name': 'Name'},
+                                        {'id': 'level', 'name': 'Level'},
+                                        # {'id': 'win_to_loss_ratio', 'name': 'win_to_loss_ratio'},
+                                        {'id': 'battles', 'name': 'Battles'},
+                                        # {'id': 'win_ratio', 'name': 'win_ratio'},
+                                        {'id': 'win_percentage', 'name': 'Win Percentage'},
+                                    ],
+                                    data=filtered_df.to_dict('records'),
+                                    row_selectable=False,
+                                    row_deletable=False,
+                                    editable=False,
+                                    filter_action='native',
+                                    sort_action='native',
+                                    style_table={'overflowX': 'auto'},
+                                    style_cell_conditional=[{'if': {'column_id': 'url'}, 'width': '200px'}, ],
+                                    page_size=10,
+                                    ),
     else:
         return dash_table.DataTable()
 
 
 @app.callback(
+    Output('redirect-div', 'children'),
+    Input('top-cards-table', 'active_cell'),
+    State('top-cards-table', 'derived_virtual_data'),
+    State('filter-settings', 'data')
+)
+def redirect_to_page(active_cell, data, stored_filter_settings):
+    if active_cell:
+        print(data[active_cell['row']]['card_name'])
+        return dcc.Location(
+            href='card?card_id=' + str(data[active_cell['row']]['card_detail_id'])
+                 + '#account=' + str(stored_filter_settings['account'])
+            , id='url-redirect')
+
+
+@app.callback(
     Output('top-cards', 'children'),
     Input('filtered-battle-df', 'data'),
+    Input('filter-settings', 'data')
 )
-def update_top_cards(filtered_df):
+def update_top_cards(filtered_df, stored_filter_settings):
     if not filtered_df:
         raise PreventUpdate
+
+    account_name = stored_filter_settings['account']
 
     filtered_df = pd.read_json(filtered_df, orient='split')
 
     cards = []
     if not filtered_df.empty:
         filtered_df = filtered_df.head(5)
+        count = 0
         for index, row in filtered_df.iterrows():
             cards.append(
-                dbc.Card(
-                    [
+                dbc.CardLink(
+                    dbc.Card([
                         dbc.CardImg(src=row.url, top=True, style={'height': '200px', 'object-fit': 'contain'}),
                         dbc.CardBody([
                             html.P(str(row.card_name) + '\t\t★' + str(row.level), className='card-text'),
@@ -237,12 +258,23 @@ def update_top_cards(filtered_df):
                         ]
                         ),
                     ],
-                    style={'height': '375px'},
-                    className='mb-3',
-                )
+                        style={'height': '400px', 'text-decoration': 'none'},
+                        className='mb-3',
+                    ),
+                    href='card?card_id=' + str(row.card_detail_id) + '#account=' + account_name,
+                ),
             )
+            count += 1
 
     return [dbc.Col(card) for card in cards]
+
+
+for i in range(5):
+    @app.callback(Output('filtered-battle-df', 'data'),
+                  Input('card-' + str(i), 'n_clicks'))
+    def card_selection_callback(value):
+        print(value)
+        return ""
 
 
 @app.callback(Output('filtered-battle-df', 'data'),
@@ -386,7 +418,6 @@ for mana_cap in ManaCap:
         setting = ctx.inputs_list[0]['id'].split('-')[0]
         filter_settings[setting] = is_active(n_clicks)
         return style, filter_settings
-
 
 for battle_format in Format:
     @app.callback(Output('{}-filter-button'.format(battle_format.name), 'style'),
