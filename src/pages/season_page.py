@@ -8,6 +8,7 @@ from main import app
 from src import season_balances_info, season_battle_info, market_info
 from src.configuration import store, progress
 from src.graphs import season_graph
+from src.pages.navigation_pages import nav_ids
 from src.utils import store_util, chart_util, progress_util, hive_blog, tournaments_info
 
 layout = dbc.Container([
@@ -130,7 +131,7 @@ layout = dbc.Container([
 
 @app.callback(Output('dropdown-user-selection-season', 'value'),
               Output('dropdown-user-selection-season', 'options'),
-              Input('trigger-daily-update', 'data'),
+              Input(nav_ids.trigger_daily, 'data'),
               )
 def update_user_list(tigger):
     return store_util.get_last_portfolio_selection(), store_util.get_account_names()

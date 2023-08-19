@@ -13,6 +13,7 @@ from src import battle_store, collection_store, portfolio
 from src.configuration import progress, config
 from src.pages import main_page, rating_page, nemesis_page, losing_page, season_page, config_page
 from src.pages.card_pages import card_page, card_page_filter
+from src.pages.navigation_pages import nav_ids
 from src.pages.portfolio_pages import portfolio_page
 from src.utils import store_util, progress_util
 
@@ -63,7 +64,7 @@ navbar = dbc.Navbar(
                 ),
                 width='auto',
             ),
-            dcc.Store(id='trigger-daily-update'),
+            dcc.Store(id=nav_ids.trigger_daily),
             html.Div(id='progress-daily'),
             html.Div(id='progress-season'),
             dcc.Interval(id='interval-global', interval=1000),
@@ -116,7 +117,7 @@ def display_page(pathname, search, search_hash):
 
 
 @app.callback(
-    Output('trigger-daily-update', 'data'),
+    Output(nav_ids.trigger_daily, 'data'),
     Input('load-new-values', 'n_clicks'),
 )
 def update__output(n_clicks):

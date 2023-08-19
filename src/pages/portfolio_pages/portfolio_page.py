@@ -8,6 +8,7 @@ from dash.exceptions import PreventUpdate
 from main import app
 from src.configuration import store
 from src.graphs import portfolio_graph
+from src.pages.navigation_pages import nav_ids
 from src.pages.portfolio_pages import portfolio_deposit, portfolio_editions, portfolio_sps
 from src.static import static_values_enum
 from src.static.static_values_enum import Edition
@@ -51,7 +52,7 @@ layout = dbc.Container([
 
 @app.callback(Output('dropdown-user-selection-portfolio', 'value'),
               Output('dropdown-user-selection-portfolio', 'options'),
-              Input('trigger-daily-update', 'data'),
+              Input(nav_ids.trigger_daily, 'data'),
               )
 def update_user_list(tigger):
     return store_util.get_last_portfolio_selection(), store_util.get_account_names()
@@ -60,7 +61,7 @@ def update_user_list(tigger):
 @app.callback(Output('filtered-portfolio-df', 'data'),
               Input('dropdown-user-selection-portfolio', 'value'),
               Input('trigger-portfolio-update', 'data'),
-              Input('trigger-daily-update', 'data'),
+              Input(nav_ids.trigger_daily, 'data'),
               )
 def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
     filtered_users = []

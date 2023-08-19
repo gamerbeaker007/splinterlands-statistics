@@ -2,7 +2,7 @@ import logging
 
 from src.api import spl
 from src.configuration import store, config
-from src.pages import navigation_page
+from src.pages.navigation_pages import navigation_page
 from src.pages.main_dash import app
 from src.static.static_values_enum import Format
 from src.utils import store_util

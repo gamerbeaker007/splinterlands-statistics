@@ -10,6 +10,7 @@ from main import app
 from src import analyse
 from src.configuration import store
 from src.pages import filter_page
+from src.pages.navigation_pages import nav_ids
 from src.static.static_values_enum import Element, Edition, CardType, Rarity, ManaCap, Format
 from src.utils import store_util
 
@@ -167,7 +168,7 @@ layout = dbc.Container([
 
 @app.callback(Output('dropdown-season-selection', 'options'),
               Output('dropdown-season-selection', 'value'),
-              Input('trigger-daily-update', 'data'))
+              Input(nav_ids.trigger_daily, 'data'))
 def update_seasons_played_list(tigger):
     season_played = store_util.get_seasons_played_list()
     first_played_season = ''
@@ -306,7 +307,7 @@ def filter_battle_df(store_filter_settings):
 
 @app.callback(Output('filter-settings', 'data'),
               Input('dropdown-user-selection', 'value'),
-              Input('trigger-daily-update', 'data'),
+              Input(nav_ids.trigger_daily, 'data'),
               )
 def filter_battle_df(account,
                      trigger_daily):

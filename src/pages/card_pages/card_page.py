@@ -1,7 +1,8 @@
 import dash_bootstrap_components as dbc
 from dash import html, dcc
 
-from src.pages.card_pages import weakest_cards, top_cards, card_page_filter
+from src.pages.card_pages import weakest_cards, top_cards, card_page_filter, card_page_ids, card_page_info, \
+    card_page_image
 
 layout = dbc.Container([
     dbc.Row([
@@ -11,8 +12,8 @@ layout = dbc.Container([
     dbc.Row(card_page_filter.layout),
 
     dbc.Row([
-        dbc.Col(html.H1('Col1 (detailed)')),
-        dbc.Col(html.H1('Col2 (image)')),
+        dbc.Col(card_page_info.layout),
+        dbc.Col(html.H1(card_page_image.layout)),
         dbc.Col(html.H1('Col3 (ruleset)')),
     ]),
 
@@ -20,12 +21,11 @@ layout = dbc.Container([
     dbc.Row(weakest_cards.layout),
 
 
-    dcc.Store(id='filtered-cards-df'),
-    dcc.Store(id='filtered-cards-losing-df'),
-    dcc.Store(id='filter-cards-settings'),
+    dcc.Store(id=card_page_ids.filtered_cards_top_df),
+    dcc.Store(id=card_page_ids.filtered_cards_losing_df),
+    dcc.Store(id=card_page_ids.filter_cards_settings),
 
-    dcc.Store(id='input_account_name'),
-    dcc.Store(id='input_card_name'),
-
+    dcc.Store(id=card_page_ids.input_account_name),
+    dcc.Store(id=card_page_ids.input_card_name),
 ])
 

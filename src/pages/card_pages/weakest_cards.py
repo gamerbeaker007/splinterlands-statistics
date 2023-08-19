@@ -2,15 +2,17 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input
 from dash.exceptions import PreventUpdate
+
 from main import app
+from src.pages.card_pages import card_page_ids
 
-
-layout = dbc.Row(id='weakest-against-cards')
+layout = dbc.Row([dbc.Row(html.H1("Weakest against")),
+                  dbc.Row(id=card_page_ids.weakest_against_cards)])
 
 
 @app.callback(
-    Output('weakest-against-cards', 'children'),
-    Input('filtered-cards-losing-df', 'data'),
+    Output(card_page_ids.weakest_against_cards, 'children'),
+    Input(card_page_ids.filtered_cards_losing_df, 'data'),
 )
 def update_weakest_cards(filtered_df):
     if not filtered_df:
@@ -32,7 +34,7 @@ def update_weakest_cards(filtered_df):
                         ]
                         ),
                     ],
-                    style={'height': '375px'},
+                    style={'height': '300px'},
                     className='mb-3',
                 )
             )

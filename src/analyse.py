@@ -347,8 +347,6 @@ def get_battles_with_used_card(df, card_name):
         battle_ids = df.loc[(df.card_name == card_name)].battle_id.tolist()
         result_df = df.loc[df.battle_id.isin(battle_ids)]
 
-        # remove unit that is being searched for
-        result_df = result_df.loc[(df.card_name != card_name)]
     return result_df
 
 
@@ -358,3 +356,9 @@ def get_losing_battles(df, battle_ids):
         result_df = df.loc[df.battle_id.isin(battle_ids)]
 
     return result_df
+
+
+def get_max_card_of_collection(account, card_name):
+    cards = store.collection.loc[(store.collection.player == account)& (store.collection.card_name == card_name)].copy()
+    return cards.level.max()
+

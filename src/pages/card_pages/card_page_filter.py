@@ -5,6 +5,8 @@ from dash.exceptions import PreventUpdate
 from main import app
 from src import analyse
 from src.configuration import store
+from src.pages.card_pages import card_page_ids
+from src.pages.navigation_pages import nav_ids
 from src.utils import store_util
 
 load_with_card_id = None
@@ -19,7 +21,7 @@ layout = dbc.Row([
             [
                 dbc.InputGroupText('Account'),
                 dcc.Dropdown(store_util.get_account_names(),
-                             id='dropdown-user-selection-card-overview',
+                             id=card_page_ids.dropdown_user_selection,
                              className='dbc',
                              style={'width': '70%'},
                              ),
@@ -31,7 +33,7 @@ layout = dbc.Row([
         dbc.InputGroup(
             [
                 dbc.InputGroupText('Played cards'),
-                dcc.Dropdown(id='dropdown-card-selection',
+                dcc.Dropdown(id=card_page_ids.dropdown_card_selection,
                              className='dbc',
                              style={'width': '70%'},
                              ),
@@ -43,11 +45,9 @@ layout = dbc.Row([
 ]),
 
 
-@app.callback(Output('dropdown-user-selection-card-overview', 'value'),
-              Input('dropdown-user-selection-card-overview', 'state'),
-              Input('trigger-daily-update', 'data'),
-
-              )
+@app.callback(Output(card_page_ids.dropdown_user_selection, 'value'),
+              Input(card_page_ids.dropdown_user_selection, 'state'),
+              Input(nav_ids.trigger_daily, 'data'))
 def update_account_value(state, daily_trigger):
     if load_with_account_name:
         return load_with_account_name
@@ -55,9 +55,9 @@ def update_account_value(state, daily_trigger):
         return store_util.get_first_account_name()
 
 
-@app.callback(Output('filtered-cards-df', 'data'),
-              Output('filtered-cards-losing-df', 'data'),
-              Input('filter-cards-settings', 'data'))
+@app.callback(Output(card_page_ids.filtered_cards_top_df, 'data'),
+              Output(card_page_ids.filtered_cards_losing_df, 'data'),
+              Input(card_page_ids.filter_cards_settings, 'data'))
 def filter_cards_df(store_filter_settings):
     if store_filter_settings is None or store_filter_settings['account'] == '':
         raise PreventUpdate
@@ -84,10 +84,10 @@ def filter_cards_df(store_filter_settings):
         return None, None
 
 
-@app.callback(Output('filter-cards-settings', 'data'),
-              Input('dropdown-user-selection-card-overview', 'value'),
-              Input('dropdown-card-selection', 'value'),
-              Input('trigger-daily-update', 'data'),
+@app.callback(Output(card_page_ids.filter_cards_settings, 'data'),
+              Input(card_page_ids.dropdown_user_selection, 'value'),
+              Input(card_page_ids.dropdown_card_selection, 'value'),
+              Input(nav_ids.trigger_daily, 'data'),
               )
 def update_filter_settings(account,
                            selected_card,
@@ -97,10 +97,10 @@ def update_filter_settings(account,
     return filter_settings
 
 
-@app.callback(Output('dropdown-card-selection', 'value'),
-              Output('dropdown-card-selection', 'options'),
-              Input('dropdown-user-selection-card-overview', 'value'),
-              Input('trigger-daily-update', 'data'),
+@app.callback(Output(card_page_ids.dropdown_card_selection, 'value'),
+              Output(card_page_ids.dropdown_card_selection, 'options'),
+              Input(card_page_ids.dropdown_user_selection, 'value'),
+              Input(nav_ids.trigger_daily, 'data'),
               )
 def update_card_list(user_selection, tigger):
     if load_with_account_name:

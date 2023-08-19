@@ -1,25 +1,29 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, Output, Input
+from dash import html, Output, Input, State
 from dash.exceptions import PreventUpdate
 from main import app
+from src.pages.card_pages import card_page_ids
 
-
-layout = dbc.Row(id='top-paired-cards')
+layout = dbc.Row([dbc.Row(html.H1("Top paired cards")),
+                  dbc.Row(id=card_page_ids.top_paired_cards)])
 
 
 @app.callback(
-    Output('top-paired-cards', 'children'),
-    Input('filtered-cards-df', 'data'),
+    Output(card_page_ids.top_paired_cards, 'children'),
+    Input(card_page_ids.filtered_cards_top_df, 'data'),
+    State(card_page_ids.filter_cards_settings, 'data')
 )
-def update_top_cards(filtered_df):
-    if not filtered_df :
+def update_top_cards(filtered_df, filter_settings):
+    if not filtered_df:
         raise PreventUpdate
 
     filtered_df = pd.read_json(filtered_df, orient='split')
 
     cards = []
     if not filtered_df.empty:
+        # remove the card that is being searched for
+        filtered_df = filtered_df.loc[filtered_df.card_name != filter_settings['selected-card']]
         filtered_df = filtered_df.head(5)
         for index, row in filtered_df.iterrows():
             cards.append(
@@ -35,7 +39,7 @@ def update_top_cards(filtered_df):
                         ]
                         ),
                     ],
-                    style={'height': '375px'},
+                    style={'height': '450px'},
                     className='mb-3',
                 )
             )

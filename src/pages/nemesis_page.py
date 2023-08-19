@@ -4,6 +4,7 @@ from dash import html, dcc, Input, Output
 
 from main import app
 from src import analyse
+from src.pages.navigation_pages import nav_ids
 from src.static import static_values_enum
 from src.static.static_values_enum import MatchType
 from src.utils import store_util
@@ -29,7 +30,7 @@ layout = dbc.Container([
 
 @app.callback(Output('dropdown-user-selection', 'value'),
               Output('dropdown-user-selection', 'options'),
-              Input('trigger-daily-update', 'data'),
+              Input(nav_ids.trigger_daily, 'data'),
               )
 def update_user_list(tigger):
     return store_util.get_first_account_name(), store_util.get_account_names()
@@ -37,7 +38,7 @@ def update_user_list(tigger):
 
 @app.callback(Output('dropdown-match-type-selection', 'value'),
               Output('dropdown-match-type-selection', 'options'),
-              Input('trigger-daily-update', 'data'),
+              Input(nav_ids.trigger_daily, 'data'),
               )
 def update_match_types_list(tigger):
     return 'ALL', ['ALL'] + MatchType.list_values()
