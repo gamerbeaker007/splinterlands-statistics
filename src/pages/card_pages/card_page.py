@@ -13,7 +13,7 @@ layout = dbc.Container([
 
     dbc.Row([
         dbc.Col(card_page_info.layout, style={'position': 'relative'}),
-        dbc.Col(html.H1(card_page_image.layout)),
+        dbc.Col(card_page_image.layout),
         dbc.Col(card_page_ruleset.layout, style={'position': 'relative'}),
     ]),
 

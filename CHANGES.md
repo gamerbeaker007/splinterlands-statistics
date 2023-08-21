@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## 0.6.0 WIP
 - FIX: skip zero now only skips when sum of DEC/MERIT/SPS == 0, not >0
+- Migrate data: add opponent to battle log 
+- Add card overview page, including clickable from main page.
+- Update/Extend Nemesis page
 
 
 ## 0.5.0

@@ -59,6 +59,14 @@ def get_account_names():
         return store.accounts.account_name.tolist()
 
 
+def get_played_players(account):
+    df = store.battle_big.loc[store.battle_big.account == account]
+    if df.empty:
+        return list()
+    else:
+        return df.opponent.sort_values().unique().tolist()
+
+
 def get_first_account_name():
     if store.accounts.empty:
         return ""

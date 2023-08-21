@@ -62,6 +62,7 @@ def add_battle_store_big_my(account, team, battle):
     inactive = battle['inactive']
     battle_id = battle['battle_queue_id_1']
     winner = battle['winner']
+    opponent = battle['player_2'] if battle['player_1'] == account else battle['player_1']
     result = "win" if winner == account else "loss"
 
     cards = list(team['monsters'])
@@ -85,6 +86,7 @@ def add_battle_store_big_my(account, team, battle):
                            'level': card['level'],
                            'edition': card['edition'],
                            'account': account,
+                           'opponent': opponent,
                            'created_date': created_date,
                            'match_type': match_type,
                            'format': match_format,

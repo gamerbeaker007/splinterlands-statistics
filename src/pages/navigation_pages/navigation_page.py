@@ -1,6 +1,3 @@
-import json
-import urllib
-
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
 from dash import html, Output, Input, dcc, ctx
@@ -11,7 +8,8 @@ from dash_iconify import DashIconify
 from main import app
 from src import battle_store, collection_store, portfolio
 from src.configuration import progress, config
-from src.pages import main_page, rating_page, nemesis_page, losing_page, season_page, config_page
+from src.pages import main_page, rating_page, losing_page, season_page, config_page
+from src.pages.nemesis_pages import nemesis_page
 from src.pages.card_pages import card_page, card_page_filter
 from src.pages.navigation_pages import nav_ids
 from src.pages.portfolio_pages import portfolio_page
