@@ -10,6 +10,7 @@ from main import app
 from src import analyse
 from src.configuration import store
 from src.pages import filter_page
+from src.pages.card_pages import card
 from src.pages.navigation_pages import nav_ids
 from src.static.static_values_enum import Element, Edition, CardType, Rarity, ManaCap, Format
 from src.utils import store_util
@@ -221,7 +222,6 @@ def update_main_table(filtered_df):
 )
 def redirect_to_page(active_cell, data, stored_filter_settings):
     if active_cell:
-        print(data[active_cell['row']]['card_name'])
         return dcc.Location(
             href='card?card_id=' + str(data[active_cell['row']]['card_detail_id'])
                  + '#account=' + str(stored_filter_settings['account'])
@@ -241,41 +241,11 @@ def update_top_cards(filtered_df, stored_filter_settings):
 
     filtered_df = pd.read_json(filtered_df, orient='split')
 
-    cards = []
+    result_layout = []
     if not filtered_df.empty:
-        filtered_df = filtered_df.head(5)
-        count = 0
-        for index, row in filtered_df.iterrows():
-            cards.append(
-                dbc.CardLink(
-                    dbc.Card([
-                        dbc.CardImg(src=row.url, top=True, style={'height': '200px', 'object-fit': 'contain'}),
-                        dbc.CardBody([
-                            html.P(str(row.card_name) + '\t\t★' + str(row.level), className='card-text'),
-                            html.P('Battles (W-L): ' + str(int(row.win)) + '-' + str(int(row.loss)),
-                                   className='card-text'),
-                            html.P('Battle count: ' + str(int(row.battles)), className='card-text'),
-                            html.P('Win: ' + str(row.win_percentage) + '%', className='card-text'),
-                        ]
-                        ),
-                    ],
-                        style={'height': '400px', 'text-decoration': 'none'},
-                        className='mb-3',
-                    ),
-                    href='card?card_id=' + str(row.card_detail_id) + '#account=' + account_name,
-                ),
-            )
-            count += 1
+        result_layout = card.get_card_columns(account_name, filtered_df, 5)
 
-    return [dbc.Col(card) for card in cards]
-
-
-for i in range(5):
-    @app.callback(Output('filtered-battle-df', 'data'),
-                  Input('card-' + str(i), 'n_clicks'))
-    def card_selection_callback(value):
-        print(value)
-        return ""
+    return result_layout
 
 
 @app.callback(Output('filtered-battle-df', 'data'),

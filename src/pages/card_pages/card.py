@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import html
 
 
-def get_card_columns(df, number, detailed=True):
+def get_card_columns(account, df, number, detailed=True, make_link=True):
     df = df.head(number)
     cards = []
     for index, row in df.iterrows():
@@ -23,14 +23,28 @@ def get_card_columns(df, number, detailed=True):
                                className='card-text',
                                style={'text-align': 'center', 'margin-bottom': '5px'}))
 
-        cards.append(
-            dbc.Card(
-                [
-                    dbc.CardImg(src=row.url, top=True, style={'height': '200px', 'object-fit': 'contain'}),
-                    dbc.CardBody(body),
-                ],
-                className='mb-3',
+        if make_link:
+            cards.append(
+                dbc.CardLink(
+                    dbc.Card([
+                        dbc.CardImg(src=row.url, top=True, style={'height': '200px', 'object-fit': 'contain'}),
+                        dbc.CardBody(body),
+                        ],
+                        className='mb-3',
+                    ),
+                    href='card?card_id=' + str(row.card_detail_id) + '#account=' + account,
+                    style={'text-decoration': 'none', 'color': 'inherit'},
+                ),
             )
-        )
+        else:
+            cards.append(
+                dbc.Card(
+                    [
+                        dbc.CardImg(src=row.url, top=True, style={'height': '200px', 'object-fit': 'contain'}),
+                        dbc.CardBody(body),
+                    ],
+                    className='mb-3',
+                )
+            )
 
     return [dbc.Col(card, className='mb-3') for card in cards]

@@ -97,8 +97,6 @@ def display_page(pathname, search, search_hash):
         return losing_page.layout
     if pathname == '/card':
         if search and search_hash:
-            print(search.split('=')[-1])
-            print(search_hash.split('=')[-1])
             card_page_filter.load_with_card_id = search.split('=')[-1]
             card_page_filter.load_with_account_name = search_hash.split('=')[-1]
         return card_page.layout

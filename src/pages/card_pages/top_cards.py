@@ -24,17 +24,18 @@ def update_top_cards(filtered_df, filter_settings):
     result_layout = []
 
     if not filtered_df.empty:
+        account = filter_settings['account']
         # remove the card that is being searched for
         filtered_df = filtered_df.loc[filtered_df.card_name != filter_settings['selected-card']]
 
         summoners_df = filtered_df.loc[filtered_df.card_type == CardType.summoner.value]
         if not summoners_df.empty:
             result_layout.append(dbc.Row(html.H3("Most paired with summoner (2)")))
-            result_layout.append(dbc.Row(card.get_card_columns(summoners_df, 2)))
+            result_layout.append(dbc.Row(card.get_card_columns(account, summoners_df, 2)))
 
         monsters_df = filtered_df.loc[filtered_df.card_type == CardType.monster.value]
         if not monsters_df.empty:
             result_layout.append(dbc.Row(html.H3("Most paired with units (5)")))
-            result_layout.append(dbc.Row(card.get_card_columns(monsters_df, 5)))
+            result_layout.append(dbc.Row(card.get_card_columns(account, monsters_df, 5)))
 
         return result_layout
