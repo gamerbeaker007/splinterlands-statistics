@@ -32,12 +32,15 @@ def update_top_cards(filtered_df, filter_settings):
                                                              filter_settings['selected-card'])
         return html.Div(
             [
-                html.H6('Battle statistics'),
-                html.P(str(row.card_name) + '\t\t★ ' + str(max_level_owned)),
+                html.H5('Battle statistics'),
+                html.P(str(row.card_name) + '\t\t★ ' + str(max_level_owned),
+                       style={'margin-bottom': '5px'}),
                 html.P('Battles (W-L): ' + str(int(row.win)) + '-' + str(int(row.loss)),
-                       className='card-text'),
-                html.P('Battle count: ' + str(int(row.battles))),
-                html.P('Win: ' + str(row.win_percentage) + '%'),
+                       style={'margin-bottom': '5px'}),
+                html.P('Battle count: ' + str(int(row.battles)),
+                       style={'margin-bottom': '5px'}),
+                html.P('Win: ' + str(row.win_percentage) + '%',
+                       style={'margin-bottom': '5px'}),
             ],
             className='mb-3',
         )
