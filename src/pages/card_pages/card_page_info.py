@@ -2,11 +2,15 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, State
 from dash.exceptions import PreventUpdate
+
 from main import app
 from src import analyse
 from src.pages.card_pages import card_page_ids
 
-layout = dbc.Row(id=card_page_ids.card_info, justify="center", align="center", className="h-50")
+layout = dbc.Row(id=card_page_ids.card_info, style={'position': 'absolute',
+                                                    'top': '50%',
+                                                    'left': '50%',
+                                                    'transform': 'translate(-50%,-50%)'})
 
 
 @app.callback(
@@ -20,7 +24,6 @@ def update_top_cards(filtered_df, filter_settings):
 
     filtered_df = pd.read_json(filtered_df, orient='split')
 
-    cards = []
     if not filtered_df.empty:
         # remove the card that is being searched for
         filtered_df = filtered_df.loc[filtered_df.card_name == filter_settings['selected-card']]
@@ -29,13 +32,12 @@ def update_top_cards(filtered_df, filter_settings):
                                                              filter_settings['selected-card'])
         return html.Div(
             [
-                html.H4('Card statistics'),
+                html.H6('Battle statistics'),
                 html.P(str(row.card_name) + '\t\t★ ' + str(max_level_owned)),
                 html.P('Battles (W-L): ' + str(int(row.win)) + '-' + str(int(row.loss)),
                        className='card-text'),
                 html.P('Battle count: ' + str(int(row.battles))),
                 html.P('Win: ' + str(row.win_percentage) + '%'),
             ],
-            style={'height': '250px'},
             className='mb-3',
         )

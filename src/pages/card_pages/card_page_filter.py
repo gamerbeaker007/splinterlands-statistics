@@ -57,6 +57,7 @@ def update_account_value(state, daily_trigger):
 
 @app.callback(Output(card_page_ids.filtered_cards_top_df, 'data'),
               Output(card_page_ids.filtered_cards_losing_df, 'data'),
+              Output(card_page_ids.filtered_cards_battle_df, 'data'),
               Input(card_page_ids.filter_cards_settings, 'data'))
 def filter_cards_df(store_filter_settings):
     if store_filter_settings is None or store_filter_settings['account'] == '':
@@ -65,6 +66,7 @@ def filter_cards_df(store_filter_settings):
     if store_filter_settings['selected-card']:
         # Filter before processing is done
         my_team = analyse.filter_battles(store.battle_big, filter_account=store_filter_settings['account'])
+        battles_df = my_team.loc[my_team.card_name == store_filter_settings['selected-card']].copy()
         my_team = analyse.get_battles_with_used_card(my_team, store_filter_settings['selected-card'])
         battle_ids = my_team.battle_id.tolist()
 
@@ -79,9 +81,10 @@ def filter_cards_df(store_filter_settings):
         losing_against = analyse.process_battles_win_percentage(losing_against, group_by_including_level=False)
 
         return (my_team.to_json(date_format='iso', orient='split'),
-                losing_against.to_json(date_format='iso', orient='split'))
+                losing_against.to_json(date_format='iso', orient='split'),
+                battles_df.to_json(date_format='iso', orient='split'))
     else:
-        return None, None
+        return None, None, None
 
 
 @app.callback(Output(card_page_ids.filter_cards_settings, 'data'),

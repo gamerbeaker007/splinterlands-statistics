@@ -4,7 +4,8 @@ from dash import html, Output, Input
 from dash.exceptions import PreventUpdate
 
 from main import app
-from src.pages.card_pages import card_page_ids
+from src.pages.card_pages import card_page_ids, card
+from src.static.static_values_enum import CardType
 
 layout = dbc.Row([dbc.Row(html.H1("Weakest against")),
                   dbc.Row(id=card_page_ids.weakest_against_cards)])
@@ -20,23 +21,20 @@ def update_weakest_cards(filtered_df):
 
     filtered_df = pd.read_json(filtered_df, orient='split')
 
-    cards = []
-    if not filtered_df.empty:
-        filtered_df = filtered_df.head(5)
-        for index, row in filtered_df.iterrows():
-            cards.append(
-                dbc.Card(
-                    [
-                        dbc.CardImg(src=row.url, top=True, style={'height': '200px', 'object-fit': 'contain'}),
-                        dbc.CardBody([
-                            html.P(str(row.card_name) + '\t\t★ combined', className='card-text'),
-                            html.P('Battle count: ' + str(int(row.battles)), className='card-text'),
-                        ]
-                        ),
-                    ],
-                    style={'height': '300px'},
-                    className='mb-3',
-                )
-            )
+    result_layout = []
 
-    return [dbc.Col(card) for card in cards]
+    if not filtered_df.empty:
+        summoners_df = filtered_df.loc[filtered_df.card_type == CardType.summoner.value]
+        if not summoners_df.empty:
+            result_layout.append(dbc.Row(html.H3("Most lost against  summoner (2)")))
+            result_layout.append(dbc.Row(card.get_card_columns(summoners_df, 2, detailed=False)))
+
+        monsters_df = filtered_df.loc[filtered_df.card_type == CardType.monster.value]
+        if not monsters_df.empty:
+            result_layout.append(dbc.Row(html.H3("Most lost against units (5)")))
+            result_layout.append(dbc.Row(card.get_card_columns(monsters_df, 5, detailed=False)))
+
+        return result_layout
+
+    if not filtered_df:
+        raise PreventUpdate

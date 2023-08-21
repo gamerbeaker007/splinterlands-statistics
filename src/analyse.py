@@ -130,22 +130,22 @@ def process_battles_win_percentage(df, group_by_including_level=True):
         loss = new_df.loc[(new_df.result == 'loss')].rename(columns={"count": "loss", }).drop(['result'], axis=1)
         total_df = win.merge(loss, on=merge_columns, how='outer')
         total_df = total_df.fillna(0)
+
+        if not group_by_including_level:
+            total_df['level'] = total_df.apply(lambda row: df.loc[df.card_detail_id == row.card_detail_id].level.max(), axis=1)
+
         total_df['win_to_loss_ratio'] = total_df.win / total_df.loss
         total_df['battles'] = total_df.win + total_df.loss
         total_df['win_ratio'] = total_df.win / total_df.battles
         total_df['win_percentage'] = total_df.win_ratio * 100
         total_df = total_df.round(2)
 
-        if group_by_including_level:
-            total_df['url_markdown'] = total_df.apply(lambda row: get_image_url_markdown(row['card_name'],
-                                                                                         row['level'],
-                                                                                         row['edition']), axis=1)
-            total_df['url'] = total_df.apply(lambda row: get_image_url(row['card_name'],
-                                                                       row['level'],
-                                                                       row['edition']), axis=1)
-        else:
-            total_df['url_markdown'] = total_df.apply(lambda row: get_art_url_markdown(row['card_name']), axis=1)
-            total_df['url'] = total_df.apply(lambda row: get_art_url(row['card_name']), axis=1)
+        total_df['url_markdown'] = total_df.apply(lambda row: get_image_url_markdown(row['card_name'],
+                                                                                     row['level'],
+                                                                                     row['edition']), axis=1)
+        total_df['url'] = total_df.apply(lambda row: get_image_url(row['card_name'],
+                                                                   row['level'],
+                                                                   row['edition']), axis=1)
 
         total_df.sort_values(['battles', 'win_percentage'], ascending=False, inplace=True)
 
