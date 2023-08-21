@@ -143,7 +143,7 @@ def add_losing_battle_team(account, team, battle):
     rulesets = battle['ruleset']
     inactive = battle['inactive']
     battle_id = battle['battle_queue_id_1']
-    opponent = battle['winner']
+    opponent = battle['player_2'] if battle['player_1'] == account else battle['player_1']
 
     cards = list(team['monsters'])
     cards.append(team['summoner'])

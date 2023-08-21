@@ -6,7 +6,7 @@ from main import app
 from src import analyse
 from src.configuration import store
 from src.pages.navigation_pages import nav_ids
-from src.pages.nemesis_pages import nemesis_page_ids, nemesis_page_opponent
+from src.pages.nemesis_pages import nemesis_page_ids, nemesis_page_opponent, nemesis_page_battles
 from src.static.static_values_enum import MatchType
 from src.utils import store_util
 
@@ -46,6 +46,9 @@ layout = dbc.Container([
         dbc.Col(html.H1("COL2 ")),
         dbc.Col(html.H1("COL3 "), style={'position': 'relative'}),
     ]),
+
+    dbc.Row(html.H3('Last 5 battle')),
+    dbc.Row(nemesis_page_battles.layout),
 
     html.Hr(),
     dbc.Row(dbc.Col(dbc.InputGroup(

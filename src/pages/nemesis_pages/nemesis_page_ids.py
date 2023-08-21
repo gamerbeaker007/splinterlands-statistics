@@ -8,4 +8,6 @@ filtered_nemesis_df = 'filtered-nemesis-df'
 filtered_against_df = 'filtered-nemesis--against-df'
 
 nemesis = 'nemesis'
+
 opponent_stats = 'nemesis-opponent-stats'
+opponent_battles = 'nemesis-opponent-battles'
