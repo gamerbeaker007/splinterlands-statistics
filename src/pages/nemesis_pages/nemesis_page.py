@@ -47,7 +47,7 @@ layout = dbc.Container([
         # dbc.Col(html.H1("COL3 "), style={'position': 'relative'}),
     ]),
 
-    dbc.Row(html.H3('Last 5 battle')),
+    dbc.Row(html.H3('Last 5 battles')),
     dbc.Row(nemesis_page_battles.layout),
 
     html.Hr(),
