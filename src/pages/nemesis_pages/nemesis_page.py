@@ -14,7 +14,6 @@ layout = dbc.Container([
     dbc.Row(html.H1("Nemesis"), className='mb-3'),
     dbc.Row([
         dbc.Col(
-            # html.Div(
             dbc.InputGroup(
                 [
                     dbc.InputGroupText('Account'),
@@ -43,8 +42,8 @@ layout = dbc.Container([
 
     dbc.Row([
         dbc.Col(nemesis_page_opponent.layout),
-        dbc.Col(html.H1("COL2 ")),
-        dbc.Col(html.H1("COL3 "), style={'position': 'relative'}),
+        # dbc.Col(html.H1("COL2 ")),
+        # dbc.Col(html.H1("COL3 "), style={'position': 'relative'}),
     ]),
 
     dbc.Row(html.H3('Last 5 battle')),

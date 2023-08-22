@@ -15,6 +15,62 @@ from src.pages.nemesis_pages import nemesis_page_ids
 layout = dbc.Row(id=nemesis_page_ids.opponent_battles)
 
 
+def get_mana_div(mana):
+    url = 'https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/bg_mana.png'
+    div_style = {
+        'width': '50px',
+        'height': '50px',
+        'position': 'relative',
+    }
+    img_style = {'background-image': 'url(' + str(url) + ')',
+                 'background-size': '100%',
+                 'height': '50px',
+                 'width': '50px'}
+
+    text_style = {
+        'text-align': 'center',
+        'padding-top': '10px'
+    }
+
+    return dbc.Col(style=div_style,
+                   width=1,
+                   className='m-1',
+                   children=dbc.Col(style=img_style, children=html.H5(str(mana), style=text_style)))
+
+
+def get_ruleset_div(rule_sets):
+    prefix = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/rulesets/new/img_combat-rule_'
+    suffix = '_150.png'
+
+    ruleset_layout = []
+    for ruleset in rule_sets:
+        replaced = ruleset.replace(' ', '-').lower()
+        replaced = replaced.replace('&-', '').lower()  # Up close & Personal
+        replaced = replaced.replace('?', '-').lower()  # Are you not entertained?
+
+        url = prefix + replaced + suffix
+
+        img_style = {'height': '50px',
+                     'width': '50px'}
+        ruleset_layout.append(html.Img(src=url, title=ruleset, style=img_style, className='m-1'))
+
+    return dbc.Col(children=ruleset_layout)
+
+
+def get_replay_link(battle_id):
+    link = 'https://splinterlands.com/?p=battle&id=' + battle_id
+    img = 'https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/icon_replay_active.svg'
+    img_style = {'height': '40px',
+                 'width': '40px'}
+    return dbc.Col(className='m-1 pt-1',
+                   children=html.A(title=link,
+                                   href=link,
+                                   target='_black',
+                                   children=html.Img(src=img,
+                                                     title='Replay',
+                                                     style=img_style)))
+
+
 @app.callback(
     Output(nemesis_page_ids.opponent_battles, 'children'),
     Input(nemesis_page_ids.filtered_against_df, 'data'),
@@ -39,10 +95,12 @@ def update_battles(filtered_df):
                 opponent_team = battle_details['team1']
 
             date = parser.parse(battle_row['created_date'])
+            mana = battle_row['mana_cap']
+            rule_sets = battle_row['ruleset'].split('|')
             battle_info_row = dbc.Row(children=[dbc.Col(str(date.date()), width=2),
-                                                dbc.Col(html.P("MANA")),
-                                                dbc.Col(html.P("Ruleset")),
-                                                dbc.Col(html.P("REPLAY"))
+                                                get_mana_div(mana),
+                                                get_ruleset_div(rule_sets),
+                                                get_replay_link(battle_id)
                                                 ])
 
             battle_row = dbc.Row(children=[
@@ -53,7 +111,7 @@ def update_battles(filtered_df):
             row_result.append(battle_info_row)
             row_result.append(battle_row)
 
-            result_layout.append(dbc.Row(row_result))
+            result_layout.append(dbc.Row(row_result, className='mb-3 p-1 border border-primary rounded bg-light text-primary'))
 
     return result_layout
 
@@ -80,84 +138,3 @@ def get_team(my_team, home_team=True):
         result.append(html.Img(src=url, style={'height': '150px'}))
 
     return result
-
-# def get_team(my_team, home_team=True):
-#     result = []
-#
-#     if home_team:
-#         card_name = config.card_details_df.loc[my_team['summoner']['card_detail_id']]['name']
-#         url = analyse.get_image_url(card_name, my_team['summoner']['level'], my_team['summoner']['edition'])
-#
-#         div_style = {
-#             'width': '100px',
-#             'height': '100px',
-#             'position': 'relative',
-#         }
-#         img_style = {'background-image': 'url(' + str(url) + ')',
-#                      'background-position': 'center 15%',
-#                      'background-size': '170%',
-#                      'border-radius': '50%',
-#                      'color': 'rgba(0,0,0,0)',
-#                      'display': 'block',
-#                      'height': '100px',
-#                      'object-fit': 'cover',
-#                      'overflow': 'hidden',
-#                      'width': '100px'}
-#
-#         result.append(html.Div(style=div_style,
-#                                children=html.Span('test', style=img_style)
-#                                )
-#                       )
-#
-#     for unit in my_team['monsters']:
-#         card_name = config.card_details_df.loc[unit['card_detail_id']]['name']
-#         url = analyse.get_image_url(card_name, unit['level'],
-#                                     unit['edition'])
-#
-#         div_style = {
-#             'width': '64px',
-#             'height': '64px',
-#             'position': 'relative',
-#         }
-#         img_style = {'background-image': 'url(' + str(url) + ')',
-#                      'background-position': 'center 15%',
-#                      'background-size': '170%',
-#                      'border-radius': '50%',
-#                      'color': 'rgba(0,0,0,0)',
-#                      'display': 'block',
-#                      'height': '64px',
-#                      'object-fit': 'cover',
-#                      'overflow': 'hidden',
-#                      'width': '64px'}
-#
-#         result.append(html.Div(style=div_style,
-#                                children=html.Span('test', style=img_style)
-#                                )
-#                       )
-#
-#     if not home_team:
-#         card_name = config.card_details_df.loc[my_team['summoner']['card_detail_id']]['name']
-#         url = analyse.get_image_url(card_name, my_team['summoner']['level'], my_team['summoner']['edition'])
-#
-#         div_style = {
-#             'width': '100px',
-#             'height': '100px',
-#             'position': 'relative',
-#         }
-#         img_style = {'background-image': 'url(' + str(url) + ')',
-#                      'background-position': 'center 15%',
-#                      'background-size': '170%',
-#                      'border-radius': '50%',
-#                      'color': 'rgba(0,0,0,0)',
-#                      'display': 'block',
-#                      'height': '100px',
-#                      'object-fit': 'cover',
-#                      'overflow': 'hidden',
-#                      'width': '100px'}
-#
-#         result.append(html.Div(style=div_style,
-#                                children=html.Span('test', style=img_style)
-#                                )
-#                       )
-#
-#     return result
