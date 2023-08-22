@@ -1,6 +1,7 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, dcc, Input, Output, State
+from dash.exceptions import PreventUpdate
 
 from main import app
 from src import analyse
@@ -76,6 +77,9 @@ layout = dbc.Container([
               Input(nemesis_page_ids.dropdown_user_selection, 'value'),
               Input(nav_ids.trigger_daily, 'data'))
 def update_account_value(account, daily_trigger):
+    if not account:
+        raise PreventUpdate
+
     players = store_util.get_played_players(account)
     if len(players) > 0:
         return players[0], players
@@ -137,6 +141,9 @@ def filter_nemesis_df(account, filter_match_type):
               Input(nemesis_page_ids.dropdown_against_selection, 'value'),
               )
 def filter_opponent_df(account, opponent):
+    if not account or not opponent:
+        raise PreventUpdate
+
     df = store.battle_big.loc[(store.battle_big.account == account) & (store.battle_big.opponent == opponent)]
     df = df.drop_duplicates(subset=["battle_id"], keep='first')
     return df.to_json(date_format='iso', orient='split')

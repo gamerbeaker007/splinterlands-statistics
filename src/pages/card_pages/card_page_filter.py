@@ -107,19 +107,26 @@ def update_filter_settings(account,
               Input(nav_ids.trigger_daily, 'data'),
               )
 def update_card_list(user_selection, tigger):
+    if not user_selection:
+        raise PreventUpdate
+
     if load_with_account_name:
         df = analyse.filter_battles(store.battle_big, filter_account=load_with_account_name)
     else:
         df = analyse.filter_battles(store.battle_big, filter_account=user_selection)
 
-    played_cards = df.card_name.unique().tolist()
+    if not df.empty:
+        played_cards = df.card_name.unique().tolist()
 
-    if load_with_card_id:
-        value = df.loc[df.card_detail_id == int(load_with_card_id)].card_name.unique().tolist()[0]
-    else:
-        if len(played_cards) > 0:
-            value = played_cards[0]
+        if load_with_card_id:
+            value = df.loc[df.card_detail_id == int(load_with_card_id)].card_name.unique().tolist()[0]
         else:
-            value = None
+            if len(played_cards) > 0:
+                value = played_cards[0]
+            else:
+                value = None
+    else:
+        value = None
+        played_cards = []
     return value, played_cards
 
