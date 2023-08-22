@@ -19,7 +19,7 @@ layout = dbc.Row([dbc.Row(html.H1("Weakest against")),
 )
 def update_weakest_cards(filtered_df, stored_filter_settings):
     if not filtered_df:
-        raise PreventUpdate
+        return "No card selected"
 
     filtered_df = pd.read_json(filtered_df, orient='split')
 

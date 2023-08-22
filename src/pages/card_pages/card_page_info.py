@@ -1,7 +1,6 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, State
-from dash.exceptions import PreventUpdate
 
 from main import app
 from src import analyse
@@ -20,7 +19,7 @@ layout = dbc.Row(id=card_page_ids.card_info, style={'position': 'absolute',
 )
 def update_top_cards(filtered_df, filter_settings):
     if not filtered_df:
-        raise PreventUpdate
+        return "No card selected"
 
     filtered_df = pd.read_json(filtered_df, orient='split')
 

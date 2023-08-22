@@ -19,7 +19,8 @@ layout = dbc.Row(id=card_page_ids.card_ruleset, style={'position': 'absolute',
 )
 def update_top_cards(filtered_df):
     if not filtered_df:
-        raise PreventUpdate
+        return "No card selected"
+
     result_layout = []
 
     filtered_df = pd.read_json(filtered_df, orient='split')

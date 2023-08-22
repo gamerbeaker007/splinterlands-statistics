@@ -17,7 +17,7 @@ layout = dbc.Row([dbc.Row(html.H1("Top paired cards")),
 )
 def update_top_cards(filtered_df, filter_settings):
     if not filtered_df:
-        raise PreventUpdate
+        return "No card selected"
 
     filtered_df = pd.read_json(filtered_df, orient='split')
 

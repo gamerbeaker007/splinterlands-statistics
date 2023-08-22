@@ -68,23 +68,24 @@ def filter_cards_df(store_filter_settings):
         my_team = analyse.filter_battles(store.battle_big, filter_account=store_filter_settings['account'])
         battles_df = my_team.loc[my_team.card_name == store_filter_settings['selected-card']].copy()
         my_team = analyse.get_battles_with_used_card(my_team, store_filter_settings['selected-card'])
-        battle_ids = my_team.battle_id.tolist()
+        if not my_team.empty:
+            battle_ids = my_team.battle_id.tolist()
 
-        # Processing
-        my_team = analyse.process_battles_win_percentage(my_team, group_by_including_level=False)
+            # Processing
+            my_team = analyse.process_battles_win_percentage(my_team, group_by_including_level=False)
 
-        losing_against = analyse.filter_battles(store.losing_big, filter_account=store_filter_settings['account'])
-        losing_against = analyse.get_losing_battles(losing_against, battle_ids)
+            losing_against = analyse.filter_battles(store.losing_big, filter_account=store_filter_settings['account'])
+            losing_against = analyse.get_losing_battles(losing_against, battle_ids)
 
-        # Processing
-        losing_against['result'] = 'loss'
-        losing_against = analyse.process_battles_win_percentage(losing_against, group_by_including_level=False)
+            # Processing
+            losing_against['result'] = 'loss'
+            losing_against = analyse.process_battles_win_percentage(losing_against, group_by_including_level=False)
 
-        return (my_team.to_json(date_format='iso', orient='split'),
-                losing_against.to_json(date_format='iso', orient='split'),
-                battles_df.to_json(date_format='iso', orient='split'))
-    else:
-        return None, None, None
+            return (my_team.to_json(date_format='iso', orient='split'),
+                    losing_against.to_json(date_format='iso', orient='split'),
+                    battles_df.to_json(date_format='iso', orient='split'))
+
+    return None, None, None
 
 
 @app.callback(Output(card_page_ids.filter_cards_settings, 'data'),
@@ -116,6 +117,9 @@ def update_card_list(user_selection, tigger):
     if load_with_card_id:
         value = df.loc[df.card_detail_id == int(load_with_card_id)].card_name.unique().tolist()[0]
     else:
-        value = played_cards[0]
+        if len(played_cards) > 0:
+            value = played_cards[0]
+        else:
+            value = None
     return value, played_cards
 
