@@ -72,14 +72,14 @@ def filter_cards_df(store_filter_settings):
             battle_ids = my_team.battle_id.tolist()
 
             # Processing
-            my_team = analyse.process_battles_win_percentage(my_team, group_by_including_level=False)
+            my_team = analyse.process_battles_win_percentage(my_team, group_levels=True)
 
             losing_against = analyse.filter_battles(store.losing_big, filter_account=store_filter_settings['account'])
             losing_against = analyse.get_losing_battles(losing_against, battle_ids)
 
             # Processing
             losing_against['result'] = 'loss'
-            losing_against = analyse.process_battles_win_percentage(losing_against, group_by_including_level=False)
+            losing_against = analyse.process_battles_win_percentage(losing_against, group_levels=True)
 
             return (my_team.to_json(date_format='iso', orient='split'),
                     losing_against.to_json(date_format='iso', orient='split'),

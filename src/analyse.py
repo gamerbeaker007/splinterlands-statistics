@@ -98,7 +98,7 @@ def get_top_3_losing_account(account, filter_match_type):
         return temp_df.head(3)
 
 
-def process_battles_win_percentage(df, group_by_including_level=True):
+def process_battles_win_percentage(df, group_levels=False):
     if df.empty:
         return df
 
@@ -118,7 +118,7 @@ def process_battles_win_percentage(df, group_by_including_level=True):
                      'color',
                      'secondary_color']
 
-    if group_by_including_level:
+    if not group_levels:
         group_by_columns.append('level')
         merge_columns.append('level')
 
@@ -131,7 +131,7 @@ def process_battles_win_percentage(df, group_by_including_level=True):
         total_df = win.merge(loss, on=merge_columns, how='outer')
         total_df = total_df.fillna(0)
 
-        if not group_by_including_level:
+        if  group_levels:
             total_df['level'] = total_df.apply(lambda row: df.loc[df.card_detail_id == row.card_detail_id].level.max(), axis=1)
 
         total_df['win_to_loss_ratio'] = total_df.win / total_df.loss

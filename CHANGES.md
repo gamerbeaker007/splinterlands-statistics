@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Migrate data: fix opponent for draw battle 
 - Add card overview page, including clickable from main page.
 - Update/Extend Nemesis page
+- Add group level option to main page
 
 
 ## 0.5.0

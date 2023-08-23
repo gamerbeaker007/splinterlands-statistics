@@ -37,6 +37,7 @@ filter_settings['from_date'] = datetime.datetime(2000, 1, 1)
 filter_settings['rule_sets'] = []
 filter_settings['account'] = ''
 filter_settings['sort_by'] = []
+filter_settings['group_levels'] = []
 
 layout = dbc.Container([
     dbc.Row([
@@ -150,6 +151,22 @@ layout = dbc.Container([
                 className='mb-3',
             ),
         ),
+        dbc.Col(
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText('Group levels'),
+                    dcc.RadioItems(options=['True', 'False'],
+                                   value='False',
+                                   inline=True,
+                                   id='radio-by-selection',
+                                   className='mt-2 dbc',
+                                   labelStyle={'margin-left': '10px', 'display': 'inline-block'}
+                                   ),
+
+                ],
+                className='mb-3',
+            ),
+        ),
     ]),
 
     dbc.Row(id='top-cards'),
@@ -250,27 +267,28 @@ def update_top_cards(filtered_df, stored_filter_settings):
 
 @app.callback(Output('filtered-battle-df', 'data'),
               Input('filter-settings', 'data'))
-def filter_battle_df(store_filter_settings):
-    if store_filter_settings is None or store_filter_settings['account'] == '':
+def filter_battle_df(stored_filter_settings):
+    if stored_filter_settings is None or stored_filter_settings['account'] == '':
         raise PreventUpdate
 
     # Filter before processing is done
-    df = analyse.filter_battles(store.battle_big, filter_account=store_filter_settings['account'])
-    df = analyse.filter_date(df, filter_settings)
-    df = analyse.filter_mana_cap(df, filter_settings)
-    df = analyse.filter_rule_sets(df, filter_settings)
-    df = analyse.filter_format(df, filter_settings)
+    df = analyse.filter_battles(store.battle_big, filter_account=stored_filter_settings['account'])
+    df = analyse.filter_date(df, stored_filter_settings)
+    df = analyse.filter_mana_cap(df, stored_filter_settings)
+    df = analyse.filter_rule_sets(df, stored_filter_settings)
+    df = analyse.filter_format(df, stored_filter_settings)
 
     # Processing
-    df = analyse.process_battles_win_percentage(df)
+    df = analyse.process_battles_win_percentage(df,
+                                                group_levels=stored_filter_settings['group_levels'])
 
     # Filter after processing is done
-    df = analyse.filter_element(df, filter_settings)
-    df = analyse.filter_edition(df, filter_settings)
-    df = analyse.filter_card_type(df, filter_settings)
-    df = analyse.filter_rarity(df, filter_settings)
-    df = analyse.filter_battle_count(df, filter_settings['minimal-battles'])
-    df = analyse.sort_by(df, filter_settings['sort_by'])
+    df = analyse.filter_element(df, stored_filter_settings)
+    df = analyse.filter_edition(df, stored_filter_settings)
+    df = analyse.filter_card_type(df, stored_filter_settings)
+    df = analyse.filter_rarity(df, stored_filter_settings)
+    df = analyse.filter_battle_count(df, stored_filter_settings['minimal-battles'])
+    df = analyse.sort_by(df, stored_filter_settings['sort_by'])
 
     return df.to_json(date_format='iso', orient='split')
 
@@ -303,6 +321,16 @@ def filter_season_df(season_id):
               Input('dropdown-sort-by-selection', 'value'))
 def sort_by(sorts):
     filter_settings['sort_by'] = sorts
+    return filter_settings
+
+
+@app.callback(Output('filter-settings', 'data'),
+              Input('radio-by-selection', 'value'))
+def set_group_levels(value):
+    if value == 'True':
+        filter_settings['group_levels'] = True
+    else:
+        filter_settings['group_levels'] = False
     return filter_settings
 
 
