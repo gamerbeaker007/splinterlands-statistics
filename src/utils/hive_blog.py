@@ -16,6 +16,7 @@ gold_potion_icon = "![alchemy.png](https://images.hive.blog/20x0/https://files.p
 legendary_potion_icon = "![legendary.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AK3gbhdHjfaQxKVM39VfeHCw25haYejvUT17E8WBgveTKY5rucpRY7AbjgsAhdu.png)"
 packs_icon = "![chaosPack.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/Eo8M4f1Zieju9ibwbs6Tnp3KvN9Kb93HkqwMi3FqanTmV2XoNw7pmV4MbjDSxbgiSdo.png)"
 
+intro_img = "https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23tvcWH8iJph9FgtR4FeZoxNrHTDsvH7aUXfeunpcxNZKFLhdSCBBqUtW5e23eDRpT2SM.png"
 
 def get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles):
     if not last_season_wild_battles.empty and not last_season_wild_battles.rating.isna().values[0]:
@@ -369,10 +370,7 @@ def get_introduction_chapter(account_names):
     account_suffix = ""
     if len(account_names) > 1:
         account_suffix = " (" + str(get_account_names_str(account_names)) + ")"
-    return """ 
-https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23xL2wuMjBE9nsXndxmCoPcGJARoydfwp52UTXVez31FnNbXKtkBqVx3eUBmybtD6L8J6.gif
-
-
+    return intro_img + """
 <br><br><br>
 ![Season summary divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tSKXK2kCpyZXosK34FeU6MPbw4RGCrrs7TY1tgy4k5Lgndj2JNPEbpjr8JAgQ7kW8v1.png)
 
@@ -409,9 +407,7 @@ def get_plot_placeholder(account_name=None):
     return """
 ## <div class="phishy"><center>Season overall stats and history""" + str(account_suffix) + """</center></div>
 
-### Modern
-
-### Wild
+### Battles
 
 ### Earnings
  

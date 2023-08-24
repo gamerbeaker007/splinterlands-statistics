@@ -1,14 +1,14 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
-## 0.6.0 WIP
+## 0.6.0
 - FIX: skip zero now only skips when sum of DEC/MERIT/SPS == 0, not >0
 - Migrate data: add opponent to battle log 
 - Migrate data: fix opponent for draw battle 
 - Add card overview page, including clickable from main page.
 - Update/Extend Nemesis page
 - Add group level option to main page
-
+- Change hive blog intro image
 
 ## 0.5.0
 - FIX: Break update portfolio when hive market is down
