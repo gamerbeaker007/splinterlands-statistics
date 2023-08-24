@@ -26,14 +26,15 @@ def get_card_columns(account, df, number, detailed=True, make_link=True):
         if make_link:
             cards.append(
                 dbc.CardLink(
-                    dbc.Card([
-                        dbc.CardImg(src=row.url, top=True, style={'height': '200px', 'object-fit': 'contain'}),
-                        dbc.CardBody(body),
+                    dbc.Card(children=[
+                            dbc.CardImg(src=row.url, top=True, style={'height': '200px', 'object-fit': 'contain'}),
+                            dbc.CardBody(body),
                         ],
-                        className='mb-3',
+                        className='mb-3 card-hover',
                     ),
                     href='card?card_id=' + str(row.card_detail_id) + '#account=' + account,
-                    style={'text-decoration': 'none', 'color': 'inherit'},
+                    style={'text-decoration': 'none',
+                           'color': 'inherit'},
                 ),
             )
         else:

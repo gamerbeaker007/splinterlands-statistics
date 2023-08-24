@@ -8,7 +8,7 @@ dbc_css = 'https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.mi
 load_figure_template([config.dark_theme, config.light_theme])
 
 app = Dash(#transforms=[LogTransform()],
-                external_stylesheets=[dbc.themes.CYBORG, dbc_css],
+                external_stylesheets=[dbc.themes.CYBORG, dbc_css,  '/assets/style.css'],
                 # meta_tags=[{'name': 'viewport', 'content': 'width=device-width'}],
                 suppress_callback_exceptions=True
                 )
