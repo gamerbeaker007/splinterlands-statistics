@@ -33,7 +33,7 @@ for battle_format in Format:
     filter_settings[battle_format.value] = False
 
 filter_settings['minimal-battles'] = 0
-filter_settings['from_date'] = datetime.datetime(2000, 1, 1)
+filter_settings['from_date'] = "2001-01-01T00:00:00.000Z"
 filter_settings['rule_sets'] = []
 filter_settings['account'] = ''
 filter_settings['sort_by'] = []

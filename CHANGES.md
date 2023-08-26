@@ -1,6 +1,9 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
+## 0.7.0
+- FIX: Home page default from date filter causing error when not loaded fully. 
+
 ## 0.6.0
 - FIX: skip zero now only skips when sum of DEC/MERIT/SPS == 0, not >0
 - Migrate data: add opponent to battle log 
