@@ -2,7 +2,6 @@ import pandas as pd
 
 season_end_dates = pd.DataFrame()
 accounts = pd.DataFrame()
-battle = pd.DataFrame()
 battle_big = pd.DataFrame()
 losing_big = pd.DataFrame()
 last_processed = pd.DataFrame()

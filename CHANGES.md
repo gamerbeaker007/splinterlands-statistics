@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 ## 0.6.0
 - FIX: skip zero now only skips when sum of DEC/MERIT/SPS == 0, not >0
 - Migrate data: add opponent to battle log 
-- Migrate data: fix opponent for draw battle 
+- Migrate data: add Brawl as match type to battle log 
+- Migrate data: fix opponent for draw battles
+- Remove recording of battle (battle.csv), keep battle_big more detailed information
 - Add card overview page, including clickable from main page.
 - Update/Extend Nemesis page
 - Add group level option to main page

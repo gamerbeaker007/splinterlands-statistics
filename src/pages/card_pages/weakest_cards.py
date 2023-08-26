@@ -38,6 +38,6 @@ def update_weakest_cards(filtered_df, stored_filter_settings):
             result_layout.append(dbc.Row(card.get_card_columns(account, monsters_df, 5, detailed=False, make_link=False)))
 
         return result_layout
+    else:
+        return "No data found"
 
-    if not filtered_df:
-        raise PreventUpdate

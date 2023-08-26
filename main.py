@@ -1,10 +1,11 @@
+import json
 import logging
 
 from src.api import spl
 from src.configuration import store, config
 from src.pages.navigation_pages import navigation_page
 from src.pages.main_dash import app
-from src.static.static_values_enum import Format
+from src.static.static_values_enum import Format, MatchType
 from src.utils import store_util
 
 store_util.load_stores()
@@ -16,7 +17,7 @@ def migrate_data():
         store.battle_big.loc[store.battle_big.card_name == 'Zyriel', 'secondary_color'] = 'Black'
 
         battle_id_to_process = store.battle_big.loc[(store.battle_big['format'].isna())].battle_id.unique().tolist()
-        counter = 0
+        counter = 1
         for battle_id in battle_id_to_process:
             battle = spl.get_battle(battle_id)
             if 'format' in battle:
@@ -27,15 +28,24 @@ def migrate_data():
                 counter += 1
                 store.battle_big.loc[store.battle_big.battle_id == battle_id, 'format'] = battle_format
 
+        # with this migration also store the is_brawl in matchType
         if 'opponent' not in store.battle_big.columns.tolist():
             battle_id_to_process = store.battle_big.battle_id.unique().tolist()
-            counter = 0
+            counter = 1
             for battle_id in battle_id_to_process:
                 battle = spl.get_battle(battle_id)
                 account = store.battle_big.loc[store.battle_big.battle_id == battle_id].account.tolist()[0]
                 opponent = battle['player_2'] if battle['player_1'] == account else battle['player_1']
                 store.battle_big.loc[store.battle_big.battle_id == battle_id, 'opponent'] = opponent
-                print("Migrate battles (opponent) " + str(counter) + " / " + str(len(battle_id_to_process)))
+
+                detail = json.loads(battle['details'])
+                if 'is_brawl' in detail and detail['is_brawl']:
+                    match_type = MatchType.BRAWL.value
+                else:
+                    match_type = battle['match_type']
+                store.battle_big.loc[store.battle_big.battle_id == battle_id, 'match_type'] = match_type
+
+                print("Migrate battles (opponent/match type) " + str(counter) + " / " + str(len(battle_id_to_process)))
                 counter += 1
 
             # Reorder columns
@@ -48,7 +58,7 @@ def migrate_data():
             store.losing_big.loc[store.losing_big.card_name == 'Zyriel', 'secondary_color'] = 'Black'
 
             battle_id_to_process = store.losing_big.loc[(store.losing_big['format'].isna())].battle_id.unique().tolist()
-            counter = 0
+            counter = 1
             for battle_id in battle_id_to_process:
                 battle = spl.get_battle(battle_id)
                 if 'format' in battle:
@@ -60,7 +70,7 @@ def migrate_data():
                     store.losing_big.loc[store.losing_big.battle_id == battle_id, 'format'] = battle_format
 
             battle_id_to_process = store.losing_big.loc[(store.losing_big['opponent'] == 'DRAW')].battle_id.unique().tolist()
-            counter = 0
+            counter = 1
             for battle_id in battle_id_to_process:
                 battle = spl.get_battle(battle_id)
                 account = store.losing_big.loc[store.losing_big.battle_id == battle_id].account.tolist()[0]

@@ -32,6 +32,7 @@ class MatchType(ExtendedEnum):
     CHALLENGE = 'Challenge'
     RANKED = 'Ranked'
     TOURNAMENT = 'Tournament'
+    BRAWL = 'Brawl'
 
 
 class CardType(ExtendedEnum):

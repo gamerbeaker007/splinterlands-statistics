@@ -15,7 +15,7 @@ layout = dbc.Row([dbc.Row(html.H1("Top paired cards")),
     Input(card_page_ids.filtered_cards_top_df, 'data'),
     State(card_page_ids.filter_cards_settings, 'data')
 )
-def update_top_cards(filtered_df, filter_settings):
+def update_top_cards(filtered_df, stored_filter_settings):
     if not filtered_df:
         return "No card selected"
 
@@ -24,9 +24,9 @@ def update_top_cards(filtered_df, filter_settings):
     result_layout = []
 
     if not filtered_df.empty:
-        account = filter_settings['account']
+        account = stored_filter_settings['account']
         # remove the card that is being searched for
-        filtered_df = filtered_df.loc[filtered_df.card_name != filter_settings['selected-card']]
+        filtered_df = filtered_df.loc[filtered_df.card_name != stored_filter_settings['selected-card']]
 
         summoners_df = filtered_df.loc[filtered_df.card_type == CardType.summoner.value]
         if not summoners_df.empty:
@@ -39,3 +39,5 @@ def update_top_cards(filtered_df, filter_settings):
             result_layout.append(dbc.Row(card.get_card_columns(account, monsters_df, 5)))
 
         return result_layout
+    else:
+        return "No data found"
