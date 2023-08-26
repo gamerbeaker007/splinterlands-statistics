@@ -8,7 +8,10 @@ from dash_iconify import DashIconify
 from main import app
 from src import battle_store, collection_store, portfolio
 from src.configuration import progress, config
-from src.pages import main_page, rating_page, nemesis_page, losing_page, season_page, config_page
+from src.pages import main_page, rating_page, losing_page, season_page, config_page
+from src.pages.nemesis_pages import nemesis_page
+from src.pages.card_pages import card_page, card_page_filter
+from src.pages.navigation_pages import nav_ids
 from src.pages.portfolio_pages import portfolio_page
 from src.utils import store_util, progress_util
 
@@ -35,6 +38,7 @@ navbar = dbc.Navbar(
                     children=[
                         dbc.NavItem(dbc.NavLink('Home', href='/')),
                         dbc.NavItem(dbc.NavLink('Losing', href='/losing')),
+                        dbc.NavItem(dbc.NavLink('Card', href='/card')),
                         dbc.NavItem(dbc.NavLink('Rating', href='/rating')),
                         dbc.NavItem(dbc.NavLink('Nemesis', href='/nemesis')),
                         dbc.NavItem(dbc.NavLink('Season', href='/season')),
@@ -58,7 +62,7 @@ navbar = dbc.Navbar(
                 ),
                 width='auto',
             ),
-            dcc.Store(id='trigger-daily-update'),
+            dcc.Store(id=nav_ids.trigger_daily),
             html.Div(id='progress-daily'),
             html.Div(id='progress-season'),
             dcc.Interval(id='interval-global', interval=1000),
@@ -81,12 +85,19 @@ def update_theme(toggle):
 
 
 @app.callback(Output('page-content', 'children'),
-              [Input('url', 'pathname')])
-def display_page(pathname):
+              Input('url', 'pathname'),
+              Input('url', 'search'),
+              Input('url', 'hash'))
+def display_page(pathname, search, search_hash):
     if pathname == '/':
         return main_page.layout
     if pathname == '/losing':
         return losing_page.layout
+    if pathname == '/card':
+        if search and search_hash:
+            card_page_filter.load_with_card_id = search.split('=')[-1]
+            card_page_filter.load_with_account_name = search_hash.split('=')[-1]
+        return card_page.layout
     if pathname == '/rating':
         return rating_page.layout
     if pathname == '/nemesis':
@@ -102,7 +113,7 @@ def display_page(pathname):
 
 
 @app.callback(
-    Output('trigger-daily-update', 'data'),
+    Output(nav_ids.trigger_daily, 'data'),
     Input('load-new-values', 'n_clicks'),
 )
 def update__output(n_clicks):

@@ -1,13 +1,15 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dash_table, dcc
+from dash_bootstrap_components import Container
 
 from src import analyse
 from src.pages.main_dash import app
+from src.pages.navigation_pages import nav_ids
 from src.static.static_values_enum import MatchType, CardType
 from src.utils import store_util
 
-layout = dbc.Container([
+layout: Container = dbc.Container([
     dbc.Row([
         html.H1('Statistics losing battles'),
         html.P('Summoners and monster you lose most against'),
@@ -73,7 +75,7 @@ def update_losing_table(filtered_df):
               Input('dropdown-type-selection-losing', 'value'),
               Input('dropdown-user-selection-losing', 'value'),
               Input('dropdown-match-type-selection-losing', 'value'),
-              Input('trigger-daily-update', 'data'),
+              Input(nav_ids.trigger_daily, 'data'),
               )
 def filter_battle_df(filter_type, filter_user, filter_match_type, trigger_daily):
     df = analyse.get_losing_df(filter_account=filter_user, filter_match_type=filter_match_type, filter_type=filter_type)

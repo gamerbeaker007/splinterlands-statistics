@@ -15,6 +15,21 @@ def get_image_url_markdown(card_name, level, edition):
     return str(markdown_prefix) + "(" + str(card_url) + ")"
 
 
+def get_art_url_markdown(card_name):
+    base_card_url = 'https://d36mxiodymuqjm.cloudfront.net/card_art/'
+    markdown_prefix = "![" + str(card_name) + "]"
+    card_name = str(card_name).replace(" ", "%20")
+    card_url = str(base_card_url) + card_name + ".png"
+    return str(markdown_prefix) + "(" + str(card_url) + ")"
+
+
+def get_art_url(card_name):
+    base_card_url = 'https://d36mxiodymuqjm.cloudfront.net/card_art/'
+    card_name = str(card_name).replace(" ", "%20")
+    card_url = str(base_card_url) + card_name + ".png"
+    return str(card_url)
+
+
 def get_image_url(card_name, level, edition):
     base_card_url = 'https://d36mxiodymuqjm.cloudfront.net/cards_by_level/'
     edition_name = Edition(edition).name
@@ -83,38 +98,48 @@ def get_top_3_losing_account(account, filter_match_type):
         return temp_df.head(3)
 
 
-def process_battles_win_percentage(df):
+def process_battles_win_percentage(df, group_levels=False):
     if df.empty:
         return df
 
+    group_by_columns = ['card_detail_id',
+                        'card_name',
+                        'card_type',
+                        'rarity',
+                        'edition',
+                        'color',
+                        'secondary_color',
+                        'result']
+    merge_columns = ['card_detail_id',
+                     'card_name',
+                     'card_type',
+                     'rarity',
+                     'edition',
+                     'color',
+                     'secondary_color']
+
+    if not group_levels:
+        group_by_columns.append('level')
+        merge_columns.append('level')
+
     total_df = pd.DataFrame()
     if not df.empty:
-        grouped = df.groupby(['card_detail_id',
-                              'card_name',
-                              'card_type',
-                              'rarity',
-                              'level',
-                              'edition',
-                              'color',
-                              'secondary_color',
-                              'result'], as_index=False, dropna=False)
+        grouped = df.groupby(group_by_columns, as_index=False, dropna=False)
         new_df = grouped.agg(count=pd.NamedAgg(column='account', aggfunc='count'))
         win = new_df.loc[(new_df.result == 'win')].rename(columns={"count": "win", }).drop(['result'], axis=1)
         loss = new_df.loc[(new_df.result == 'loss')].rename(columns={"count": "loss", }).drop(['result'], axis=1)
-        total_df = win.merge(loss, on=['card_detail_id',
-                                       'card_name',
-                                       'card_type',
-                                       'rarity',
-                                       'level',
-                                       'edition',
-                                       'color',
-                                       'secondary_color'], how='outer')
+        total_df = win.merge(loss, on=merge_columns, how='outer')
         total_df = total_df.fillna(0)
+
+        if  group_levels:
+            total_df['level'] = total_df.apply(lambda row: df.loc[df.card_detail_id == row.card_detail_id].level.max(), axis=1)
+
         total_df['win_to_loss_ratio'] = total_df.win / total_df.loss
         total_df['battles'] = total_df.win + total_df.loss
         total_df['win_ratio'] = total_df.win / total_df.battles
         total_df['win_percentage'] = total_df.win_ratio * 100
         total_df = total_df.round(2)
+
         total_df['url_markdown'] = total_df.apply(lambda row: get_image_url_markdown(row['card_name'],
                                                                                      row['level'],
                                                                                      row['edition']), axis=1)
@@ -314,3 +339,26 @@ def get_daily_battle_stats(daily_df):
         result_df.rename(columns={"result_x": "win", "result_y": "loss"}, inplace=True)
         result_df['battles'] = result_df.win + result_df.loss
     return result_df
+
+
+def get_battles_with_used_card(df, card_name):
+    result_df = pd.DataFrame()
+    if not df.empty:
+        battle_ids = df.loc[(df.card_name == card_name)].battle_id.tolist()
+        result_df = df.loc[df.battle_id.isin(battle_ids)]
+
+    return result_df
+
+
+def get_losing_battles(df, battle_ids):
+    result_df = pd.DataFrame()
+    if not df.empty:
+        result_df = df.loc[df.battle_id.isin(battle_ids)]
+
+    return result_df
+
+
+def get_max_card_of_collection(account, card_name):
+    cards = store.collection.loc[(store.collection.player == account)& (store.collection.card_name == card_name)].copy()
+    return cards.level.max()
+

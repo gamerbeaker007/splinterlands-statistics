@@ -1,0 +1,1 @@
+trigger_daily = 'trigger-daily-update'

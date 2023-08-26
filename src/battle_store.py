@@ -16,45 +16,7 @@ def get_uid_array(team):
     return uid_array
 
 
-def update_battle_store_card_specific(account, team, battle):
-    match_type = battle['match_type']
-    match_format = battle['format']
-    win = True if battle['winner'] == account else False
-
-    empty = store.battle.empty
-    mask = (False)
-    uid_arr = get_uid_array(team)
-    for uid in uid_arr:
-
-        if not empty:
-            if match_type == 'Tournament':
-                mask = (store.battle['uid'] == uid) \
-                       & (store.battle['match_type'] == match_type)
-            else:
-                mask = (store.battle['uid'] == uid) \
-                       & (store.battle['match_type'] == match_type) \
-                       & (store.battle['format'] == match_format)
-
-        if not empty and mask.any():
-            # increase win or loss
-            if win:
-                store.battle.loc[mask, 'win'] += 1
-            else:
-                store.battle.loc[mask, 'loss'] += 1
-        else:
-            # add new row
-            df = pd.DataFrame({'uid': uid,
-                               'account': account,
-                               'match_type': match_type,
-                               'format': match_format,
-                               'win': 1 if win else 0,
-                               'loss': 1 if not win else 0
-                               }, index=[0])
-            store.battle = pd.concat([store.battle, df], ignore_index=True)
-
-
-def add_battle_store_big_my(account, team, battle):
-    match_type = battle['match_type']
+def add_battle_store_big_my(account, team, battle, match_type):
     match_format = get_battle_format(battle['format'])
     created_date = battle['created_date']
     mana_cap = battle['mana_cap']
@@ -62,6 +24,7 @@ def add_battle_store_big_my(account, team, battle):
     inactive = battle['inactive']
     battle_id = battle['battle_queue_id_1']
     winner = battle['winner']
+    opponent = battle['player_2'] if battle['player_1'] == account else battle['player_1']
     result = "win" if winner == account else "loss"
 
     cards = list(team['monsters'])
@@ -85,6 +48,7 @@ def add_battle_store_big_my(account, team, battle):
                            'level': card['level'],
                            'edition': card['edition'],
                            'account': account,
+                           'opponent': opponent,
                            'created_date': created_date,
                            'match_type': match_type,
                            'format': match_format,
@@ -141,7 +105,7 @@ def add_losing_battle_team(account, team, battle):
     rulesets = battle['ruleset']
     inactive = battle['inactive']
     battle_id = battle['battle_queue_id_1']
-    opponent = battle['winner']
+    opponent = battle['player_2'] if battle['player_1'] == account else battle['player_1']
 
     cards = list(team['monsters'])
     cards.append(team['summoner'])
@@ -210,12 +174,12 @@ def process_battle(account):
                     my_team = battle_details['team2']
                     opponent_team = battle_details['team1']
 
+                if 'is_brawl' in battle_details and battle_details['is_brawl']:
+                    match_type = MatchType.BRAWL.value
+
                 add_battle_store_big_my(account,
                                         my_team,
-                                        battle)
-                update_battle_store_card_specific(account,
-                                                  my_team,
-                                                  battle)
+                                        battle, match_type)
 
                 # If a ranked match also log the rating
                 if match_type and match_type == MatchType.RANKED.value:
@@ -243,8 +207,9 @@ def update_last_processed_df(account, last_processed_date):
                            index=[0])
         store.last_processed = pd.concat([store.last_processed, new], ignore_index=True)
     else:
-        store.last_processed.loc[(store.last_processed.account == account),
-        'last_processed'] = last_processed_date
+        store.last_processed.loc[
+            (store.last_processed.account == account),
+            'last_processed'] = last_processed_date
 
 
 def is_surrender(battle_details):

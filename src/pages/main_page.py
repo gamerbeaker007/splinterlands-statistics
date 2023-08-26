@@ -10,6 +10,8 @@ from main import app
 from src import analyse
 from src.configuration import store
 from src.pages import filter_page
+from src.pages.card_pages import card
+from src.pages.navigation_pages import nav_ids
 from src.static.static_values_enum import Element, Edition, CardType, Rarity, ManaCap, Format
 from src.utils import store_util
 
@@ -35,6 +37,7 @@ filter_settings['from_date'] = datetime.datetime(2000, 1, 1)
 filter_settings['rule_sets'] = []
 filter_settings['account'] = ''
 filter_settings['sort_by'] = []
+filter_settings['group_levels'] = []
 
 layout = dbc.Container([
     dbc.Row([
@@ -128,7 +131,7 @@ layout = dbc.Container([
                 ],
                 className='mb-3',
             )
-),
+        ),
     ]),
 
     dbc.Row([
@@ -148,17 +151,34 @@ layout = dbc.Container([
                 className='mb-3',
             ),
         ),
+        dbc.Col(
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText('Group levels'),
+                    dcc.RadioItems(options=['True', 'False'],
+                                   value='False',
+                                   inline=True,
+                                   id='radio-by-selection',
+                                   className='mt-2 dbc',
+                                   labelStyle={'margin-left': '10px', 'display': 'inline-block'}
+                                   ),
+
+                ],
+                className='mb-3',
+            ),
+        ),
     ]),
 
     dbc.Row(id='top-cards'),
     dbc.Row([
         dbc.Accordion(
-            dbc.AccordionItem(html.Div(id='main-table', className='dbc'),
+            dbc.AccordionItem(html.Div(id='main-table-div', className='dbc'),
                               title='Complete table',
                               ),
             start_collapsed=True,
         )
     ]),
+    html.Div(id='redirect-div'),
     dcc.Store(id='filtered-battle-df'),
     dcc.Store(id='filter-settings'),
 ])
@@ -166,7 +186,7 @@ layout = dbc.Container([
 
 @app.callback(Output('dropdown-season-selection', 'options'),
               Output('dropdown-season-selection', 'value'),
-              Input('trigger-daily-update', 'data'))
+              Input(nav_ids.trigger_daily, 'data'))
 def update_seasons_played_list(tigger):
     season_played = store_util.get_seasons_played_list()
     first_played_season = ''
@@ -174,8 +194,9 @@ def update_seasons_played_list(tigger):
         first_played_season = season_played[-1]
     return season_played, first_played_season
 
+
 @app.callback(
-    Output('main-table', 'children'),
+    Output('main-table-div', 'children'),
     Input('filtered-battle-df', 'data'),
 )
 def update_main_table(filtered_df):
@@ -185,96 +206,96 @@ def update_main_table(filtered_df):
     filtered_df = pd.read_json(filtered_df, orient='split')
 
     if not filtered_df.empty:
-        return dash_table.DataTable(
-            # columns=[{'name': i, 'id': i} for i in df.columns],
-            columns=[
-                {'id': 'url_markdown', 'name': 'Card', 'presentation': 'markdown'},
-                {'id': 'card_name', 'name': 'Name'},
-                {'id': 'level', 'name': 'Level'},
-                # {'id': 'win_to_loss_ratio', 'name': 'win_to_loss_ratio'},
-                {'id': 'battles', 'name': 'Battles'},
-                # {'id': 'win_ratio', 'name': 'win_ratio'},
-                {'id': 'win_percentage', 'name': 'Win Percentage'},
-            ],
-            data=filtered_df.to_dict('records'),
-            row_selectable=False,
-            row_deletable=False,
-            editable=False,
-            filter_action='native',
-            sort_action='native',
-            style_table={'overflowX': 'auto'},
-            style_cell_conditional=[{'if': {'column_id': 'url'}, 'width': '200px'}, ],
-            page_size=10,
-        ),
+        return dash_table.DataTable(id='top-cards-table',
+                                    # columns=[{'name': i, 'id': i} for i in df.columns],
+                                    columns=[
+                                        {'id': 'url_markdown', 'name': 'Card', 'presentation': 'markdown'},
+                                        {'id': 'card_name', 'name': 'Name'},
+                                        {'id': 'level', 'name': 'Level'},
+                                        # {'id': 'win_to_loss_ratio', 'name': 'win_to_loss_ratio'},
+                                        {'id': 'battles', 'name': 'Battles'},
+                                        # {'id': 'win_ratio', 'name': 'win_ratio'},
+                                        {'id': 'win_percentage', 'name': 'Win Percentage'},
+                                    ],
+                                    data=filtered_df.to_dict('records'),
+                                    row_selectable=False,
+                                    row_deletable=False,
+                                    editable=False,
+                                    filter_action='native',
+                                    sort_action='native',
+                                    style_table={'overflowX': 'auto'},
+                                    style_cell_conditional=[{'if': {'column_id': 'url'}, 'width': '200px'}, ],
+                                    page_size=10,
+                                    ),
     else:
         return dash_table.DataTable()
 
 
 @app.callback(
+    Output('redirect-div', 'children'),
+    Input('top-cards-table', 'active_cell'),
+    State('top-cards-table', 'derived_virtual_data'),
+    State('filter-settings', 'data')
+)
+def redirect_to_page(active_cell, data, stored_filter_settings):
+    if active_cell:
+        return dcc.Location(
+            href='card?card_id=' + str(data[active_cell['row']]['card_detail_id'])
+                 + '#account=' + str(stored_filter_settings['account'])
+            , id='url-redirect')
+
+
+@app.callback(
     Output('top-cards', 'children'),
     Input('filtered-battle-df', 'data'),
+    Input('filter-settings', 'data')
 )
-def update_top_cards(filtered_df):
+def update_top_cards(filtered_df, stored_filter_settings):
     if not filtered_df:
         raise PreventUpdate
 
+    account_name = stored_filter_settings['account']
+
     filtered_df = pd.read_json(filtered_df, orient='split')
 
-    cards = []
+    result_layout = []
     if not filtered_df.empty:
-        filtered_df = filtered_df.head(5)
-        for index, row in filtered_df.iterrows():
-            cards.append(
-                dbc.Card(
-                    [
-                        dbc.CardImg(src=row.url, top=True, style={'height': '200px', 'object-fit': 'contain'}),
-                        dbc.CardBody([
-                            html.P(str(row.card_name) + '\t\t★' + str(row.level), className='card-text'),
-                            html.P('Battles (W-L): ' + str(int(row.win)) + '-' + str(int(row.loss)),
-                                   className='card-text'),
-                            html.P('Battle count: ' + str(int(row.battles)), className='card-text'),
-                            html.P('Win: ' + str(row.win_percentage) + '%', className='card-text'),
-                        ]
-                        ),
-                    ],
-                    style={'height': '375px'},
-                    className='mb-3',
-                )
-            )
+        result_layout = card.get_card_columns(account_name, filtered_df, 5)
 
-    return [dbc.Col(card) for card in cards]
+    return result_layout
 
 
 @app.callback(Output('filtered-battle-df', 'data'),
               Input('filter-settings', 'data'))
-def filter_battle_df(store_filter_settings):
-    if store_filter_settings is None or store_filter_settings['account'] == '':
+def filter_battle_df(stored_filter_settings):
+    if stored_filter_settings is None or stored_filter_settings['account'] == '':
         raise PreventUpdate
 
     # Filter before processing is done
-    df = analyse.filter_battles(store.battle_big, filter_account=store_filter_settings['account'])
-    df = analyse.filter_date(df, filter_settings)
-    df = analyse.filter_mana_cap(df, filter_settings)
-    df = analyse.filter_rule_sets(df, filter_settings)
-    df = analyse.filter_format(df, filter_settings)
+    df = analyse.filter_battles(store.battle_big, filter_account=stored_filter_settings['account'])
+    df = analyse.filter_date(df, stored_filter_settings)
+    df = analyse.filter_mana_cap(df, stored_filter_settings)
+    df = analyse.filter_rule_sets(df, stored_filter_settings)
+    df = analyse.filter_format(df, stored_filter_settings)
 
     # Processing
-    df = analyse.process_battles_win_percentage(df)
+    df = analyse.process_battles_win_percentage(df,
+                                                group_levels=stored_filter_settings['group_levels'])
 
     # Filter after processing is done
-    df = analyse.filter_element(df, filter_settings)
-    df = analyse.filter_edition(df, filter_settings)
-    df = analyse.filter_card_type(df, filter_settings)
-    df = analyse.filter_rarity(df, filter_settings)
-    df = analyse.filter_battle_count(df, filter_settings['minimal-battles'])
-    df = analyse.sort_by(df, filter_settings['sort_by'])
+    df = analyse.filter_element(df, stored_filter_settings)
+    df = analyse.filter_edition(df, stored_filter_settings)
+    df = analyse.filter_card_type(df, stored_filter_settings)
+    df = analyse.filter_rarity(df, stored_filter_settings)
+    df = analyse.filter_battle_count(df, stored_filter_settings['minimal-battles'])
+    df = analyse.sort_by(df, stored_filter_settings['sort_by'])
 
     return df.to_json(date_format='iso', orient='split')
 
 
 @app.callback(Output('filter-settings', 'data'),
               Input('dropdown-user-selection', 'value'),
-              Input('trigger-daily-update', 'data'),
+              Input(nav_ids.trigger_daily, 'data'),
               )
 def filter_battle_df(account,
                      trigger_daily):
@@ -300,6 +321,16 @@ def filter_season_df(season_id):
               Input('dropdown-sort-by-selection', 'value'))
 def sort_by(sorts):
     filter_settings['sort_by'] = sorts
+    return filter_settings
+
+
+@app.callback(Output('filter-settings', 'data'),
+              Input('radio-by-selection', 'value'))
+def set_group_levels(value):
+    if value == 'True':
+        filter_settings['group_levels'] = True
+    else:
+        filter_settings['group_levels'] = False
     return filter_settings
 
 
@@ -386,7 +417,6 @@ for mana_cap in ManaCap:
         setting = ctx.inputs_list[0]['id'].split('-')[0]
         filter_settings[setting] = is_active(n_clicks)
         return style, filter_settings
-
 
 for battle_format in Format:
     @app.callback(Output('{}-filter-button'.format(battle_format.name), 'style'),
