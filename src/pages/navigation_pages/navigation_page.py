@@ -1,19 +1,18 @@
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
-from dash import html, Output, Input, dcc, ctx
+from dash import html, Output, Input, dcc
 from dash_bootstrap_templates import ThemeSwitchAIO
 from dash_extensions.enrich import Trigger
 from dash_iconify import DashIconify
 
 from main import app
-from src import battle_store, collection_store, portfolio
 from src.configuration import progress, config
-from src.pages import main_page, rating_page, losing_page, season_page, config_page
-from src.pages.nemesis_pages import nemesis_page
+from src.pages import main_page, rating_page, losing_page, season_page, config_pages
 from src.pages.card_pages import card_page, card_page_filter
-from src.pages.navigation_pages import nav_ids
+from src.pages.config_pages import config_page
+from src.pages.navigation_pages import nav_ids, navigation_page_update
+from src.pages.nemesis_pages import nemesis_page
 from src.pages.portfolio_pages import portfolio_page
-from src.utils import store_util, progress_util
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
 
@@ -53,13 +52,9 @@ navbar = dbc.Navbar(
                                themes=[dbc.themes.MINTY, dbc.themes.CYBORG],
                                switch_props={'value': False}),
                 width='auto'),
+
             dbc.Col(
-                dbc.Button(
-                    'Update daily',
-                    id='load-new-values',
-                    color='primary',
-                    className='ms-2', n_clicks=0
-                ),
+                navigation_page_update.get_daily_update_button(),
                 width='auto',
             ),
             dcc.Store(id=nav_ids.trigger_daily),
@@ -110,27 +105,6 @@ def display_page(pathname, search, search_hash):
         return config_page.layout
     else:  # if redirected to unknown link
         return '404 Page Error! Please choose a link'
-
-
-@app.callback(
-    Output(nav_ids.trigger_daily, 'data'),
-    Input('load-new-values', 'n_clicks'),
-)
-def update__output(n_clicks):
-    if 'load-new-values' == ctx.triggered_id:
-        progress_util.set_daily_title('Update collection')
-        collection_store.update_collection()
-
-        progress_util.set_daily_title('Update battles')
-        battle_store.process_battles()
-
-        progress_util.set_daily_title('Update portfolio')
-        portfolio.update_portfolios()
-
-        store_util.save_stores()
-        progress_util.update_daily_msg('Done')
-        return True
-    return False
 
 
 @app.callback(Output('progress-daily', 'children'),

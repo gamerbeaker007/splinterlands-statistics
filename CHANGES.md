@@ -1,8 +1,12 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
-## 0.7.0
-- FIX: Home page default from date filter causing error when not loaded fully. 
+## 0.7.0 WIP
+- FIX: Home page default from date filter causing error when not loaded fully.
+- FIX: deposit/withdraw without account
+- Change use commandline arguments iso environment variables
+- Add read-only mode, unable to change accounts and deposit/withdraw investments
+- Add server mode, this will update battle/collection every 90 minutes, portfolio update daily
 
 ## 0.6.0
 - FIX: skip zero now only skips when sum of DEC/MERIT/SPS == 0, not >0
