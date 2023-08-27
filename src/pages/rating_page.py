@@ -51,7 +51,7 @@ layout = dbc.Container([
               Input(nav_ids.trigger_daily, 'data'),
               )
 def update_user_list(tigger):
-    return 'ALL', ['ALL'] + store_util.get_account_names()
+    return store_util.get_first_account_name(), ['ALL'] + store_util.get_account_names()
 
 
 @app.callback(Output('filtered-rating-df', 'data'),
