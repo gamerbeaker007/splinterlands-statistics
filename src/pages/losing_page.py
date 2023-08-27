@@ -14,9 +14,7 @@ layout: Container = dbc.Container([
         html.H1('Statistics losing battles'),
         html.P('Summoners and monster you lose most against'),
         dbc.Col(html.P('Filter on')),
-        dbc.Col(dcc.Dropdown(options=['ALL'] + store_util.get_account_names(),
-                             value=store_util.get_first_account_name(),
-                             id='dropdown-user-selection-losing',
+        dbc.Col(dcc.Dropdown(id='dropdown-user-selection-losing',
                              className='dbc'),
                 ),
         dbc.Col(dcc.Dropdown(options=['ALL'] + CardType.list_values(),
@@ -68,6 +66,14 @@ def update_losing_table(filtered_df):
         ),
     else:
         return dash_table.DataTable()
+
+
+@app.callback(Output('dropdown-user-selection-losing', 'value'),
+              Output('dropdown-user-selection-losing', 'options'),
+              Input(nav_ids.trigger_daily, 'data'),
+              )
+def update_user_list(tigger):
+    return store_util.get_first_account_name(), store_util.get_account_names()
 
 
 @app.callback(Output('filtered-losing-df', 'data'),

@@ -1,7 +1,7 @@
 import logging
 
 import dash_bootstrap_components as dbc
-from dash import html, Output, Input, ctx
+from dash import html, Output, Input, ctx, dcc
 
 from main import app
 from src.api import spl
@@ -55,28 +55,43 @@ layout = dbc.Container([
             ]),
             html.Div(children=get_readonly_text()),
             html.Div(id=config_page_ids.error_text_account),
+            dcc.Store(id=config_page_ids.accounts_updated)
+
         ]),
     ]),
 ])
 
 
 @app.callback(
-    Output(config_page_ids.current_accounts, 'children'),
+    Output(config_page_ids.accounts_updated, 'data'),
     Output(config_page_ids.error_text_account, 'children'),
     Input(config_page_ids.account_name_input, 'value'),
     Input(config_page_ids.add_button, 'n_clicks'),
     Input(config_page_ids.remove_button, 'n_clicks'),
 )
 def add_remove(account_name, add_clicks, remove_clicks):
-    current_account_names = store_util.get_account_names()
     error_text = ''
-    if 'add-account-btn' == ctx.triggered_id:
+    updated = False
+
+    if config_page_ids.add_button == ctx.triggered_id:
+        error_text = ''
         logging.info('Add account button was clicked')
         if spl.player_exist(account_name):
-            current_account_names = store_util.add_account(account_name)
+            store_util.add_account(account_name)
+            updated = True
         else:
             error_text = 'Account not added no splinterlands account found for: ' + str(account_name)
-    if 'remove-account-btn' == ctx.triggered_id:
+    if config_page_ids.remove_button == ctx.triggered_id:
         logging.info('Remove account button was clicked')
-        current_account_names = store_util.remove_account(account_name)
-    return html.P(', '.join(current_account_names)), html.Div(error_text, className='text-warning')
+        store_util.remove_account(account_name)
+        updated = True
+    return updated, html.Div(error_text, className='text-warning')
+
+
+@app.callback(
+    Output(config_page_ids.current_accounts, 'children'),
+    Input(config_page_ids.accounts_updated, 'data'),
+)
+def get_accounts(updated):
+    current_account_names = store_util.get_account_names()
+    return html.P(', '.join(current_account_names))

@@ -50,9 +50,7 @@ layout = dbc.Container([
             dbc.InputGroup(
                 [
                     dbc.InputGroupText('Account'),
-                    dcc.Dropdown(store_util.get_account_names(),
-                                 value=store_util.get_first_account_name(),
-                                 id='dropdown-user-selection',
+                    dcc.Dropdown(id='dropdown-user-selection',
                                  className='dbc',
                                  style={'width': '70%'},
                                  ),
@@ -182,6 +180,14 @@ layout = dbc.Container([
     dcc.Store(id='filtered-battle-df'),
     dcc.Store(id='filter-settings'),
 ])
+
+
+@app.callback(Output('dropdown-user-selection', 'value'),
+              Output('dropdown-user-selection', 'options'),
+              Input(nav_ids.trigger_daily, 'data'),
+              )
+def update_user_list(tigger):
+    return store_util.get_first_account_name(), store_util.get_account_names()
 
 
 @app.callback(Output('dropdown-season-selection', 'options'),

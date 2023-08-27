@@ -18,9 +18,7 @@ layout = dbc.Container([
             dbc.InputGroup(
                 [
                     dbc.InputGroupText('Account'),
-                    dbc.Select(store_util.get_account_names(),
-                               value=store_util.get_first_account_name(),
-                               id=nemesis_page_ids.dropdown_user_selection,
+                    dbc.Select(id=nemesis_page_ids.dropdown_user_selection,
                                className='btn-secondary',
                                ),
 
@@ -70,6 +68,14 @@ layout = dbc.Container([
     dcc.Store(id=nemesis_page_ids.filtered_nemesis_df),
     dcc.Store(id=nemesis_page_ids.filtered_against_df),
 ])
+
+
+@app.callback(Output(nemesis_page_ids.dropdown_user_selection, 'value'),
+              Output(nemesis_page_ids.dropdown_user_selection, 'options'),
+              Input(nav_ids.trigger_daily, 'data'),
+              )
+def update_user_list(tigger):
+    return store_util.get_first_account_name(), store_util.get_account_names()
 
 
 @app.callback(Output(nemesis_page_ids.dropdown_against_selection, 'value'),

@@ -244,7 +244,7 @@ def validate_buttons(n_clicks_generate_blog, n_clicks_update_season_btn):
 @app.callback(
     Output('generate-blog', 'disabled'),
     Output('update-season-btn', 'disabled'),
-    Trigger('interval-global', 'n_intervals')
+    Trigger(nav_ids.interval_global, 'n_intervals')
 )
 def check_button_status():
     if progress.progress_season_txt:

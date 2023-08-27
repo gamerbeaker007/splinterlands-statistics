@@ -1,20 +1,30 @@
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
-from dash import html, Output, Input, dcc
+from dash import html, Output, Input, dcc, ctx
+from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import ThemeSwitchAIO
 from dash_extensions.enrich import Trigger
 from dash_iconify import DashIconify
 
 from main import app
 from src.configuration import progress, config
-from src.pages import main_page, rating_page, losing_page, season_page, config_pages
+from src.pages import main_page, rating_page, losing_page, season_page
 from src.pages.card_pages import card_page, card_page_filter
 from src.pages.config_pages import config_page
-from src.pages.navigation_pages import nav_ids, navigation_page_update
+from src.pages.navigation_pages import nav_ids
 from src.pages.nemesis_pages import nemesis_page
 from src.pages.portfolio_pages import portfolio_page
+from src.utils import update
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
+
+
+def get_style():
+    if config.server_mode:
+        return {'display': 'none'}
+    else:
+        return {'display': 'block'}
+
 
 navbar = dbc.Navbar(
     dbc.Container(
@@ -54,13 +64,19 @@ navbar = dbc.Navbar(
                 width='auto'),
 
             dbc.Col(
-                navigation_page_update.get_daily_update_button(),
+                dbc.Button(
+                    'Update daily',
+                    id=nav_ids.load_new_values,
+                    color='primary',
+                    className='m-1',
+                ),
                 width='auto',
+                style=get_style(),
             ),
             dcc.Store(id=nav_ids.trigger_daily),
-            html.Div(id='progress-daily'),
-            html.Div(id='progress-season'),
-            dcc.Interval(id='interval-global', interval=1000),
+            html.Div(id=nav_ids.progress_daily),
+            html.Div(id=nav_ids.progress_season),
+            dcc.Interval(id=nav_ids.interval_global, interval=1000),
         ]),
 )
 
@@ -107,9 +123,9 @@ def display_page(pathname, search, search_hash):
         return '404 Page Error! Please choose a link'
 
 
-@app.callback(Output('progress-daily', 'children'),
-              Output('progress-season', 'children'),
-              Trigger('interval-global', 'n_intervals'))
+@app.callback(Output(nav_ids.progress_daily, 'children'),
+              Output(nav_ids.progress_season, 'children'),
+              Trigger(nav_ids.interval_global, 'n_intervals'))
 def update_progress():
     ret_val_daily = determine_notification(daily=True)
     ret_val_season = determine_notification()
@@ -191,3 +207,14 @@ def determine_notification(daily=False):
             autoClose=False,
             disallowClose=True,
         )
+
+@app.callback(
+    Output(nav_ids.trigger_daily, 'data'),
+    Input(nav_ids.load_new_values, 'n_clicks'),
+)
+def update_daily_button(n_clicks):
+    if ctx.triggered_id == nav_ids.load_new_values:
+        update.update_data()
+        return True
+    else:
+        raise PreventUpdate

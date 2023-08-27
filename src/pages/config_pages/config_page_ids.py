@@ -1,3 +1,4 @@
+accounts_updated = 'accounts_updated'
 add_button = 'add-account-btn'
 remove_button = 'remove-account-btn'
 error_text_account = 'error-text-account'

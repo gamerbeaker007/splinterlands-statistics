@@ -20,8 +20,7 @@ layout = dbc.Row([
         dbc.InputGroup(
             [
                 dbc.InputGroupText('Account'),
-                dcc.Dropdown(store_util.get_account_names(),
-                             id=card_page_ids.dropdown_user_selection,
+                dcc.Dropdown(id=card_page_ids.dropdown_user_selection,
                              className='dbc',
                              style={'width': '70%'},
                              ),
@@ -46,13 +45,14 @@ layout = dbc.Row([
 
 
 @app.callback(Output(card_page_ids.dropdown_user_selection, 'value'),
+              Output(card_page_ids.dropdown_user_selection, 'options'),
               Input(card_page_ids.dropdown_user_selection, 'state'),
               Input(nav_ids.trigger_daily, 'data'))
 def update_account_value(state, daily_trigger):
     if load_with_account_name:
         return load_with_account_name
     else:
-        return store_util.get_first_account_name()
+        return store_util.get_first_account_name(), store_util.get_account_names()
 
 
 @app.callback(Output(card_page_ids.filtered_cards_top_df, 'data'),
@@ -129,4 +129,3 @@ def update_card_list(user_selection, tigger):
         value = None
         played_cards = []
     return value, played_cards
-
