@@ -14,7 +14,7 @@ from src.pages.config_pages import config_page
 from src.pages.navigation_pages import nav_ids
 from src.pages.nemesis_pages import nemesis_page
 from src.pages.portfolio_pages import portfolio_page
-from src.utils import update
+from src.utils import store_util
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
 
@@ -214,7 +214,7 @@ def determine_notification(daily=False):
 )
 def update_daily_button(n_clicks):
     if ctx.triggered_id == nav_ids.load_new_values:
-        update.update_data()
+        store_util.update_data()
         return True
     else:
         raise PreventUpdate

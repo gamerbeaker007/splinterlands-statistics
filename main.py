@@ -87,7 +87,7 @@ def main():
     migrate_data()
 
     if config.server_mode:
-        th = Thread(target=update.async_main_wrapper)
+        th = Thread(target=update.async_background_task_wrapper)
         th.start()
 
     app.layout = navigation_page.layout

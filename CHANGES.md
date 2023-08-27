@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Change use commandline arguments iso environment variables
 - Add read-only mode, unable to change accounts and deposit/withdraw investments
 - Add server mode, this will update battle/collection every 90 minutes, portfolio update daily
+- Update add account, now updated directly (no wait for 90 minutes in server mode)
 
 ## 0.6.0
 - FIX: skip zero now only skips when sum of DEC/MERIT/SPS == 0, not >0

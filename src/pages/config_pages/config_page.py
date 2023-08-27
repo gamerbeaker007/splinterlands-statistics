@@ -78,6 +78,7 @@ def add_remove(account_name, add_clicks, remove_clicks):
         logging.info('Add account button was clicked')
         if spl.player_exist(account_name):
             store_util.add_account(account_name)
+            store_util.update_data()
             updated = True
         else:
             error_text = 'Account not added no splinterlands account found for: ' + str(account_name)
