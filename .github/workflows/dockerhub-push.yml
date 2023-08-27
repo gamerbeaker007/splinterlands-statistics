@@ -55,9 +55,9 @@ jobs:
           docker push $DOCKER_REPO:latest
 
 
-  build-and-push-branch:
+  build-and-build-push-branch:
     runs-on: ubuntu-latest
-    if: (startsWith(github.ref, 'refs/heads/build_') || startsWith(github.ref, 'refs/heads/push_')) && github.event_name == 'push'
+    if: startsWith(github.ref, 'refs/heads/build_' && github.event_name == 'push'
 
     steps:
       - name: Checkout Repository
@@ -74,5 +74,27 @@ jobs:
           BRANCH_NAME: ${{ github.ref }}
         run: |
           DOCKER_TAG=$(echo $BRANCH_NAME | sed 's/refs\/heads\/build_//')
+          docker build -t $DOCKER_REPO:pre_$DOCKER_TAG .
+          docker push $DOCKER_REPO:pre_$DOCKER_TAG
+
+  build-and-push-branch:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/push_') && github.event_name == 'push'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Temporary Docker Image
+        env:
+          BRANCH_NAME: ${{ github.ref }}
+        run: |
+          DOCKER_TAG=$(echo $BRANCH_NAME | sed 's/refs\/heads\/push_//')
           docker build -t $DOCKER_REPO:pre_$DOCKER_TAG .
           docker push $DOCKER_REPO:pre_$DOCKER_TAG
