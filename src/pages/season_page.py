@@ -1,3 +1,5 @@
+import logging
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, ctx, dcc
@@ -222,6 +224,7 @@ def generate_hive_blog(n_clicks, users):
 
         progress_util.set_season_title("Generate hive blog finished ")
         progress_util.update_season_msg('Done')
+        logging.info("Hive blog generated....")
         return post, ""
     return None, ""
 
@@ -262,8 +265,10 @@ def check_button_status():
 )
 def update_copy_to_clipboard(hive_blog_txt):
     if not hive_blog_txt:
+        logging.info("NO Hive blog yet hide clipboard div")
         return "", {'display': 'none'}
     else:
+        logging.info("Hive blog created display clipboard div....")
         return hive_blog_txt, {'display': 'block'}
 
 
