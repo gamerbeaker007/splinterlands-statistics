@@ -39,3 +39,7 @@ Then install [Win64 OpenSSL](https://slproweb.com/products/Win32OpenSSL.html) (n
 # Result how to use
 TODO
 
+NOTE: Sometimes the clipboard icon is not shown when hive blog generated.
+This might be caused by insecure connection http instead of https for example with home network local synology.  
+For more information: https://community.plotly.com/t/dcc-clipboard-is-not-working-in-my-company-network/55899/13
+
