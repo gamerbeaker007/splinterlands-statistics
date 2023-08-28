@@ -29,9 +29,7 @@ layout = dbc.Container([
                 dbc.InputGroup(
                     [
                         dbc.InputGroupText('Account'),
-                        dcc.Dropdown(store_util.get_account_names(),
-                                     value=store_util.get_first_account_name(),
-                                     id='dropdown-user-selection',
+                        dcc.Dropdown(id='dropdown-user-selection',
                                      className='dbc',
                                      style={'width': '70%'},
                                      ),

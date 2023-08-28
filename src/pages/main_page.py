@@ -1,5 +1,3 @@
-import datetime
-
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dash_table, dcc, ctx, State

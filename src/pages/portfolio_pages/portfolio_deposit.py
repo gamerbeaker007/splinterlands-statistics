@@ -6,6 +6,7 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc, Output, Input, ctx
 
 from src.configuration import config
+from src.pages.navigation_pages import nav_ids
 from src.utils import store_util, portfolio_util
 
 
@@ -43,9 +44,7 @@ def get_deposit_layout():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText('Account'),
-                            dcc.Dropdown(options=store_util.get_account_names(),
-                                         value=store_util.get_first_account_name(),
-                                         id='dropdown-user-selection',
+                            dcc.Dropdown(id='dropdown-user-selection-deposit',
                                          style={'min-width': '300px'},
                                          className='dbc'),
                         ], className='mb-3', ),
@@ -74,10 +73,19 @@ def get_deposit_layout():
         start_collapsed=True,
     ),
 
+
+@app.callback(Output('dropdown-user-selection-deposit', 'value'),
+              Output('dropdown-user-selection-deposit', 'options'),
+              Input(nav_ids.trigger_daily, 'data'),
+              )
+def update_user_list(tigger):
+    return store_util.get_first_account_name(), store_util.get_account_names()
+
+
 @app.callback(
     Output('trigger-portfolio-update', 'data'),
     [Input('deposit', 'n_clicks'),
-     Input('dropdown-user-selection', 'value'),
+     Input('dropdown-user-selection-deposit', 'value'),
      Input('my-date-picker-single', 'date'),
      Input('amount', 'value')],
 )
@@ -92,7 +100,7 @@ def deposit_action(deposit_clicks, account, my_date, amount):
 @app.callback(
     Output('trigger-portfolio-update', 'data'),
     [Input('withdraw', 'n_clicks'),
-     Input('dropdown-user-selection', 'value'),
+     Input('dropdown-user-selection-deposit', 'value'),
      Input('my-date-picker-single', 'date'),
      Input('amount', 'value')],
 )
