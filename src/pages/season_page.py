@@ -142,6 +142,7 @@ def update_user_list(tigger):
 )
 def update_output(n_clicks):
     if 'update-season-btn' == ctx.triggered_id:
+        store_util.update_season_end_dates()
         progress_util.set_season_title("Season update process initiated")
         progress_util.update_season_msg('Start season update')
         progress_util.update_season_msg('Update season button was clicked')
