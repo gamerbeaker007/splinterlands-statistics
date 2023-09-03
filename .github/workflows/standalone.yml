@@ -127,7 +127,7 @@ jobs:
     - if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v3
       with:
-        name: splinterlands-stats-v2-linux-${{ github.event.release.tag_name }}
+        name: splinterlands-stats-v2-ubuntu-${{ github.event.release.tag_name }}
         path: ./splinterlands-stats-v2/*
 
     - if: matrix.os == 'windows-latest'

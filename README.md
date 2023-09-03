@@ -1,20 +1,13 @@
 # Splinterlands Statistics
 
 # Instructions
-## With windows executable
-* Download windows executable
+## With executable
+* Download executable
 * Unzip
-* Run main.exe
+* Run main.exe or main.sh
 * Browse to http://127.0.0.1:8085 
 * In the config tab add the accounts you want to monitor
-Tip: to see the console log of the program run this via and command prompt
-
-## With linux executable
-* Download linux executable
-* Unzip
-* ./main.sh
-* Browse to http://127.0.0.1:8085 
-* In the config tab add the accounts you want to monitor
+Tip for windows: to see the console log of the program run this via and command prompt
 
 ## With Docker 
 docker pull gamerbeaker/splinterlands-statistics:latest
