@@ -124,7 +124,7 @@ jobs:
       run: |
         mv "splinterlands-stats-v2/main" "splinterlands-stats-v2/main.sh"
 
-    uses: actions/upload-artifact@v3
-    with:
-      name: splinterlands-stats-v2-windows-${{ github.event.release.tag_name }}
-      path: ./splinterlands-stats-v2/*
+    - uses: actions/upload-artifact@v3
+      with:
+        name: splinterlands-stats-v2-windows-${{ github.event.release.tag_name }}
+        path: ./splinterlands-stats-v2/*
