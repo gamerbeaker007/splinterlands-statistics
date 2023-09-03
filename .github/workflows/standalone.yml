@@ -126,5 +126,5 @@ jobs:
 
     - uses: actions/upload-artifact@v3
       with:
-        name: splinterlands-stats-v2-windows-${{ github.event.release.tag_name }}
+        name: splinterlands-stats-v2-${{ matrix.os.split('-')[0] }}-${{ github.event.release.tag_name }}
         path: ./splinterlands-stats-v2/*
