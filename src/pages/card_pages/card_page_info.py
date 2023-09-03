@@ -27,12 +27,11 @@ def update_top_cards(filtered_df, filter_settings):
         # remove the card that is being searched for
         filtered_df = filtered_df.loc[filtered_df.card_name == filter_settings['selected-card']]
         row = filtered_df.iloc[0]
-        max_level_owned = analyse.get_max_card_of_collection(filter_settings['account'],
-                                                             filter_settings['selected-card'])
+
         return html.Div(
             [
                 html.H5('Battle statistics'),
-                html.P(str(row.card_name) + '\t\t★ ' + str(max_level_owned),
+                html.P(str(row.card_name) + '\t\t★ ' + str(row.level),
                        style={'margin-bottom': '5px'}),
                 html.P('Battles (W-L): ' + str(int(row.win)) + '-' + str(int(row.loss)),
                        style={'margin-bottom': '5px'}),

@@ -25,12 +25,10 @@ def update_top_cards(filtered_df, filter_settings):
         selected_card = filter_settings['selected-card']
         filtered_df = filtered_df.loc[filtered_df.card_name == selected_card]
         row = filtered_df.iloc[0]
-        max_level_owned = analyse.get_max_card_of_collection(filter_settings['account'], selected_card)
-        image_url = analyse.get_image_url(selected_card, max_level_owned, row.edition)
         return dbc.Card(
             [
                 dbc.CardBody([
-                    dbc.CardImg(src=image_url, top=True, style={'height': '300px', 'object-fit': 'contain'}),
+                    dbc.CardImg(src=row.url, top=True, style={'height': '300px', 'object-fit': 'contain'}),
                 ]
                 ),
             ],
