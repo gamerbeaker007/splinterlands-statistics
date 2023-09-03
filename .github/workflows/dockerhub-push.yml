@@ -15,6 +15,7 @@ env:
 
 jobs:
   build-and-push-release:
+    name: Dockerhub push release
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
 
@@ -36,6 +37,7 @@ jobs:
           docker push $DOCKER_REPO:$IMAGE_TAG
 
   build-and-push-latest:
+    name: DockerHub push latest
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
@@ -56,6 +58,7 @@ jobs:
 
 
   build-and-build-push-branch:
+    name: DockerHub push build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/heads/build_') && github.event_name == 'push'
 
@@ -78,6 +81,7 @@ jobs:
           docker push $DOCKER_REPO:pre_$DOCKER_TAG
 
   build-and-push-branch:
+    name: DockerHub push branch
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/heads/push_') && github.event_name == 'push'
 
