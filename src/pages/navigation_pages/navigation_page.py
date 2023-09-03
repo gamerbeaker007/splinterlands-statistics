@@ -34,7 +34,7 @@ navbar = dbc.Navbar(
                 dbc.Row(
                     [
                         dbc.Col(html.Img(src=SPL_LOGO, height='150px')),
-                        dbc.Col(dbc.NavbarBrand('SPL Battle statistics', className='ms-2')),
+                        dbc.Col(dbc.NavbarBrand('SPL Battle statistics (' + config.APP_VERSION + ')', className='ms-2')),
                     ],
                     align='center',
                     className='g-0',

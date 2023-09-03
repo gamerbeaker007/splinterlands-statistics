@@ -1,0 +1,146 @@
+name: Build and Publish
+
+on:
+  release:
+    types:
+      - created
+  push:
+    branches:
+      - 'main'
+      - 'build_*'
+  # run it during pull request
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['windows-latest', 'ubuntu-latest'] # later add others like 'ubuntu-latest', 'macos-latest'
+
+    if: ((startsWith(github.ref, 'refs/heads/build_') || startsWith(github.ref, 'refs/heads/main')) && github.event_name == 'push')
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip' # caching pip dependencies
+
+    - if: matrix.os == 'windows-latest'
+      run: |
+        choco install openssl -y
+        md -path C:\OpenSSL-Win64
+        Copy-Item "C:\Program Files\OpenSSL\*" -Destination "C:\OpenSSL-Win64" -Recurse
+
+    - run: pip install -r requirements.txt pyinstaller
+    - run: echo "__standalone_version__ = '${{ github.ref }}'" > src/configuration/standalone_version.py
+
+
+    - if: matrix.os == 'windows-latest'
+      run: >
+        pyinstaller --onefile 
+        --collect-data dash_mantine_components 
+        --collect-data dash_extensions 
+        --collect-data dash_iconify 
+        --collect-data dash_bootstrap_templates 
+        --hidden-import _scrypt
+        --add-data="assets;assets"
+        --distpath splinterlands-stats-v2
+        main.py
+
+    - if: matrix.os == 'ubuntu-latest'
+      run: >
+        pyinstaller --onefile 
+        --collect-data dash_mantine_components 
+        --collect-data dash_extensions 
+        --collect-data dash_iconify 
+        --collect-data dash_bootstrap_templates 
+        --hidden-import _scrypt
+        --add-data="assets:assets"
+        --distpath splinterlands-stats-v2
+        main.py
+
+    - if: matrix.os == 'ubuntu-latest'
+      run: |
+        mv "splinterlands-stats-v2/main" "splinterlands-stats-v2/main.sh"
+        tar -cvf splinterlands-stats-v2.tar splinterlands-stats-v2
+
+    - if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v3
+      with:
+        name: splinterlands-stats-v2-${{ matrix.os }}
+        path: splinterlands-stats-v2.tar
+
+    - if: matrix.os == 'windows-latest'
+      uses: actions/upload-artifact@v3
+      with:
+        name: splinterlands-stats-v2-${{ matrix.os }}
+        path: ./splinterlands-stats-v2/*
+
+
+  build-on-release:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['windows-latest', 'ubuntu-latest'] # later add others like 'ubuntu-latest', 'macos-latest'
+
+    runs-on: ${{ matrix.os }}
+    if: github.event_name == 'release' && github.event.action == 'published'
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip' # caching pip dependencies
+
+    - if: matrix.os == 'windows-latest'
+      run: |
+        choco install openssl -y
+        md -path C:\OpenSSL-Win64
+        Copy-Item "C:\Program Files\OpenSSL\*" -Destination "C:\OpenSSL-Win64" -Recurse
+
+    - run: pip install -r requirements.txt pyinstaller
+    - run: echo "__standalone_version__ = '${{ github.event.release.tag_name }}'" > src/configuration/standalone_version.py
+
+    - if: matrix.os == 'windows-latest'
+      run: >
+        pyinstaller --onefile 
+        --collect-data dash_mantine_components 
+        --collect-data dash_extensions 
+        --collect-data dash_iconify 
+        --collect-data dash_bootstrap_templates 
+        --hidden-import _scrypt
+        --add-data="assets;assets"
+        --distpath splinterlands-stats-v2
+        main.py
+
+    - if: matrix.os == 'ubuntu-latest'
+      run: >
+        pyinstaller --onefile 
+        --collect-data dash_mantine_components 
+        --collect-data dash_extensions 
+        --collect-data dash_iconify 
+        --collect-data dash_bootstrap_templates 
+        --hidden-import _scrypt
+        --add-data="assets:assets"
+        --distpath splinterlands-stats-v2
+        main.py
+
+    - if: matrix.os == 'ubuntu-latest'
+      run: |
+        mv "splinterlands-stats-v2/main" "splinterlands-stats-v2/main.sh"
+        tar -cvf splinterlands-stats-v2.tar splinterlands-stats-v2
+
+    - if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v3
+      with:
+        name: splinterlands-stats-v2-${{ matrix.os }}
+        path: splinterlands-stats-v2.tar
+
+    - if: matrix.os == 'windows-latest'
+      uses: actions/upload-artifact@v3
+      with:
+        name: splinterlands-stats-v2-${{ matrix.os }}
+        path: ./splinterlands-stats-v2/*

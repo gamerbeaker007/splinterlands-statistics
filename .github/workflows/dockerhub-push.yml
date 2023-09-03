@@ -32,7 +32,7 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          docker build -t $DOCKER_REPO:$IMAGE_TAG .
+          docker build --build-arg APP_VERSION=$IMAGE_TAG -t $DOCKER_REPO:$IMAGE_TAG .
           docker push $DOCKER_REPO:$IMAGE_TAG
 
   build-and-push-latest:
@@ -51,7 +51,7 @@ jobs:
 
       - name: Build and Push Docker Image with Latest Tag
         run: |
-          docker build -t $DOCKER_REPO:latest .
+          docker build --build-arg APP_VERSION=latest -t $DOCKER_REPO:latest .
           docker push $DOCKER_REPO:latest
 
 
@@ -74,7 +74,7 @@ jobs:
           BRANCH_NAME: ${{ github.ref }}
         run: |
           DOCKER_TAG=$(echo $BRANCH_NAME | sed 's/refs\/heads\/build_//')
-          docker build -t $DOCKER_REPO:pre_$DOCKER_TAG .
+          docker build --build-arg APP_VERSION=pre_$DOCKER_TAG -t $DOCKER_REPO:pre_$DOCKER_TAG .
           docker push $DOCKER_REPO:pre_$DOCKER_TAG
 
   build-and-push-branch:
