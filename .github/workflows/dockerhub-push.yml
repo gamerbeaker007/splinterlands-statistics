@@ -3,7 +3,7 @@ name: Build/push dockerhub
 on:
   release:
     types:
-      - created
+      - published
   push:
     branches:
       - main

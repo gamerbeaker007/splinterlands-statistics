@@ -21,9 +21,13 @@ docker pull gamerbeaker/splinterlands-statistics:latest
 
 ### Windows (docker):
 <code>docker run --rm -it -v C:\Temp\:/app/store -p 8050:8050 --name splinterlands-statistics gamerbeaker/splinterlands-statistics:latest</code>
+For server mode 
+<code>docker run --rm -it -v C:\Temp\:/app/store -p 8050:8050 --name splinterlands-statistics gamerbeaker/splinterlands-statistics:latest -s</code>
 
 ### Linux (docker):
 <code>docker run --rm -it -v \tmp\:/app/store -p 8050:8050 --name splinterlands-statistics gamerbeaker/splinterlands-statistics:latest</code>
+For server mode
+<code>docker run --rm -it -v \tmp\:/app/store -p 8050:8050 --name splinterlands-statistics gamerbeaker/splinterlands-statistics:latest -s</code>
 
 ## With python development or local execution
 Download sources and unpack. 

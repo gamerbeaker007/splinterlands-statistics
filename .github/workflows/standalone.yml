@@ -3,7 +3,7 @@ name: Create standalone application
 on:
   release:
     types:
-      - created
+      - published
   push:
     branches:
       - 'main'
