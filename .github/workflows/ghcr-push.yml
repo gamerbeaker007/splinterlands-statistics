@@ -1,5 +1,4 @@
-name: Build and Publish
-
+name: Build/Push ghrc
 on:
   # run it on push to the default repository branch
   push:
