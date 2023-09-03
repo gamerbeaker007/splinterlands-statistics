@@ -3,8 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## 0.7.0
 - FIX: Home page default from date filter causing error when not loaded fully.
-- FIX: deposit/withdraw without account
-- FIX: update season end dates also when season update button is pressed. Was only done on startup not good with server mode 
+- FIX: Deposit/withdraw without account
+- FIX: Update season end dates also when season update button is pressed. Was only done on startup not good with server mode
+- FIX: When a specific card is viewed that is no longer in you possession it did not generate the level correctly
 - Change use commandline arguments iso environment variables
 - Add read-only mode, unable to change accounts and deposit/withdraw investments
 - Add server mode, this will update battle/collection every 90 minutes, portfolio update daily
