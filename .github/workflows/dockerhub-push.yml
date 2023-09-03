@@ -1,0 +1,104 @@
+name: Build/push dockerhub
+
+on:
+  release:
+    types:
+      - created
+  push:
+    branches:
+      - main
+      - 'build_*'
+      - 'push_*'
+env:
+  DOCKER_REPO: gamerbeaker/splinterlands-statistics
+
+
+jobs:
+  build-and-push-release:
+    name: Dockerhub push release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        env:
+          IMAGE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          docker build --build-arg APP_VERSION=$IMAGE_TAG -t $DOCKER_REPO:$IMAGE_TAG .
+          docker push $DOCKER_REPO:$IMAGE_TAG
+
+  build-and-push-latest:
+    name: DockerHub push latest
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image with Latest Tag
+        run: |
+          docker build --build-arg APP_VERSION=latest -t $DOCKER_REPO:latest .
+          docker push $DOCKER_REPO:latest
+
+
+  build-and-build-push-branch:
+    name: DockerHub push build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/build_') && github.event_name == 'push'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Temporary Docker Image
+        env:
+          BRANCH_NAME: ${{ github.ref }}
+        run: |
+          DOCKER_TAG=$(echo $BRANCH_NAME | sed 's/refs\/heads\/build_//')
+          docker build --build-arg APP_VERSION=pre_$DOCKER_TAG -t $DOCKER_REPO:pre_$DOCKER_TAG .
+          docker push $DOCKER_REPO:pre_$DOCKER_TAG
+
+  build-and-push-branch:
+    name: DockerHub push branch
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/push_') && github.event_name == 'push'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Temporary Docker Image
+        env:
+          BRANCH_NAME: ${{ github.ref }}
+        run: |
+          DOCKER_TAG=$(echo $BRANCH_NAME | sed 's/refs\/heads\/push_//')
+          docker build -t $DOCKER_REPO:pre_$DOCKER_TAG .
+          docker push $DOCKER_REPO:pre_$DOCKER_TAG

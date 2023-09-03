@@ -10,4 +10,10 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD [ "python3", "main.py"]
+# Define a build-arg for APP_VERSION
+ARG APP_VERSION
+
+# Set the environment variable for the app version
+ENV APP_VERSION=$APP_VERSION
+
+ENTRYPOINT [ "python3", "main.py"]

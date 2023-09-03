@@ -1,0 +1,30 @@
+name: Build/Push ghrc.io
+on:
+  # run it on push to the default repository branch
+  push:
+    branches:
+      - 'main'
+      - 'build_*'
+  # run it during pull request
+  pull_request:
+
+jobs:
+
+  push_to_ghrc_registry:
+    name: ghrc.io push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push  splinterlands-stats-v2 docker image
+        run: |
+               docker build . --build-arg APP_VERSION=latest --tag ghcr.io/gamerbeaker007/splinterlands-stats-v2:latest
+               docker push ghcr.io/gamerbeaker007/splinterlands-stats-v2:latest

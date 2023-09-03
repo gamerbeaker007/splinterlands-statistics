@@ -29,9 +29,7 @@ layout = dbc.Container([
                 dbc.InputGroup(
                     [
                         dbc.InputGroupText('Account'),
-                        dcc.Dropdown(store_util.get_account_names(),
-                                     value=store_util.get_first_account_name(),
-                                     id='dropdown-user-selection',
+                        dcc.Dropdown(id='dropdown-user-selection',
                                      className='dbc',
                                      style={'width': '70%'},
                                      ),
@@ -144,6 +142,7 @@ def update_user_list(tigger):
 )
 def update_output(n_clicks):
     if 'update-season-btn' == ctx.triggered_id:
+        store_util.update_season_end_dates()
         progress_util.set_season_title("Season update process initiated")
         progress_util.update_season_msg('Start season update')
         progress_util.update_season_msg('Update season button was clicked')
@@ -244,7 +243,7 @@ def validate_buttons(n_clicks_generate_blog, n_clicks_update_season_btn):
 @app.callback(
     Output('generate-blog', 'disabled'),
     Output('update-season-btn', 'disabled'),
-    Trigger('interval-global', 'n_intervals')
+    Trigger(nav_ids.interval_global, 'n_intervals')
 )
 def check_button_status():
     if progress.progress_season_txt:

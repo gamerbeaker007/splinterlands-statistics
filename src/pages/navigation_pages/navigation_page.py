@@ -1,21 +1,30 @@
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
 from dash import html, Output, Input, dcc, ctx
+from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import ThemeSwitchAIO
 from dash_extensions.enrich import Trigger
 from dash_iconify import DashIconify
 
 from main import app
-from src import battle_store, collection_store, portfolio
 from src.configuration import progress, config
-from src.pages import main_page, rating_page, losing_page, season_page, config_page
-from src.pages.nemesis_pages import nemesis_page
+from src.pages import main_page, rating_page, losing_page, season_page
 from src.pages.card_pages import card_page, card_page_filter
+from src.pages.config_pages import config_page
 from src.pages.navigation_pages import nav_ids
+from src.pages.nemesis_pages import nemesis_page
 from src.pages.portfolio_pages import portfolio_page
-from src.utils import store_util, progress_util
+from src.utils import store_util
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
+
+
+def get_style():
+    if config.server_mode:
+        return {'display': 'none'}
+    else:
+        return {'display': 'block'}
+
 
 navbar = dbc.Navbar(
     dbc.Container(
@@ -25,7 +34,7 @@ navbar = dbc.Navbar(
                 dbc.Row(
                     [
                         dbc.Col(html.Img(src=SPL_LOGO, height='150px')),
-                        dbc.Col(dbc.NavbarBrand('SPL Battle statistics', className='ms-2')),
+                        dbc.Col(dbc.NavbarBrand('SPL Battle statistics (' + config.APP_VERSION + ')', className='ms-2')),
                     ],
                     align='center',
                     className='g-0',
@@ -53,19 +62,21 @@ navbar = dbc.Navbar(
                                themes=[dbc.themes.MINTY, dbc.themes.CYBORG],
                                switch_props={'value': False}),
                 width='auto'),
+
             dbc.Col(
                 dbc.Button(
                     'Update daily',
-                    id='load-new-values',
+                    id=nav_ids.load_new_values,
                     color='primary',
-                    className='ms-2', n_clicks=0
+                    className='m-1',
                 ),
                 width='auto',
+                style=get_style(),
             ),
             dcc.Store(id=nav_ids.trigger_daily),
-            html.Div(id='progress-daily'),
-            html.Div(id='progress-season'),
-            dcc.Interval(id='interval-global', interval=1000),
+            html.Div(id=nav_ids.progress_daily),
+            html.Div(id=nav_ids.progress_season),
+            dcc.Interval(id=nav_ids.interval_global, interval=1000),
         ]),
 )
 
@@ -112,30 +123,9 @@ def display_page(pathname, search, search_hash):
         return '404 Page Error! Please choose a link'
 
 
-@app.callback(
-    Output(nav_ids.trigger_daily, 'data'),
-    Input('load-new-values', 'n_clicks'),
-)
-def update__output(n_clicks):
-    if 'load-new-values' == ctx.triggered_id:
-        progress_util.set_daily_title('Update collection')
-        collection_store.update_collection()
-
-        progress_util.set_daily_title('Update battles')
-        battle_store.process_battles()
-
-        progress_util.set_daily_title('Update portfolio')
-        portfolio.update_portfolios()
-
-        store_util.save_stores()
-        progress_util.update_daily_msg('Done')
-        return True
-    return False
-
-
-@app.callback(Output('progress-daily', 'children'),
-              Output('progress-season', 'children'),
-              Trigger('interval-global', 'n_intervals'))
+@app.callback(Output(nav_ids.progress_daily, 'children'),
+              Output(nav_ids.progress_season, 'children'),
+              Trigger(nav_ids.interval_global, 'n_intervals'))
 def update_progress():
     ret_val_daily = determine_notification(daily=True)
     ret_val_season = determine_notification()
@@ -217,3 +207,14 @@ def determine_notification(daily=False):
             autoClose=False,
             disallowClose=True,
         )
+
+@app.callback(
+    Output(nav_ids.trigger_daily, 'data'),
+    Input(nav_ids.load_new_values, 'n_clicks'),
+)
+def update_daily_button(n_clicks):
+    if ctx.triggered_id == nav_ids.load_new_values:
+        store_util.update_data()
+        return True
+    else:
+        raise PreventUpdate

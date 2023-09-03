@@ -7,6 +7,7 @@ from main import app
 from src import analyse
 from src.configuration import store
 from src.graphs import rating_graph
+from src.pages.navigation_pages import nav_ids
 from src.static.static_values_enum import Format
 from src.utils import store_util, chart_util
 
@@ -17,9 +18,7 @@ layout = dbc.Container([
             dbc.InputGroup(
                 [
                     dbc.InputGroupText('Account'),
-                    dcc.Dropdown(options=['ALL'] + store_util.get_account_names(),
-                                 value=store_util.get_first_account_name(),
-                                 id='dropdown-user-selection-rating',
+                    dcc.Dropdown(id='dropdown-user-selection-rating',
                                  className='dbc',
                                  style={'width': '70%'},
                                  ),
@@ -45,6 +44,14 @@ layout = dbc.Container([
         dcc.Store(id='filtered-daily-df')
     ]),
 ])
+
+
+@app.callback(Output('dropdown-user-selection-rating', 'value'),
+              Output('dropdown-user-selection-rating', 'options'),
+              Input(nav_ids.trigger_daily, 'data'),
+              )
+def update_user_list(tigger):
+    return store_util.get_first_account_name(), ['ALL'] + store_util.get_account_names()
 
 
 @app.callback(Output('filtered-rating-df', 'data'),

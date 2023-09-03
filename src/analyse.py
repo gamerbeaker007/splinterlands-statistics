@@ -358,7 +358,3 @@ def get_losing_battles(df, battle_ids):
     return result_df
 
 
-def get_max_card_of_collection(account, card_name):
-    cards = store.collection.loc[(store.collection.player == account)& (store.collection.card_name == card_name)].copy()
-    return cards.level.max()
-

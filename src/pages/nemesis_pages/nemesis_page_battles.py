@@ -48,6 +48,7 @@ def get_ruleset_div(rule_sets):
         replaced = ruleset.replace(' ', '-').lower()
         replaced = replaced.replace('&-', '').lower()  # Up close & Personal
         replaced = replaced.replace('?', '-').lower()  # Are you not entertained?
+        replaced = replaced.replace('’', '-').lower()  # What doesn’t kill you
 
         url = prefix + replaced + suffix
 

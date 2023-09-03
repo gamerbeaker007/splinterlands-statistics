@@ -1,5 +1,3 @@
-import datetime
-
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dash_table, dcc, ctx, State
@@ -33,7 +31,7 @@ for battle_format in Format:
     filter_settings[battle_format.value] = False
 
 filter_settings['minimal-battles'] = 0
-filter_settings['from_date'] = datetime.datetime(2000, 1, 1)
+filter_settings['from_date'] = '2001-01-01T00:00:00.000Z'
 filter_settings['rule_sets'] = []
 filter_settings['account'] = ''
 filter_settings['sort_by'] = []
@@ -50,9 +48,7 @@ layout = dbc.Container([
             dbc.InputGroup(
                 [
                     dbc.InputGroupText('Account'),
-                    dcc.Dropdown(store_util.get_account_names(),
-                                 value=store_util.get_first_account_name(),
-                                 id='dropdown-user-selection',
+                    dcc.Dropdown(id='dropdown-user-selection',
                                  className='dbc',
                                  style={'width': '70%'},
                                  ),
@@ -184,6 +180,14 @@ layout = dbc.Container([
 ])
 
 
+@app.callback(Output('dropdown-user-selection', 'value'),
+              Output('dropdown-user-selection', 'options'),
+              Input(nav_ids.trigger_daily, 'data'),
+              )
+def update_user_list(tigger):
+    return store_util.get_first_account_name(), store_util.get_account_names()
+
+
 @app.callback(Output('dropdown-season-selection', 'options'),
               Output('dropdown-season-selection', 'value'),
               Input(nav_ids.trigger_daily, 'data'))
@@ -312,9 +316,9 @@ def filter_season_df(season_id):
         from_date = parser.parse(season_end_date)
 
         filter_settings['from_date'] = from_date
-        return filter_settings, str(from_date.strftime("%Y-%m-%d %H:%M (UTC)"))
+        return filter_settings, str(from_date.strftime('%Y-%m-%d %H:%M (UTC)'))
     else:
-        return filter_settings, ""
+        return filter_settings, ''
 
 
 @app.callback(Output('filter-settings', 'data'),
