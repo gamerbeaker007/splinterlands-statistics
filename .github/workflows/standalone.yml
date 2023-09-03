@@ -124,14 +124,6 @@ jobs:
       run: |
         mv "splinterlands-stats-v2/main" "splinterlands-stats-v2/main.sh"
 
-    - name: Set OS Environment Variable
-      run: |
-        if [[ "${{ matrix.os }}" == "linux-latest" ]]; then
-          echo "OS=linux" >> $GITHUB_ENV
-        elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-          echo "OS=windows" >> $GITHUB_ENV
-        fi      
-
     - if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v3
       with:
