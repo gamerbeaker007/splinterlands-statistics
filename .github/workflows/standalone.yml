@@ -64,10 +64,10 @@ jobs:
       run: |
         mv "splinterlands-stats-v2/main" "splinterlands-stats-v2/main.sh"
 
-    uses: actions/upload-artifact@v3
-    with:
-      name: splinterlands-stats-v2-${{ matrix.os }}
-      path: ./splinterlands-stats-v2/*
+    - uses: actions/upload-artifact@v3
+      with:
+        name: splinterlands-stats-v2-${{ matrix.os }}
+        path: ./splinterlands-stats-v2/*
 
 
   build-on-release:

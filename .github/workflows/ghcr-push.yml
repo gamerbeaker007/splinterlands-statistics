@@ -1,5 +1,5 @@
 name: Build/Push ghrc.io
-#on:
+on:
 #  # run it on push to the default repository branch
 #  push:
 #    branches:

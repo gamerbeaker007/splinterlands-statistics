@@ -1,6 +1,6 @@
 name: Build/push dockerhub
 
-#on:
+on:
 #  release:
 #    types:
 #      - created
