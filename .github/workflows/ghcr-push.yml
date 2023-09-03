@@ -1,4 +1,4 @@
-name: Build/Push ghrc
+name: Build/Push ghrc.io
 on:
   # run it on push to the default repository branch
   push:
