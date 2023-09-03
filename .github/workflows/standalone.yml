@@ -124,9 +124,6 @@ jobs:
       run: |
         mv "splinterlands-stats-v2/main" "splinterlands-stats-v2/main.sh"
 
-    - name: set OS
-      id: set_os
-      run: echo "::set-output name=os::${{ matrix.os }}"
     - name: Set OS Environment Variable
       run: |
         if [[ "${{ matrix.os }}" == "linux-latest" ]]; then
