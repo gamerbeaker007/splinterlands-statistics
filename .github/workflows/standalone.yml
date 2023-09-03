@@ -19,7 +19,7 @@ jobs:
       matrix:
         os: ['windows-latest', 'ubuntu-latest'] # later add others like 'ubuntu-latest', 'macos-latest'
 
-    if: ((startsWith(github.ref, 'refs/heads/build_') || startsWith(github.ref, 'refs/heads/main')) && github.event_name == 'push')
+    if: ((startsWith(github.ref, 'refs/heads/build_') || startsWith(github.ref, 'refs/heads/main')) && github.event_name == 'push') || github.event_name == 'pull_request'
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
