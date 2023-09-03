@@ -3,13 +3,15 @@ All notable changes to this project will be documented in this file.
 
 ## 0.7.0
 - FIX: Home page default from date filter causing error when not loaded fully.
-- FIX: Deposit/withdraw without account
+- FIX: Deposit/withdraw exception without account
 - FIX: Update season end dates also when season update button is pressed. Was only done on startup not good with server mode
 - FIX: When a specific card is viewed that is no longer in you possession it did not generate the level correctly
 - Change use commandline arguments iso environment variables
 - Add read-only mode, unable to change accounts and deposit/withdraw investments
 - Add server mode, this will update battle/collection every 90 minutes, portfolio update daily
+- Add version info for released versions
 - Update add account, now updated directly (no wait for 90 minutes in server mode)
+- Update github workflows
 
 ## 0.6.0
 - FIX: skip zero now only skips when sum of DEC/MERIT/SPS == 0, not >0
