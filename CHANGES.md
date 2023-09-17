@@ -2,7 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## 0.8.0 WIP
-- Update readme for executable + cahnge linux to ubuntu in github workflow
+- FIX: When splinterlands is in maintenance mode skip update, causing application crashes
+- Update readme for executable + change linux to ubuntu in github workflow
 
 ## 0.7.0
 - FIX: Home page default from date filter causing error when not loaded fully.

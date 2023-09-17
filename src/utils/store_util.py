@@ -155,15 +155,22 @@ def get_last_season_values(df, users, season_id_column='season_id'):
     return df.loc[(df.player.isin(users)) & (df[season_id_column] == df[season_id_column].max())].copy()
 
 
+def is_maintenance_mode():
+    return spl.get_settings()['maintenance_mode']
+
+
 def update_data():
-    progress_util.set_daily_title('Update collection')
-    collection_store.update_collection()
+    if not is_maintenance_mode():
+        progress_util.set_daily_title('Update collection')
+        collection_store.update_collection()
 
-    progress_util.set_daily_title('Update battles')
-    battle_store.process_battles()
+        progress_util.set_daily_title('Update battles')
+        battle_store.process_battles()
 
-    progress_util.set_daily_title('Update portfolio')
-    portfolio.update_portfolios()
+        progress_util.set_daily_title('Update portfolio')
+        portfolio.update_portfolios()
 
-    save_stores()
-    progress_util.update_daily_msg('Done')
+        save_stores()
+        progress_util.update_daily_msg('Done')
+    else:
+        logging.info("Splinterlands server is in maintenance mode skip this update cycle")
