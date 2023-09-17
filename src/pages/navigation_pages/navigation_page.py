@@ -11,20 +11,13 @@ from src.configuration import progress, config
 from src.pages import main_page, rating_page, losing_page, season_page
 from src.pages.card_pages import card_page, card_page_filter
 from src.pages.config_pages import config_page
+from src.pages.modules import styles
 from src.pages.navigation_pages import nav_ids
 from src.pages.nemesis_pages import nemesis_page
 from src.pages.portfolio_pages import portfolio_page
 from src.utils import store_util
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
-
-
-def get_style():
-    if config.server_mode:
-        return {'display': 'none'}
-    else:
-        return {'display': 'block'}
-
 
 navbar = dbc.Navbar(
     dbc.Container(
@@ -71,7 +64,7 @@ navbar = dbc.Navbar(
                     className='m-1',
                 ),
                 width='auto',
-                style=get_style(),
+                style=styles.get_server_mode_style(),
             ),
             dcc.Store(id=nav_ids.trigger_daily),
             html.Div(id=nav_ids.progress_daily),

@@ -187,13 +187,11 @@ def update_data(battle_update=True, season_update=False):
             progress_util.update_daily_msg('Done')
 
         if season_update:
+            progress_util.set_season_title("Season update process initiated")
             update_season_end_dates()
 
-            progress_util.set_season_title("Season update process initiated")
-            progress_util.update_season_msg('Start season update')
-            progress_util.update_season_msg('Update season button was clicked')
-
             for account in get_account_names():
+                progress_util.update_season_msg('Start season update for: ' + str(account))
                 if season_update_needed(account):
                     # TODO Check if account has claimed their season chest
 

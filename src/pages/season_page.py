@@ -8,6 +8,7 @@ from main import app
 from src import season_balances_info, market_info
 from src.configuration import store, progress, config
 from src.graphs import season_graph
+from src.pages.modules import styles
 from src.pages.navigation_pages import nav_ids
 from src.utils import store_util, chart_util, progress_util, hive_blog, tournaments_info
 
@@ -16,13 +17,17 @@ layout = dbc.Container([
         html.H1('Season statistics'),
         dbc.Col([
             dbc.Row(
-                dbc.Button(
-                    'Update seasons',
-                    id='update-season-btn',
-                    color='primary',
-                    n_clicks=0,
-                    style={'width': '30%'},
-                    className='mb-3',
+                dbc.Col(
+                    dbc.Button(
+                        'Update seasons',
+                        id='update-season-btn',
+                        color='primary',
+                        n_clicks=0,
+                        style={'width': '30%'},
+                        className='mb-3',
+                    ),
+                    width='fill',
+                    style=styles.get_server_mode_style(),
                 ),
             ),
             dbc.Row(
