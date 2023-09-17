@@ -5,8 +5,8 @@ from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import Trigger
 
 from main import app
-from src import season_balances_info, season_battle_info, market_info
-from src.configuration import store, progress
+from src import season_balances_info, market_info
+from src.configuration import store, progress, config
 from src.graphs import season_graph
 from src.pages.navigation_pages import nav_ids
 from src.utils import store_util, chart_util, progress_util, hive_blog, tournaments_info
@@ -141,16 +141,8 @@ def update_user_list(tigger):
     prevent_initial_call=True,
 )
 def update_output(n_clicks):
-    if 'update-season-btn' == ctx.triggered_id:
-        store_util.update_season_end_dates()
-        progress_util.set_season_title("Season update process initiated")
-        progress_util.update_season_msg('Start season update')
-        progress_util.update_season_msg('Update season button was clicked')
-        season_balances_info.update_season_balances_store()
-        season_battle_info.update_season_battle_store()
-        store_util.save_stores()
-        progress_util.set_season_title("Season update done")
-        progress_util.update_season_msg('Done')
+    if 'update-season-btn' == ctx.triggered_id and not config.server_mode:
+        store_util.update_data(battle_update=False, season_update=True)
         return True
     return False
 

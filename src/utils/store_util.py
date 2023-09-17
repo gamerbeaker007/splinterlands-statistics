@@ -3,9 +3,10 @@ import os
 
 import pandas as pd
 
-from src import portfolio, collection_store, battle_store
+from src import portfolio, collection_store, battle_store, season_balances_info, season_battle_info
 from src.api import spl
 from src.configuration import store, config
+from src.static.static_values_enum import Format
 from src.utils import progress_util
 
 
@@ -42,7 +43,7 @@ def load_stores():
     for store_name in get_store_names():
         store_file = get_store_file(store_name)
         if os.path.isfile(store_file):
-            #TODO investigate the low_memory
+            # TODO investigate the low_memory
             # DtypeWarning: Columns (6,14) have mixed types. Specify dtype option on import or set low_memory=False.
             #   store.__dict__[store_name] = pd.read_csv(store_file, index_col=0)
             store.__dict__[store_name] = pd.read_csv(store_file, index_col=0, low_memory=False)
@@ -138,7 +139,7 @@ def get_seasons_played_list():
         temp_end_dates.end_date = pd.to_datetime(temp_end_dates.end_date)
 
         last_id = temp_end_dates.loc[(temp_end_dates.end_date > first_date)].id.min()
-        return temp_end_dates.sort_values('id', ascending=False).loc[(temp_end_dates.id >= last_id-1)].id.to_list()
+        return temp_end_dates.sort_values('id', ascending=False).loc[(temp_end_dates.id >= last_id - 1)].id.to_list()
     else:
         return list()
 
@@ -159,18 +160,52 @@ def is_maintenance_mode():
     return spl.get_settings()['maintenance_mode']
 
 
-def update_data():
+def season_update_needed(account):
+    retVal = True
+    current_season_data = config.current_season
+    if not (store.season_sps.empty or store.season_sps.loc[store.season_sps.player == account].empty):
+        start_from_season = store.season_sps.loc[store.season_sps.player == account].season_id.max() + 1
+        if start_from_season == current_season_data['id']:
+            progress_util.update_season_msg("No new season to process for: " + str(account))
+            retVal = False
+    return retVal
+
+
+def update_data(battle_update=True, season_update=False):
     if not is_maintenance_mode():
-        progress_util.set_daily_title('Update collection')
-        collection_store.update_collection()
+        if battle_update:
+            progress_util.set_daily_title('Update collection')
+            collection_store.update_collection()
 
-        progress_util.set_daily_title('Update battles')
-        battle_store.process_battles()
+            progress_util.set_daily_title('Update battles')
+            battle_store.process_battles()
 
-        progress_util.set_daily_title('Update portfolio')
-        portfolio.update_portfolios()
+            progress_util.set_daily_title('Update portfolio')
+            portfolio.update_portfolios()
 
-        save_stores()
-        progress_util.update_daily_msg('Done')
+            save_stores()
+            progress_util.update_daily_msg('Done')
+
+        if season_update:
+            update_season_end_dates()
+
+            progress_util.set_season_title("Season update process initiated")
+            progress_util.update_season_msg('Start season update')
+            progress_util.update_season_msg('Update season button was clicked')
+
+            for account in get_account_names():
+                if season_update_needed(account):
+                    # TODO Check if account has claimed their season chest
+
+                    season_balances_info.update_balances_store(account)
+                    store.season_modern_battle_info = season_battle_info.get_season_battles(account,
+                                                                                            store.season_modern_battle_info.copy(),
+                                                                                            Format.modern)
+                    store.season_wild_battle_info = season_battle_info.get_season_battles(account,
+                                                                                          store.season_wild_battle_info.copy(),
+                                                                                          Format.wild)
+            save_stores()
+            progress_util.set_season_title("Season update done")
+            progress_util.update_season_msg('Done')
     else:
         logging.info("Splinterlands server is in maintenance mode skip this update cycle")

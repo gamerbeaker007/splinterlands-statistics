@@ -5,11 +5,10 @@ from src.utils import store_util
 SERVER_MODE_INTERVAL_IN_MINUTES = 90
 
 
-
 async def async_update_task():
     """ async function"""
     while True:
-        store_util.update_data()
+        store_util.update_data(battle_update=True, season_update=True)
         await asyncio.sleep(SERVER_MODE_INTERVAL_IN_MINUTES*60)
 
 
