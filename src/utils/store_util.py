@@ -156,54 +156,60 @@ def get_last_season_values(df, users, season_id_column='season_id'):
     return df.loc[(df.player.isin(users)) & (df[season_id_column] == df[season_id_column].max())].copy()
 
 
-def is_maintenance_mode():
-    return spl.get_settings()['maintenance_mode']
-
-
-def season_update_needed(account):
-    retVal = True
-    current_season_data = config.current_season
+def is_last_season_processed(account, current_season_data):
     if not (store.season_sps.empty or store.season_sps.loc[store.season_sps.player == account].empty):
-        start_from_season = store.season_sps.loc[store.season_sps.player == account].season_id.max() + 1
-        if start_from_season == current_season_data['id']:
-            progress_util.update_season_msg("No new season to process for: " + str(account))
-            retVal = False
-    return retVal
+        last_season = store.season_sps.loc[store.season_sps.player == account].season_id.max()
+        if last_season == current_season_data['id'] - 1:
+            return True
+    return False
+
+
+def update_battle_log():
+    progress_util.set_daily_title('Update collection')
+    collection_store.update_collection()
+
+    progress_util.set_daily_title('Update battles')
+    battle_store.process_battles()
+
+    progress_util.set_daily_title('Update portfolio')
+    portfolio.update_portfolios()
+
+    save_stores()
+    progress_util.update_daily_msg('Done')
+
+
+def update_season_log():
+    progress_util.set_season_title("Season update process initiated")
+    update_season_end_dates()
+    current_season_data = spl.get_current_season()
+
+    for account in get_account_names():
+        progress_util.update_season_msg('Start season update for: ' + str(account))
+        if not is_last_season_processed(account, current_season_data):
+            if spl.is_season_reward_claimed(account, current_season_data):
+                season_balances_info.update_balances_store(account, current_season_data)
+                store.season_modern_battle_info = season_battle_info.get_season_battles(account,
+                                                                                        store.season_modern_battle_info.copy(),
+                                                                                        Format.modern,
+                                                                                        current_season_data)
+                store.season_wild_battle_info = season_battle_info.get_season_battles(account,
+                                                                                      store.season_wild_battle_info.copy(),
+                                                                                      Format.wild,
+                                                                                      current_season_data)
+        else:
+            progress_util.update_season_msg("No seasons to process for: " + str(account))
+
+    save_stores()
+    progress_util.set_season_title("Season update done")
+    progress_util.update_season_msg('Done')
 
 
 def update_data(battle_update=True, season_update=False):
-    if not is_maintenance_mode():
+    if not spl.is_maintenance_mode():
         if battle_update:
-            progress_util.set_daily_title('Update collection')
-            collection_store.update_collection()
-
-            progress_util.set_daily_title('Update battles')
-            battle_store.process_battles()
-
-            progress_util.set_daily_title('Update portfolio')
-            portfolio.update_portfolios()
-
-            save_stores()
-            progress_util.update_daily_msg('Done')
+            update_battle_log()
 
         if season_update:
-            progress_util.set_season_title("Season update process initiated")
-            update_season_end_dates()
-
-            for account in get_account_names():
-                progress_util.update_season_msg('Start season update for: ' + str(account))
-                if season_update_needed(account):
-                    # TODO Check if account has claimed their season chest
-
-                    season_balances_info.update_balances_store(account)
-                    store.season_modern_battle_info = season_battle_info.get_season_battles(account,
-                                                                                            store.season_modern_battle_info.copy(),
-                                                                                            Format.modern)
-                    store.season_wild_battle_info = season_battle_info.get_season_battles(account,
-                                                                                          store.season_wild_battle_info.copy(),
-                                                                                          Format.wild)
-            save_stores()
-            progress_util.set_season_title("Season update done")
-            progress_util.update_season_msg('Done')
+            update_season_log()
     else:
         logging.info("Splinterlands server is in maintenance mode skip this update cycle")

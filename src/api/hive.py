@@ -39,8 +39,7 @@ def find_one_with_retry(contract_name, table_name, query):
         api = Api()
         result = api.find_one(contract_name=contract_name, table_name=table_name, query=query)
     except RPCErrorDoRetry:
-        logging.warning(
-            hive_down_message)
+        logging.warning(hive_down_message)
         # Retry with other hive node
         api = Api(url=BACKUP_URL)
         result = api.find_one(contract_name='marketpools', table_name='liquidityPositions', query=query)
@@ -86,3 +85,27 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
 
             get_hive_transactions(account_name, from_date, till_date, last_id-1, results)
     return results
+
+def get_claimed_rewrds(account_name, season):
+    # required_auths: []
+    # required_posting_auths: [
+    #     "beaker007"
+    # ]
+    # id: sm_claim_reward
+    # json: {
+    #     "type": "league_season",
+    #     "season": 118,
+    #     "app": "splinterlands/0.7.139",
+    #     "n": "JZa9g8hW4m"
+    # }
+
+    try:
+        api = Api()
+        result = api.find_one(contract_name='condenser_api', table_name='get_account_history', query=query)
+    except RPCErrorDoRetry:
+        logging.warning(
+            hive_down_message)
+        # Retry with other hive node
+        api = Api(url=BACKUP_URL)
+        result = api.find_one(contract_name='marketpools', table_name='liquidityPositions', query=query)
+    return result

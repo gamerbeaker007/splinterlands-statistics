@@ -7,9 +7,7 @@ from src.configuration import store, config
 from src.utils import store_util, progress_util
 
 
-def update_balances_store(account_name):
-    current_season_data = config.current_season
-
+def update_balances_store(account_name, current_season_data):
     if not (store.season_sps.empty or store.season_sps.loc[store.season_sps.player == account_name].empty):
         start_from_season = store.season_sps.loc[store.season_sps.player == account_name].season_id.max() + 1
 
@@ -229,8 +227,3 @@ def determine_first_season_id_played(balance_history_dec_df):
 def get_start_end_time_season(season_id):
     return store.season_end_dates.loc[(store.season_end_dates.id == season_id - 1)]['end_date'].values[0], \
         store.season_end_dates.loc[(store.season_end_dates.id == season_id)]['end_date'].values[0]
-
-
-def update_season_balances_store():
-    for account in store_util.get_account_names():
-        update_balances_store(account)

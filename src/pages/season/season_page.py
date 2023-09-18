@@ -6,11 +6,14 @@ from dash_extensions.enrich import Trigger
 
 from main import app
 from src import season_balances_info, market_info
+from src.api import spl
 from src.configuration import store, progress, config
 from src.graphs import season_graph
 from src.pages.modules import styles
 from src.pages.navigation_pages import nav_ids
+from src.pages.season import season_ids
 from src.utils import store_util, chart_util, progress_util, hive_blog, tournaments_info
+from src.utils.update import SERVER_MODE_INTERVAL_IN_MINUTES
 
 layout = dbc.Container([
     dbc.Row([
@@ -34,7 +37,7 @@ layout = dbc.Container([
                 dbc.InputGroup(
                     [
                         dbc.InputGroupText('Account'),
-                        dcc.Dropdown(id='dropdown-user-selection',
+                        dcc.Dropdown(id=season_ids.dropdown_user_selection_season,
                                      className='dbc',
                                      style={'width': '70%'},
                                      ),
@@ -43,6 +46,10 @@ layout = dbc.Container([
                     className='mb-3',
                 )
             ),
+            dbc.Row(
+                dbc.Label(id=season_ids.season_update_label, className='text-warning')
+            ),
+
         ]),
         dbc.Col(
             dbc.Accordion(
@@ -53,7 +60,7 @@ layout = dbc.Container([
                                 dbc.InputGroupText('Accounts'),
                                 dcc.Dropdown(
                                     multi=True,
-                                    id='dropdown-user-selection-season',
+                                    id=season_ids.dropdown_user_selection_season_blog,
                                     className='dbc',
                                 ),
                             ], className='mb-3',
@@ -61,9 +68,9 @@ layout = dbc.Container([
                     ),
                     dbc.Row([
                         dbc.Col(dbc.Button('Generate', id='generate-blog', className='mb-3'), width='auto'),
-                        dbc.Col(html.Div(id="clipboard-div",
+                        dbc.Col(html.Div(id='clipboard-div',
                                          style={'display': 'none'},
-                                         children=dcc.Clipboard(id="copy-to-clipboard", style={"fontSize": 25})
+                                         children=dcc.Clipboard(id='copy-to-clipboard', style={'fontSize': 25})
                                          ),
                                 )
 
@@ -132,8 +139,15 @@ layout = dbc.Container([
 ])
 
 
-@app.callback(Output('dropdown-user-selection-season', 'value'),
-              Output('dropdown-user-selection-season', 'options'),
+@app.callback(Output(season_ids.dropdown_user_selection_season, 'value'),
+              Output(season_ids.dropdown_user_selection_season, 'options'),
+              Input(nav_ids.trigger_daily, 'data'))
+def update_user_list(daily_trigger):
+    return store_util.get_first_account_name(), store_util.get_account_names()
+
+
+@app.callback(Output(season_ids.dropdown_user_selection_season_blog, 'value'),
+              Output(season_ids.dropdown_user_selection_season_blog, 'options'),
               Input(nav_ids.trigger_daily, 'data'),
               )
 def update_user_list(tigger):
@@ -153,16 +167,45 @@ def update_output(n_clicks):
 
 
 @app.callback(
+    Output(season_ids.season_update_label, 'children'),
+    Output(season_ids.season_update_label, 'style'),
+    Input(season_ids.dropdown_user_selection_season, 'value'),
+    Input('trigger-season-update', 'data'),
+)
+def update_season_label(user, tigger):
+    if not user:
+        raise PreventUpdate
+
+    current_season_data = spl.get_current_season()
+    if store_util.is_last_season_processed(user, current_season_data):
+        return '', {'display': 'none'}
+    else:
+        if spl.is_season_reward_claimed(user, current_season_data):
+            if config.server_mode:
+                msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
+                      'result are in waiting to be process max waiting time: ' + \
+                      str(SERVER_MODE_INTERVAL_IN_MINUTES) + " minutes"
+            else:
+                msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
+                      'result are in press update seasons to process'
+        else:
+            msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
+                  'results are NOT processed. Season rewards not claimed yet.'
+
+        return msg, {'display': 'block'}
+
+
+@app.callback(
     Output('hive-blog-content', 'data'),
     Output('error-hive-blog', 'children'),
     Input('generate-blog', 'n_clicks'),
-    Input('dropdown-user-selection-season', 'value'),
+    Input(season_ids.dropdown_user_selection_season_blog, 'value'),
     prevent_initial_call=True,
 )
 def generate_hive_blog(n_clicks, users):
     if 'generate-blog' == ctx.triggered_id:
         if not users:
-            return None, html.P(html.Div("No accounts selected", className='text-warning'))
+            return None, html.P(html.Div('No accounts selected', className='text-warning'))
         previous_season_id = store.season_end_dates.id.max() - 1
         sps_df = store_util.get_last_season_values(store.season_sps, users)
 
@@ -170,9 +213,9 @@ def generate_hive_blog(n_clicks, users):
             player_spd_df = sps_df.loc[sps_df.player == account]
             if player_spd_df.empty or not (player_spd_df.season_id == previous_season_id).all():
                 return None, html.P(
-                    html.Div("Latest season information is missing, use update season first", className='text-warning'))
+                    html.Div('Latest season information is missing, use update season first', className='text-warning'))
 
-        progress_util.set_season_title("Generate hive blog")
+        progress_util.set_season_title('Generate hive blog')
         progress_util.update_season_msg('Start collecting last season data')
         season_info_store = {
             'sps': sps_df,
@@ -218,10 +261,10 @@ def generate_hive_blog(n_clicks, users):
                                          sold_dict,
                                          previous_season_id)
 
-        progress_util.set_season_title("Generate hive blog finished ")
+        progress_util.set_season_title('Generate hive blog finished ')
         progress_util.update_season_msg('Done')
-        return post, ""
-    return None, ""
+        return post, ''
+    return None, ''
 
 
 @app.callback(
@@ -260,7 +303,7 @@ def check_button_status():
 )
 def update_copy_to_clipboard(hive_blog_txt):
     if not hive_blog_txt:
-        return "", {'display': 'none'}
+        return '', {'display': 'none'}
     else:
         return hive_blog_txt, {'display': 'block'}
 
@@ -271,11 +314,11 @@ def update_copy_to_clipboard(hive_blog_txt):
 )
 def update_copy_to_clipboard(n_clicks):
     if ctx.triggered_id == 'copy-to-clipboard':
-        return html.P("Text is copied to clipboard")
+        return html.P('Text is copied to clipboard')
 
 
 @app.callback(Output('modern-season-rating-graph', 'figure'),
-              Input('dropdown-user-selection', 'value'),
+              Input(season_ids.dropdown_user_selection_season, 'value'),
               Input('trigger-season-update', 'data'),
               Input('theme-store', 'data'),
               )
@@ -290,7 +333,7 @@ def update_modern_graph(account, season_tigger, theme):
 
 
 @app.callback(Output('wild-season-battle-graph', 'figure'),
-              Input('dropdown-user-selection', 'value'),
+              Input(season_ids.dropdown_user_selection_season, 'value'),
               Input('trigger-season-update', 'data'),
               Input('theme-store', 'data'),
               )
@@ -305,7 +348,7 @@ def update_wild_battle_graph(account, season_trigger, theme):
 
 
 @app.callback(Output('modern-season-battle-graph', 'figure'),
-              Input('dropdown-user-selection', 'value'),
+              Input(season_ids.dropdown_user_selection_season, 'value'),
               Input('trigger-season-update', 'data'),
               Input('theme-store', 'data'),
               )
@@ -320,7 +363,7 @@ def update_modern_battle_graph(account, season_tigger, theme):
 
 
 @app.callback(Output('wild-season-rating-graph', 'figure'),
-              Input('dropdown-user-selection', 'value'),
+              Input(season_ids.dropdown_user_selection_season, 'value'),
               Input('trigger-season-update', 'data'),
               Input('theme-store', 'data'),
               )
@@ -334,7 +377,7 @@ def update_wild_graph(account, season_trigger, theme):
 
 
 @app.callback(Output('total-balance-graph', 'figure'),
-              Input('dropdown-user-selection', 'value'),
+              Input(season_ids.dropdown_user_selection_season, 'value'),
               Input('trigger-season-update', 'data'),
               Input('theme-store', 'data'),
               )
@@ -362,7 +405,7 @@ def update_earnings_graph(account, season_trigger, theme):
 
 
 @app.callback(Output('total-all-balance-graph', 'figure'),
-              Input('dropdown-user-selection', 'value'),
+              Input(season_ids.dropdown_user_selection_season, 'value'),
               Input('dropdown-token-selection', 'value'),
               Input('dropdown-skip-zero-selection', 'value'),
               Input('trigger-season-update', 'data'),

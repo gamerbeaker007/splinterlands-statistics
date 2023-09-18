@@ -2,7 +2,7 @@ import asyncio
 
 from src.utils import store_util
 
-SERVER_MODE_INTERVAL_IN_MINUTES = 90
+SERVER_MODE_INTERVAL_IN_MINUTES = 30
 
 
 async def async_update_task():
