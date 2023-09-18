@@ -1,3 +1,22 @@
 season_update_label = 'season-update-label'
 dropdown_user_selection_season = 'dropdown-user-selection-season'
 dropdown_user_selection_season_blog = 'dropdown-user-selection-season-blog'
+
+
+update_season_btn = 'update-season-btn'
+
+clipboard_div = 'clipboard-div'
+copy_to_clipboard = 'copy-to-clipboard'
+generate_blog = 'generate-blog'
+error_hive_blog = 'error-hive-blog'
+text_output_temp = 'text-output-temp'
+modern_season_rating_graph = 'modern-season-rating-graph'
+wild_season_rating_graph = 'wild-season-rating-graph'
+modern_season_battle_graph = 'modern-season-battle-graph'
+wild_season_battle_graph = 'wild-season-battle-graph'
+total_balance_graph = 'total-balance-graph'
+dropdown_token_selection = 'dropdown-token-selection'
+dropdown_skip_zero_selection = 'dropdown-skip-zero-selection'
+total_all_balance_graph = 'total-all-balance-graph'
+trigger_season_update = 'trigger-season-update'
+hive_blog_content = 'hive-blog-content'

@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 - FIX: When splinterlands is in maintenance mode skip update, causing application crashes
 - Update readme for executable + change linux to ubuntu in github workflow
 - Change server mode wait time. After processing daily and season reschedule next pull cycle to 30 minutes.
-- Add season pull information to server mode. Inluding some feedback when rewards are not claimed yet.
+- Add season pull information to server mode. Including some feedback when rewards are not claimed yet.
 - 
 
 ## 0.7.0
