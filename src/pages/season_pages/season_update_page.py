@@ -5,9 +5,9 @@ from dash.exceptions import PreventUpdate
 from main import app
 from src.api import spl
 from src.configuration import config
-from src.pages.modules import styles
+from src.pages.shared_modules import styles
 from src.pages.navigation_pages import nav_ids
-from src.pages.season import season_ids
+from src.pages.season_pages import season_ids
 from src.utils import store_util
 from src.utils.update import SERVER_MODE_INTERVAL_IN_MINUTES
 

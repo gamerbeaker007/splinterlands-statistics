@@ -5,7 +5,7 @@ from dash import html, Output, Input, dcc
 from main import app
 from src.configuration import store
 from src.graphs import season_graph
-from src.pages.season import season_ids
+from src.pages.season_pages import season_ids
 from src.utils import chart_util
 
 layout = [

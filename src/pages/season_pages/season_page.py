@@ -1,8 +1,8 @@
 import dash_bootstrap_components as dbc
 from dash import html, dcc
 
-from src.pages.season import season_ids, season_hive_blog_page, season_battle_info_page, season_balance_info_page, \
-    season_update_page
+from src.pages.season_pages import season_ids, season_update_page, season_hive_blog_page, season_battle_info_page, \
+    season_balance_info_page
 
 layout = dbc.Container([
     dbc.Row([

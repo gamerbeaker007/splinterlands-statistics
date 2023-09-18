@@ -9,10 +9,10 @@ from dash_iconify import DashIconify
 from main import app
 from src.configuration import progress, config
 from src.pages import main_page, rating_page, losing_page
-from src.pages.season import season_page
+from src.pages.season_pages import season_page
 from src.pages.card_pages import card_page, card_page_filter
 from src.pages.config_pages import config_page
-from src.pages.modules import styles
+from src.pages.shared_modules import styles
 from src.pages.navigation_pages import nav_ids
 from src.pages.nemesis_pages import nemesis_page
 from src.pages.portfolio_pages import portfolio_page

@@ -8,7 +8,7 @@ from dash import html, Output, Input, ctx, dcc
 from src import season_balances_info, market_info
 from src.configuration import store, progress
 from src.pages.navigation_pages import nav_ids
-from src.pages.season import season_ids
+from src.pages.season_pages import season_ids
 from src.utils import store_util, progress_util, tournaments_info, hive_blog
 
 layout = dbc.Accordion(
