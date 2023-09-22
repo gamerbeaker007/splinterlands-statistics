@@ -100,5 +100,5 @@ jobs:
           BRANCH_NAME: ${{ github.ref }}
         run: |
           DOCKER_TAG=$(echo $BRANCH_NAME | sed 's/refs\/heads\/push_//')
-          docker build -t $DOCKER_REPO:pre_$DOCKER_TAG .
+          docker build --build-arg APP_VERSION=pre_$DOCKER_TAG -t $DOCKER_REPO:pre_$DOCKER_TAG .
           docker push $DOCKER_REPO:pre_$DOCKER_TAG
