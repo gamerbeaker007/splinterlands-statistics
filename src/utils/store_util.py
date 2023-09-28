@@ -205,11 +205,16 @@ def update_season_log():
 
 
 def update_data(battle_update=True, season_update=False):
-    if not spl.is_maintenance_mode():
-        if battle_update:
-            update_battle_log()
+    try:
+        if not spl.is_maintenance_mode():
+            if battle_update:
+                update_battle_log()
 
-        if season_update:
-            update_season_log()
-    else:
-        logging.info("Splinterlands server is in maintenance mode skip this update cycle")
+            if season_update:
+                update_season_log()
+        else:
+            logging.info("Splinterlands server is in maintenance mode skip this update cycle")
+    except Exception as e:
+        logging.error("Exception during update data")
+        logging.exception(e)
+
