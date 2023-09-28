@@ -221,14 +221,13 @@ def get_player_history_rewards(username):
 
 
 def get_player_history_season_rewards_df(username):
-    address = base_url + "players/history?username=" + str(
-        username) + "&from_block=-1&limit=1000&types=claim_reward"
+    address = base_url + "players/history?username=" + str(username) + "&from_block=-1&limit=1000&types=claim_reward"
     result = http.get(address).json()
     df = pd.DataFrame()
     for row in result:
         df = pd.concat([df, pd.DataFrame(json.loads(row['data']), index=[0])], ignore_index=True)
     if not df.empty:
-        df = df.loc[df['type'] == 'league_season']
+            df = df.loc[df['type'] == 'league_season']
     return df
 
 

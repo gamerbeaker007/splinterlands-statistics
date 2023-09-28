@@ -10,5 +10,7 @@ load_figure_template([config.dark_theme, config.light_theme])
 app = Dash(#transforms=[LogTransform()],
                 external_stylesheets=[dbc.themes.CYBORG, dbc_css,  '/assets/style.css'],
                 # meta_tags=[{'name': 'viewport', 'content': 'width=device-width'}],
-                suppress_callback_exceptions=True
+                suppress_callback_exceptions=True,
+                title="Splinterlands - statistics",
+                update_title=None
                 )
