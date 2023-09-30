@@ -220,6 +220,40 @@ def get_player_history_rewards(username):
     return http.get(address).json()
 
 
+def get_player_history_season_rewards_df(username):
+    address = base_url + "players/history?username=" + str(username) + "&from_block=-1&limit=1000&types=claim_reward"
+    result = http.get(address).json()
+    df = pd.DataFrame()
+    for row in result:
+        df = pd.concat([df, pd.DataFrame(json.loads(row['data']), index=[0])], ignore_index=True)
+    if not df.empty:
+            df = df.loc[df['type'] == 'league_season']
+    return df
+
+
 def get_battle(battle_id):
     address = base_url + "battle/result?id=" + str(battle_id)
     return http.get(address).json()
+
+
+def is_maintenance_mode():
+    return get_settings()['maintenance_mode']
+
+
+def is_season_reward_claimed(account, current_season_data):
+    df = get_player_history_season_rewards_df(account)
+    if df.empty:
+        # in this case there are not season rewards found at all assume inactive account or rental account
+        # proceed processing balances
+        logging.info("No season rewards found at all for account: " + str(account))
+        logging.info("Assume inactive account or rental account continue processing season for : " + str(account))
+        return True
+
+    if df.loc[df.season == current_season_data['id'] - 1].empty:
+        logging.info("Season results not claimed yet for account: " + str(account))
+        logging.info("Stop season processing for: " + str(account))
+        return False
+
+    logging.info("Continue season results are claimed for account: " + str(account))
+    return True
+

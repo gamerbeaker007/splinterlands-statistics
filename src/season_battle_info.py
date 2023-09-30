@@ -1,17 +1,11 @@
-import logging
-
 import numpy as np
 import pandas as pd
 
 from src.api import spl
-from src.configuration import store, config
-from src.static.static_values_enum import Format
-from src.utils import store_util, progress_util
+from src.utils import progress_util
 
 
-def get_season_battles(account_name, store_df, mode):
-    current_season_data = config.current_season
-
+def get_season_battles(account_name, store_df, mode, current_season_data):
     if not (store_df.empty or
             store_df.loc[store_df.player == account_name].empty):
         next_season = store_df.loc[
@@ -43,10 +37,3 @@ def get_season_battles(account_name, store_df, mode):
                  "' battle info done..")
 
     return store_df
-
-
-def update_season_battle_store():
-    for account in store_util.get_account_names():
-        store.season_modern_battle_info = get_season_battles(account, store.season_modern_battle_info.copy(), Format.modern)
-        store.season_wild_battle_info = get_season_battles(account, store.season_wild_battle_info.copy(), Format.wild)
-    store_util.save_stores()

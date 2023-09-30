@@ -39,8 +39,7 @@ def find_one_with_retry(contract_name, table_name, query):
         api = Api()
         result = api.find_one(contract_name=contract_name, table_name=table_name, query=query)
     except RPCErrorDoRetry:
-        logging.warning(
-            hive_down_message)
+        logging.warning(hive_down_message)
         # Retry with other hive node
         api = Api(url=BACKUP_URL)
         result = api.find_one(contract_name='marketpools', table_name='liquidityPositions', query=query)

@@ -56,7 +56,6 @@ if not os.path.isdir(store_dir):
     os.mkdir(store_dir)
 
 card_details_df = spl.get_card_details()
-current_season = spl.get_current_season()
 settings = spl.get_settings()
 dark_theme = 'cyborg'
 light_theme = 'minty'

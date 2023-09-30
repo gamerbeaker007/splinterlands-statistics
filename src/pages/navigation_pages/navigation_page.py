@@ -8,23 +8,17 @@ from dash_iconify import DashIconify
 
 from main import app
 from src.configuration import progress, config
-from src.pages import main_page, rating_page, losing_page, season_page
+from src.pages import main_page, rating_page, losing_page
+from src.pages.season_pages import season_page
 from src.pages.card_pages import card_page, card_page_filter
 from src.pages.config_pages import config_page
+from src.pages.shared_modules import styles
 from src.pages.navigation_pages import nav_ids
 from src.pages.nemesis_pages import nemesis_page
 from src.pages.portfolio_pages import portfolio_page
 from src.utils import store_util
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
-
-
-def get_style():
-    if config.server_mode:
-        return {'display': 'none'}
-    else:
-        return {'display': 'block'}
-
 
 navbar = dbc.Navbar(
     dbc.Container(
@@ -71,7 +65,7 @@ navbar = dbc.Navbar(
                     className='m-1',
                 ),
                 width='auto',
-                style=get_style(),
+                style=styles.get_server_mode_style(),
             ),
             dcc.Store(id=nav_ids.trigger_daily),
             html.Div(id=nav_ids.progress_daily),
@@ -213,8 +207,8 @@ def determine_notification(daily=False):
     Input(nav_ids.load_new_values, 'n_clicks'),
 )
 def update_daily_button(n_clicks):
-    if ctx.triggered_id == nav_ids.load_new_values:
-        store_util.update_data()
+    if ctx.triggered_id == nav_ids.load_new_values and not config.server_mode:
+        store_util.update_data(battle_update=True, season_update=False)
         return True
     else:
         raise PreventUpdate
