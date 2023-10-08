@@ -13,6 +13,7 @@ from src.pages.rating_pages import rating_ids
 from src.static.static_values_enum import Format
 from src.utils import store_util, chart_util
 
+
 filter_settings = {}
 filter_settings['from_date'] = '2001-01-01T00:00:00.000Z'
 filter_settings['account'] = ''
@@ -82,9 +83,11 @@ def update_user_list(tigger):
               Input(rating_ids.filter_settings, 'data'),
               )
 def filter_df(stored_filter_settings):
-    account = stored_filter_settings['account']
+    if not stored_filter_settings:
+        raise PreventUpdate
 
-    if store.rating.empty or store.battle_big.empty:
+    account = stored_filter_settings['account']
+    if not account or store.rating.empty or store.battle_big.empty:
         empty_df = pd.DataFrame()
         return empty_df.to_json(date_format='iso', orient='split'), \
             empty_df.to_json(date_format='iso', orient='split')
@@ -161,8 +164,8 @@ def update_wild_graph(filtered_df, theme):
 def update_seasons_played_list_rating(tigger):
     season_played = store_util.get_seasons_played_list()
     first_played_season = ''
-    if len(season_played) > 0:
-        first_played_season = season_played[-1]
+    if len(season_played) > 1:
+        first_played_season = season_played[1]
     return season_played, first_played_season
 
 

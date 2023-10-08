@@ -9,12 +9,14 @@ import plotly.graph_objects as go
 
 
 def create_rating_graph(df, theme):
-    df['created_date_new'] = pd.to_datetime(df.loc[:, 'created_date'])
-    df['created_date_fmt'] = df.loc[:, 'created_date_new'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    fig = px.scatter(df, x='created_date_fmt', y='rating', color='account', template=theme, height=800)
+    df = df.copy()  # Create a copy of the DataFrame
+    df['date'] = pd.to_datetime(df['created_date']).dt.strftime('%Y-%m-%d %H:%M:%S')
+    fig = px.scatter(df, x='date', y='rating', color='account', template=theme, height=800)
+
     fig.update_layout(
-        xaxis={'type': 'category'}
+        xaxis={'type': 'category'},
     )
+
     # Start from 1 skip Novice
     for i in np.arange(1, len(static_values_enum.league_ratings)):
         y = static_values_enum.league_ratings[i]
@@ -38,9 +40,9 @@ def get_scatter_trace(df, name, show_legend=False):
         'loss': px.colors.qualitative.Plotly[3],
     }
 
-    df['created_date_new'] = pd.to_datetime(df.loc[:, 'created_date'])
-    df['created_date_fmt'] = df.loc[:, 'created_date_new'].dt.strftime('%Y-%m-%d')
-    return go.Scatter(x=df.created_date_fmt,
+    df = df.copy()  # Create a copy of the DataFrame
+    df['date'] = pd.to_datetime(df['created_date']).dt.strftime('%Y-%m-%d')
+    return go.Scatter(x=df.date,
                       y=df[name],
                       mode='lines+markers',
                       name=name,
@@ -86,6 +88,7 @@ def plot_daily_stats_battle(daily_df, theme):
 
     fig.update_layout(
         xaxis={'type': 'category'},
+        xaxis2={'type': 'category'},
         template=theme,
         title_text="Daily battle stats",
         # legend=dict(
