@@ -152,7 +152,7 @@ layout = dbc.Container([
                 [
                     dbc.InputGroupText('Group levels'),
                     dcc.RadioItems(options=['True', 'False'],
-                                   value='False',
+                                   value='True',
                                    inline=True,
                                    id='radio-by-selection',
                                    className='mt-2 dbc',
