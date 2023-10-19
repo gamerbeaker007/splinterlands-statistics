@@ -1,11 +1,11 @@
 import json
 import logging
 from datetime import datetime
+from time import sleep
 
 import pytz
 import requests
 from hiveengine.api import Api
-from hiveengine.market import Market
 from hiveengine.rpc import RPCErrorDoRetry
 
 BACKUP_URL = 'https://api2.hive-engine.com/rpc/'
@@ -35,26 +35,47 @@ def get_quantity(token_pair):
 
 
 def find_one_with_retry(contract_name, table_name, query):
-    try:
-        api = Api()
-        result = api.find_one(contract_name=contract_name, table_name=table_name, query=query)
-    except RPCErrorDoRetry:
-        logging.warning(hive_down_message)
-        # Retry with other hive node
-        api = Api(url=BACKUP_URL)
-        result = api.find_one(contract_name='marketpools', table_name='liquidityPositions', query=query)
+    result = None
+    success = False
+    # try 10 times on normal API
+    for i in range(0, 10):
+        try:
+            api = Api()
+            result = api.find_one(contract_name=contract_name, table_name=table_name, query=query)
+            success = True
+            break
+        except RPCErrorDoRetry:
+            sleep(1)
+
+    if not success:
+        # try 10 times on backup API
+        for i in range(0, 10):
+            try:
+                # Retry with other hive node
+                api = Api(url=BACKUP_URL)
+                result = api.find_one(contract_name=contract_name, table_name=table_name, query=query)
+                success = True
+                break
+            except RPCErrorDoRetry:
+                logging.warning("find_one_with_retry(10x): backup url try again " + str(i))
+                sleep(1)
+
+    if not success:
+        raise Exception("find_one_with_retry failed 20 times. " 
+                        ' contract:' + str(contract_name) +
+                        ' table_name:' + str(table_name) +
+                        ' query:' + str(query) +
+                        ' stop update .....')
+
     return result
 
 
-def get_market():
-    try:
-        market = Market()
-    except RPCErrorDoRetry:
-        logging.warning(hive_down_message)
-        # Retry with other hive node
-        api = Api(url=BACKUP_URL)
-        market = Market(api=api)
-    return market
+def get_market_with_retry(token):
+    market = find_one_with_retry('market', 'metrics', {'symbol': token})
+    if market:
+        return market[0]
+    else:
+        return None
 
 
 def get_hive_transactions(account_name, from_date, till_date, last_id, results):
