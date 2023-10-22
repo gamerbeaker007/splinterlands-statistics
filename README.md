@@ -5,7 +5,7 @@
 * Download executable
 * Unzip
 * Run main.exe or main.sh
-* Browse to http://127.0.0.1:8085 
+* Browse to http://127.0.0.1:8050
 * In the config tab add the accounts you want to monitor
 Tip for windows: to see the console log of the program run this via and command prompt
 

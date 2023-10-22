@@ -103,7 +103,7 @@ def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
 @app.callback(Output('total-all-portfolio-graph', 'figure'),
               Input('filtered-portfolio-df', 'data'),
               Input('dropdown-user-selection-portfolio', 'value'),
-              Input('theme-store', 'data'),
+              Input(nav_ids.theme_store, 'data'),
               )
 def update_portfolio_total_graph(filtered_df, combined_users, theme):
 
@@ -120,7 +120,7 @@ def update_portfolio_total_graph(filtered_df, combined_users, theme):
 
 @app.callback(Output('all-portfolio-graph', 'figure'),
               Input('filtered-portfolio-df', 'data'),
-              Input('theme-store', 'data'),
+              Input(nav_ids.theme_store, 'data'),
               )
 def update_portfolio_all_graph(filtered_df, theme):
     if not filtered_df:

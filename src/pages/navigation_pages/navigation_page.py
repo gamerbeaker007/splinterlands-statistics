@@ -8,7 +8,8 @@ from dash_iconify import DashIconify
 
 from main import app
 from src.configuration import progress, config
-from src.pages import main_page, rating_page, losing_page
+from src.pages import main_page, losing_page
+from src.pages.rating_pages import rating_page
 from src.pages.season_pages import season_page
 from src.pages.card_pages import card_page, card_page_filter
 from src.pages.config_pages import config_page
@@ -75,14 +76,14 @@ navbar = dbc.Navbar(
 )
 
 layout = html.Div([
-    dcc.Store(id='theme-store', storage_type='session'),
+    dcc.Store(id=nav_ids.theme_store, storage_type='session'),
     dcc.Location(id='url', refresh=False),
     navbar,
     html.Div(id='page-content', children=[]),
 ])
 
 
-@app.callback(Output('theme-store', 'data'),
+@app.callback(Output(nav_ids.theme_store, 'data'),
               Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
               )
 def update_theme(toggle):

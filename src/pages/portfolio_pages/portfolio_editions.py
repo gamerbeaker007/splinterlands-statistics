@@ -3,6 +3,7 @@ from dash import Output, Input, dcc
 
 from src.graphs import portfolio_graph
 from src.pages.main_dash import app
+from src.pages.navigation_pages import nav_ids
 from src.static.static_values_enum import Edition
 from src.utils import chart_util
 
@@ -13,7 +14,7 @@ def get_edition_layout():
 
 @app.callback(Output('portfolio-editions-graph', 'figure'),
               Input('filtered-portfolio-df', 'data'),
-              Input('theme-store', 'data'),
+              Input(nav_ids.theme_store, 'data'),
               )
 def update_portfolio_editions_graph(filtered_df, theme):
     if not filtered_df:

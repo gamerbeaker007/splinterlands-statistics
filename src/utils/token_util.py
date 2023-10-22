@@ -2,7 +2,6 @@ from datetime import datetime
 from time import sleep
 
 import pandas as pd
-from hiveengine.market import Market
 
 from src.api import spl, coingecko, hive
 
@@ -25,29 +24,23 @@ def get_all_tokens(account_name):
 
 
 def calculate_prices(df, all_tokens, hive_in_dollar):
-    market = hive.get_market()
 
-    for token in market:
-        if token["symbol"] == "SPS":
-            quantity, value = calculate_value(all_tokens, hive_in_dollar, "SPSP", token["highestBid"])
-            if quantity:
-                df['spsp_qty'] = quantity
-                df['spsp_value'] = value
-            quantity, value = calculate_value(all_tokens, hive_in_dollar, "SPS", token["highestBid"])
-            if quantity:
-                df['sps_qty'] = quantity
-                df['sps_value'] = value
-        elif token["symbol"] == "SLDICE":
-            quantity, value = calculate_value(all_tokens, hive_in_dollar, "DICE", token["highestBid"])
-            if quantity:
-                df['dic_qty'] = quantity
-                df['dic_value'] = value
+    for token in all_tokens:
+        if token == 'SPSP':
+            token_market = hive.get_market_with_retry('SPS')
+        elif token == 'DICE':
+            token_market = hive.get_market_with_retry('SLDICE')
         else:
-            this_token = token['symbol']
-            quantity, value = calculate_value(all_tokens, hive_in_dollar, this_token, token["highestBid"])
+            token_market = hive.get_market_with_retry(token)
+
+        if token_market:
+            quantity = all_tokens[token]
+            hive_value = float(token_market["highestBid"])
+            value = round(hive_value * hive_in_dollar * quantity, 2)
             if quantity:
-                df[str(this_token.lower()) + '_qty'] = quantity
-                df[str(this_token.lower()) + '_value'] = value
+                df[str(token.lower()) + '_qty'] = quantity
+                df[str(token.lower()) + '_value'] = value
+
     return df
 
 
@@ -63,9 +56,8 @@ def get_token_value(account):
 
 
 def get_dec_last_price():
-    market_list = pd.DataFrame(Market())
-    dec_market = market_list.loc[market_list.symbol == 'DEC']
-    return float(dec_market.lastPrice.iloc[0])
+    df = pd.DataFrame(hive.get_market_with_retry('DEC'), index=[0])
+    return float(df.lastPrice.iloc[0])
 
 
 def get_liquidity_pool(df, account, hive_in_dollar):
