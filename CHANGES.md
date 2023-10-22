@@ -1,6 +1,9 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
+## 0.9.1
+- FIX sorting of rating table with multiple accounts
+
 ## 0.9.0
 - FIX: price calculations for tokens was missing REBELLION due to 1000 token limit, include stronger retry mechanism
 - Remove previous migrations

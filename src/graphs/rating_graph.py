@@ -14,7 +14,7 @@ def create_rating_graph(df, theme):
     fig = px.scatter(df, x='date', y='rating', color='account', template=theme, height=800)
 
     fig.update_layout(
-        xaxis={'type': 'category'},
+        xaxis={'type': 'category', 'categoryorder': 'category ascending'},
     )
 
     # Start from 1 skip Novice
@@ -87,8 +87,8 @@ def plot_daily_stats_battle(daily_df, theme):
     fig.update_yaxes(showgrid=True, gridwidth=0.5)
 
     fig.update_layout(
-        xaxis={'type': 'category'},
-        xaxis2={'type': 'category'},
+        xaxis={'type': 'category', 'categoryorder': 'category ascending'},
+        xaxis2={'type': 'category', 'categoryorder': 'category ascending'},
         template=theme,
         title_text="Daily battle stats",
         # legend=dict(
