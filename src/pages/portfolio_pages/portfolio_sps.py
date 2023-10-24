@@ -4,15 +4,16 @@ from dash import Output, Input, dcc
 from src.graphs import portfolio_graph
 from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
+from src.pages.portfolio_pages import portfolio_ids
 from src.utils import chart_util
 
 
 def get_sps_layout():
-    return dcc.Graph(id='portfolio-sps-graph')
+    return dcc.Graph(id=portfolio_ids.portfolio_sps_graph)
 
 
-@app.callback(Output('portfolio-sps-graph', 'figure'),
-              Input('filtered-portfolio-df', 'data'),
+@app.callback(Output(portfolio_ids.portfolio_sps_graph, 'figure'),
+              Input(portfolio_ids.filtered_portfolio_df, 'data'),
               Input(nav_ids.theme_store, 'data'),
               )
 def update_portfolio_sps_graph(filtered_df, theme):

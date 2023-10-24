@@ -9,15 +9,14 @@ from main import app
 from src.configuration import store
 from src.graphs import portfolio_graph
 from src.pages.navigation_pages import nav_ids
-from src.pages.portfolio_pages import portfolio_deposit, portfolio_editions, portfolio_sps
+from src.pages.portfolio_pages import portfolio_deposit, portfolio_editions, portfolio_sps, portfolio_ids
 from src.static import static_values_enum
 from src.static.static_values_enum import Edition
 from src.utils import chart_util, store_util
 
 layout = dbc.Container([
-    dcc.Store(id='combined-users'),
-    dcc.Store(id='filtered-portfolio-df'),
-    dcc.Store(id='trigger-portfolio-update'),
+    dcc.Store(id=portfolio_ids.filtered_portfolio_df),
+    dcc.Store(id=portfolio_ids.trigger_portfolio_update),
 
     dbc.Row([
         html.H1('Portfolio'),
@@ -26,7 +25,7 @@ layout = dbc.Container([
                 [
                     dbc.InputGroupText('Combine accounts'),
                     dcc.Dropdown(multi=True,
-                                 id='dropdown-user-selection-portfolio',
+                                 id=portfolio_ids.dropdown_user_selection_portfolio,
                                  className='dbc',
                                  style={'min-width': '350px'},
                                  ),
@@ -36,8 +35,8 @@ layout = dbc.Container([
         ),
         dbc.Col(portfolio_deposit.get_deposit_layout(),className='mb-3'),
     ]),
-    dbc.Row(id='update-values-row', className='mb-3'),
-    dbc.Row(dcc.Graph(id='total-all-portfolio-graph'), className='mb-3'),
+    dbc.Row(id=portfolio_ids.update_values_row, className='mb-3'),
+    dbc.Row(dcc.Graph(id=portfolio_ids.total_all_portfolio_graph), className='mb-3'),
 
     dbc.Row([
         dbc.Col(portfolio_editions.get_edition_layout(), className='mb-3'),
@@ -46,21 +45,21 @@ layout = dbc.Container([
 ]
 ),
 
-    dbc.Row(dcc.Graph(id='all-portfolio-graph'),className='mb-3'),
+    dbc.Row(dcc.Graph(id=portfolio_ids.all_portfolio_graph), className='mb-3'),
 ])
 
 
-@app.callback(Output('dropdown-user-selection-portfolio', 'value'),
-              Output('dropdown-user-selection-portfolio', 'options'),
+@app.callback(Output(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
+              Output(portfolio_ids.dropdown_user_selection_portfolio, 'options'),
               Input(nav_ids.trigger_daily, 'data'),
               )
 def update_user_list(tigger):
     return store_util.get_last_portfolio_selection(), store_util.get_account_names()
 
 
-@app.callback(Output('filtered-portfolio-df', 'data'),
-              Input('dropdown-user-selection-portfolio', 'value'),
-              Input('trigger-portfolio-update', 'data'),
+@app.callback(Output(portfolio_ids.filtered_portfolio_df, 'data'),
+              Input(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
+              Input(portfolio_ids.trigger_portfolio_update, 'data'),
               Input(nav_ids.trigger_daily, 'data'),
               )
 def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
@@ -100,9 +99,9 @@ def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
         return pd.DataFrame().to_json(date_format='iso', orient='split')
 
 
-@app.callback(Output('total-all-portfolio-graph', 'figure'),
-              Input('filtered-portfolio-df', 'data'),
-              Input('dropdown-user-selection-portfolio', 'value'),
+@app.callback(Output(portfolio_ids.total_all_portfolio_graph, 'figure'),
+              Input(portfolio_ids.filtered_portfolio_df, 'data'),
+              Input(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
               Input(nav_ids.theme_store, 'data'),
               )
 def update_portfolio_total_graph(filtered_df, combined_users, theme):
@@ -118,8 +117,8 @@ def update_portfolio_total_graph(filtered_df, combined_users, theme):
         return portfolio_graph.plot_portfolio_total(temp_df, combined_users, theme)
 
 
-@app.callback(Output('all-portfolio-graph', 'figure'),
-              Input('filtered-portfolio-df', 'data'),
+@app.callback(Output(portfolio_ids.all_portfolio_graph, 'figure'),
+              Input(portfolio_ids.filtered_portfolio_df, 'data'),
               Input(nav_ids.theme_store, 'data'),
               )
 def update_portfolio_all_graph(filtered_df, theme):
@@ -166,9 +165,9 @@ def create_value_card(title, text, image_url):
 
 
 @app.callback(
-    Output('update-values-row', 'children'),
-    Input('filtered-portfolio-df', 'data'),
-    Input('total-all-portfolio-graph', 'clickData'))
+    Output(portfolio_ids.update_values_row, 'children'),
+    Input(portfolio_ids.filtered_portfolio_df, 'data'),
+    Input(portfolio_ids.total_all_portfolio_graph, 'clickData'))
 def display_click_data(filtered_portfolio_df, click_data):
     if not filtered_portfolio_df:
         raise PreventUpdate

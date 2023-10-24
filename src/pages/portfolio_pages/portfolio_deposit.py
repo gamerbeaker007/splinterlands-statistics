@@ -7,6 +7,7 @@ from dash import html, dcc, Output, Input, ctx
 
 from src.configuration import config
 from src.pages.navigation_pages import nav_ids
+from src.pages.portfolio_pages import portfolio_ids
 from src.utils import store_util, portfolio_util
 
 
@@ -34,7 +35,7 @@ def get_deposit_layout():
                         [
                             dbc.InputGroupText('Date'),
                             dcc.DatePickerSingle(
-                                id='my-date-picker-single',
+                                id=portfolio_ids.data_picker,
                                 min_date_allowed=date(2015, 8, 5),
                                 initial_visible_month=date.today(),
                                 date=date.today(),
@@ -44,29 +45,30 @@ def get_deposit_layout():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText('Account'),
-                            dcc.Dropdown(id='dropdown-user-selection-deposit',
+                            dcc.Dropdown(id=portfolio_ids.dropdown_user_selection_deposit,
                                          style={'min-width': '300px'},
                                          className='dbc'),
                         ], className='mb-3', ),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText('Amount'),
-                            dbc.Input(id='amount', type='number', pattern='[0-9]'),
+                            dbc.InputGroupText(portfolio_ids.amount),
+                            dbc.Input(id=portfolio_ids.amount, type='number', pattern='[0-9]'),
                         ], className='mb-3'),
                     dbc.Row(
                         [
-                            dbc.Col(dbc.Button('Deposit', id='deposit', className='ml-auto'),
+                            dbc.Col(dbc.Button(portfolio_ids.deposit, id=portfolio_ids.deposit, className='ml-auto'),
                                     width=2,
                                     className='mb-3'),
-                            dbc.Col(dbc.Button('Withdraw', id='withdraw', className='ml-auto'),
+                            dbc.Col(dbc.Button(portfolio_ids.withdraw, id=portfolio_ids.withdraw, className='ml-auto'),
                                     width=2,
                                     className='mb-3')
                         ]),
                     html.Div([
-                        html.P(id='error-text')
+                        html.P(id=portfolio_ids.error_text)
                     ])
                 ]),
                 html.Div(children=get_readonly_text()),
+                html.Div(id=portfolio_ids.deposit_withdraw_text),
             ],
             title='deposit/withdraw investment',
         ),
@@ -74,8 +76,8 @@ def get_deposit_layout():
     ),
 
 
-@app.callback(Output('dropdown-user-selection-deposit', 'value'),
-              Output('dropdown-user-selection-deposit', 'options'),
+@app.callback(Output(portfolio_ids.dropdown_user_selection_deposit, 'value'),
+              Output(portfolio_ids.dropdown_user_selection_deposit, 'options'),
               Input(nav_ids.trigger_daily, 'data'),
               )
 def update_user_list(tigger):
@@ -83,40 +85,62 @@ def update_user_list(tigger):
 
 
 @app.callback(
-    Output('trigger-portfolio-update', 'data'),
-    [Input('deposit', 'n_clicks'),
-     Input('dropdown-user-selection-deposit', 'value'),
-     Input('my-date-picker-single', 'date'),
-     Input('amount', 'value')],
+    Output(portfolio_ids.trigger_portfolio_update, 'data'),
+    Output(portfolio_ids.deposit_withdraw_text, 'children'),
+    [Input(portfolio_ids.deposit, 'n_clicks'),
+     Input(portfolio_ids.dropdown_user_selection_deposit, 'value'),
+     Input(portfolio_ids.data_picker, 'date'),
+     Input(portfolio_ids.amount, 'value')],
 )
 def deposit_action(deposit_clicks, account, my_date, amount):
-    if ctx.triggered_id == 'deposit' and account:
-        portfolio_util.update_investment(account, amount, my_date)
-        logging.info('Deposit: ' + str(my_date) + ' amount: ' + str(amount))
-        return True
-    return False
+    text = ''
+    updated = False
+    class_name = 'text-warning'
+    if ctx.triggered_id == portfolio_ids.deposit and account:
+        if not config.read_only:
+            portfolio_util.update_investment(account, amount, my_date)
+            logging.info('Deposit: ' + str(my_date) + ' amount: ' + str(amount))
+            text = 'Deposit processed'
+            class_name = 'text-success'
+            updated = True
+        else:
+            text = 'This is not allowed in read-only mode'
+            class_name = 'text-danger'
+
+    return updated, html.Div(text, className=class_name)
 
 
 @app.callback(
-    Output('trigger-portfolio-update', 'data'),
-    [Input('withdraw', 'n_clicks'),
-     Input('dropdown-user-selection-deposit', 'value'),
-     Input('my-date-picker-single', 'date'),
-     Input('amount', 'value')],
+    Output(portfolio_ids.trigger_portfolio_update, 'data'),
+    Output(portfolio_ids.deposit_withdraw_text, 'children'),
+    [Input(portfolio_ids.withdraw, 'n_clicks'),
+     Input(portfolio_ids.dropdown_user_selection_deposit, 'value'),
+     Input(portfolio_ids.data_picker, 'date'),
+     Input(portfolio_ids.amount, 'value')],
 )
 def withdraw_action(withdraw_clicks, account, my_date, amount):
-    if ctx.triggered_id == 'withdraw' and account:
-        portfolio_util.update_investment(account, amount * -1, my_date)
-        logging.info('Withdraw: ' + str(my_date) + ' amount: ' + str(amount))
-        return True
-    return False
+    text = ''
+    updated = False
+    class_name = 'text-warning'
+    if ctx.triggered_id == portfolio_ids.withdraw and account:
+        if not config.read_only:
+            portfolio_util.update_investment(account, amount * -1, my_date)
+            logging.info('Withdraw: ' + str(my_date) + ' amount: ' + str(amount))
+            text = 'Withdraw processed'
+            class_name = 'text-success'
+            updated = True
+        else:
+            text = 'This is not allowed in read-only mode'
+            class_name = 'text-danger'
+
+    return updated, html.Div(text, className=class_name)
 
 
 @app.callback(
-    Output('error-text', 'children'),
-    Output('deposit', 'disabled'),
-    Output('withdraw', 'disabled'),
-    Input('amount', 'value')
+    Output(portfolio_ids.error_text, 'children'),
+    Output(portfolio_ids.deposit, 'disabled'),
+    Output(portfolio_ids.withdraw, 'disabled'),
+    Input(portfolio_ids.amount, 'value')
 )
 def validate_buttons(value):
     if not value:

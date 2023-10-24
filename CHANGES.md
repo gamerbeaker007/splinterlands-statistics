@@ -1,6 +1,10 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
+## 0.10.0 WIP
+- FIX readonly mode more strict portfolio and config page. 
+
+
 ## 0.9.1
 - FIX sorting of rating table with multiple accounts
 
