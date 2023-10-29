@@ -16,7 +16,7 @@ gold_potion_icon = "![alchemy.png](https://images.hive.blog/20x0/https://files.p
 legendary_potion_icon = "![legendary.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AK3gbhdHjfaQxKVM39VfeHCw25haYejvUT17E8WBgveTKY5rucpRY7AbjgsAhdu.png)"
 packs_icon = "![chaosPack.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/Eo8M4f1Zieju9ibwbs6Tnp3KvN9Kb93HkqwMi3FqanTmV2XoNw7pmV4MbjDSxbgiSdo.png)"
 
-intro_img = "https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23tvcWH8iJph9FgtR4FeZoxNrHTDsvH7aUXfeunpcxNZKFLhdSCBBqUtW5e23eDRpT2SM.png"
+intro_img = "https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23tvcWHTtW5SAv63Z2J86Zuyvn5Jk2BQQ5qBQrGBvv5hRm1DUaVKJN4Z8X9eFfSokovT1.png"
 
 def get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles):
     if not last_season_wild_battles.empty and not last_season_wild_battles.rating.isna().values[0]:
