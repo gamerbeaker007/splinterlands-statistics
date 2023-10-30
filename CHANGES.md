@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.10.0 WIP
 - FIX readonly mode more strict portfolio and config page. 
+- FIX hive-engine exceptions try also on backup url (switched primary url and secondary url)
 
 
 ## 0.9.1

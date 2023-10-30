@@ -8,10 +8,11 @@ import requests
 from hiveengine.api import Api
 from hiveengine.rpc import RPCErrorDoRetry
 
-BACKUP_URL = 'https://api2.hive-engine.com/rpc/'
+PRIMARY_URL = 'https://api2.hive-engine.com/rpc/'
+SECONDARY_URL = 'https://api.hive-engine.com/'
 HIVE_BLOG_URL = 'https://api.hive.blog'
 
-hive_down_message = "Default hive node 'https://api.hive-engine.com/' down, retry on backup node: " + str(BACKUP_URL)
+hive_down_message = "Default hive node 'https://api.hive-engine.com/' down, retry on backup node: " + str(SECONDARY_URL)
 
 
 def get_liquidity_positions(account, token_pair):
@@ -39,34 +40,47 @@ def find_one_with_retry(contract_name, table_name, query):
     success = False
     # try 10 times on normal API
     for i in range(0, 10):
+        # noinspection PyBroadException
         try:
-            api = Api()
+            api = Api(url=PRIMARY_URL)
             result = api.find_one(contract_name=contract_name, table_name=table_name, query=query)
             success = True
             break
         except RPCErrorDoRetry:
             sleep(1)
+        except Exception as e:
+            logging.warning('find_one_with_retry - exception on https://api.hive-engine.com/'
+                            ' contract: ' + str(contract_name) +
+                            ' table_name: ' + str(table_name) +
+                            ' query: ' + str(query) +
+                            ' retry on backup url: ' + SECONDARY_URL)
+            break
 
     if not success:
         # try 10 times on backup API
         for i in range(0, 10):
             try:
                 # Retry with other hive node
-                api = Api(url=BACKUP_URL)
+                api = Api(url=SECONDARY_URL)
                 result = api.find_one(contract_name=contract_name, table_name=table_name, query=query)
                 success = True
                 break
             except RPCErrorDoRetry:
                 logging.warning("find_one_with_retry(10x): backup url try again " + str(i))
                 sleep(1)
-
+            except Exception as e:
+                logging.warning('find_one_with_retry - fail with backup url rethrow exception')
+                raise Exception('find_one_with_retry - fail with backup url rethrow exception' 
+                                ' contract: ' + str(contract_name) +
+                                ' table_name: ' + str(table_name) +
+                                ' query: ' + str(query) +
+                                ' stop update .....')
     if not success:
-        raise Exception("find_one_with_retry failed 20 times. " 
+        raise Exception('find_one_with_retry failed 20 times.' 
                         ' contract:' + str(contract_name) +
                         ' table_name:' + str(table_name) +
                         ' query:' + str(query) +
                         ' stop update .....')
-
     return result
 
 
