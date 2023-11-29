@@ -156,13 +156,13 @@ def get_leaderboard_with_player_season(username, season, mode):
 def get_deeds_collection(username):
     address = land_url + "land/deeds?status=collection&player=" + username
     collection = http.get(address)
-    return collection.json()['data']
+    return collection.json()['data']['deeds']
 
 
 def get_deeds_market():
     address = land_url + "land/deeds?status=market"
     market = http.get(address)
-    return market.json()['data']
+    return market.json()['data']['deeds']
 
 
 def get_balances(username):

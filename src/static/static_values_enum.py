@@ -79,6 +79,7 @@ class Edition(ExtendedEnum):
     chaos = 7
     rift = 8
     soulbound = 10
+    rebellion = 12
 
 
 class Element(ExtendedEnum):

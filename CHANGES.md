@@ -1,6 +1,10 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
+## 0.9.3
+- FIX portfolio value calculation after land update 
+- small preparation for rebellion  
+
 ## 0.9.2
 - FIX readonly mode more strict portfolio and config page. 
 - FIX hive-engine exceptions try also on backup url (switched primary url and secondary url)
