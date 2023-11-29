@@ -1,6 +1,10 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
+## 0.10.0
+- Add monitor of staked DEC
+- Update ordering of portfolio ALL graph
+
 ## 0.9.3
 - FIX portfolio value calculation after land update 
 - small preparation for rebellion  

@@ -227,11 +227,20 @@ def display_click_data(filtered_portfolio_df, click_data):
         ]
         dec_value = value_row[dec_columns].sum()
 
+        dec_staked_columns = value_row.index[
+            value_row.index.str.startswith("dec_staked_value")
+        ]
+        dec_staked_value = value_row[dec_staked_columns].sum()
+
         sps_columns = value_row.index[
-            value_row.index.str.startswith("sps_value") |
-            value_row.index.str.startswith("spsp_value")
+            value_row.index.str.startswith("sps_value")
             ]
         sps_value = value_row[sps_columns].sum()
+
+        sps_staked_columns = value_row.index[
+            value_row.index.str.startswith("spsp_value")
+            ]
+        sps_staked_value = value_row[sps_staked_columns].sum()
 
         other_columns = value_row.index[
             value_row.index.str.endswith("_value") &
@@ -249,7 +258,9 @@ def display_click_data(filtered_portfolio_df, click_data):
         card_list_value = 0
         card_market_value = 0
         dec_value = 0
+        dec_staked_value = 0
         sps_value = 0
+        sps_staked_value = 0
         land_value = 0
         other_value = 0
 
@@ -264,8 +275,20 @@ def display_click_data(filtered_portfolio_df, click_data):
             html.Br(),
             "Market: " + str(round(card_market_value, 2)) + " $",
             ], static_values_enum.cards_icon_url),
-        create_value_card("DEC", str(round(dec_value, 2)) + " $", static_values_enum.dec_icon_url),
-        create_value_card("SPS", str(round(sps_value, 2)) + " $", static_values_enum.sps_icon_url),
+        create_value_card("DEC",
+                          [
+                              "Liquid: " + str(round(dec_value, 2)) + " $",
+                              html.Br(),
+                              "Staked: " + str(round(dec_staked_value, 2)) + " $",
+                          ],
+                          static_values_enum.dec_icon_url),
+        create_value_card("SPS",
+                          [
+                              "Liquid: " + str(round(sps_value, 2)) + " $",
+                              html.Br(),
+                              "Staked: " + str(round(sps_staked_value, 2)) + " $",
+                          ],
+                          static_values_enum.sps_icon_url),
         create_value_card("Land", str(round(land_value, 2)) + " $", static_values_enum.land_icon_url),
         create_value_card("Others", str(round(other_value, 2)) + " $", static_values_enum.other_icon_url)
     ]

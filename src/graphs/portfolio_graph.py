@@ -15,7 +15,7 @@ def plot_portfolio_total(portfolio_df, combined_users, theme):
     fig = px.line(portfolio_df,
                   x='date',
                   y=column_data,
-                  title="Total portfolio values of '" + ",".join(combined_users) + "' combined",
+                  title='Total portfolio values of \'' + ','.join(combined_users) + '\' combined',
                   markers=True)
     fig.update_traces(connectgaps=True)
     fig.update_layout(
@@ -40,13 +40,15 @@ def plot_portfolio_all(df, theme, skip_zero=True):
         temp_df['date'] = df[['date']]
 
     temp_df = temp_df.set_index('date')
-    max_value = temp_df.loc[:, temp_df.columns.str.endswith("_value")].max().max()
-    max_qty = temp_df.loc[:, ~temp_df.columns.str.endswith("_value")].max().max()
+    max_value = temp_df.loc[:, temp_df.columns.str.endswith('_value')].max().max()
+    max_qty = temp_df.loc[:, ~temp_df.columns.str.endswith('_value')].max().max()
 
     # Get a discrete color palette from Plotly
     color_palette = pc.qualitative.Plotly
     color_index = 0  # Initialize the index for cycling colors
 
+    # Sort columns for legend
+    temp_df = temp_df.reindex(sorted(temp_df.columns), axis=1)
     for column in temp_df.columns.tolist():
         current_color = color_palette[color_index]
 
@@ -73,9 +75,9 @@ def plot_portfolio_all(df, theme, skip_zero=True):
 
     fig.update_layout(
         template=theme,
-        title_text="All",
+        title_text='All',
         legend=dict(
-            orientation="v",
+            orientation='v',
             x=1.1,
             xanchor='left',
             y=1,
@@ -98,7 +100,7 @@ def plot_portfolio_all(df, theme, skip_zero=True):
         yaxis1=dict(
             showgrid=False,
             range=[0, max_value * 1.05],
-            title="value $",
+            title='value $',
         ),
     )
 
@@ -107,15 +109,15 @@ def plot_portfolio_all(df, theme, skip_zero=True):
 
 def get_editions_fig(editions_df, theme):
     fig = go.Figure()
-    # max_value = editions_df.loc[:, editions_df.columns.str.endswith("_market_value")].max().max()
-    # max_bcx = editions_df.loc[:, editions_df.columns.str.endswith("_bcx")].max().max()
+    # max_value = editions_df.loc[:, editions_df.columns.str.endswith('_market_value')].max().max()
+    # max_bcx = editions_df.loc[:, editions_df.columns.str.endswith('_bcx')].max().max()
 
     # Get a discrete color palette from Plotly
     color_palette = pc.qualitative.Plotly
     color_index = 0  # Initialize the index for cycling colors
 
     for edition in Edition.list_names():
-        if str(edition) + "_bcx" in editions_df.columns.tolist():
+        if str(edition) + '_bcx' in editions_df.columns.tolist():
             legend_group = edition
             current_color = color_palette[color_index]
 
@@ -139,8 +141,8 @@ def get_editions_fig(editions_df, theme):
 
     current_color = color_palette[color_index]
     temp_df = editions_df.copy()
-    temp_df['all_value'] = temp_df.loc[:, temp_df.columns.str.endswith("_market_value")].sum(axis=1)
-    temp_df['all_bcx'] = temp_df.loc[:, temp_df.columns.str.endswith("_bcx")].sum(axis=1)
+    temp_df['all_value'] = temp_df.loc[:, temp_df.columns.str.endswith('_market_value')].sum(axis=1)
+    temp_df['all_bcx'] = temp_df.loc[:, temp_df.columns.str.endswith('_bcx')].sum(axis=1)
     legend_group = 'combined'
     market_value_trace = go.Scatter(x=temp_df.index,
                                     y=temp_df.all_value,
@@ -161,13 +163,13 @@ def get_editions_fig(editions_df, theme):
 
     fig.update_layout(
         template=theme,
-        title_text="Editions",
-        hovermode="x unified",
+        title_text='Editions',
+        hovermode='x unified',
         legend=dict(
-            orientation="h",
-            yanchor="bottom",
+            orientation='h',
+            yanchor='bottom',
             y=1.02,
-            xanchor="right",
+            xanchor='right',
             x=1
         ),
         xaxis=dict(
@@ -184,7 +186,7 @@ def get_editions_fig(editions_df, theme):
         yaxis1=dict(
             showgrid=False,
             # range=[0, max_value * 1.05],
-            title="value $",
+            title='value $',
         ),
     )
 
@@ -193,8 +195,8 @@ def get_editions_fig(editions_df, theme):
 
 def get_sps_fig(sps_df, theme):
     fig = go.Figure()
-    max_value = sps_df.loc[:, sps_df.columns.str.endswith("_value")].max().max()
-    max_qty = sps_df.loc[:, sps_df.columns.str.endswith("_qty")].max().max()
+    max_value = sps_df.loc[:, sps_df.columns.str.endswith('_value')].max().max()
+    max_qty = sps_df.loc[:, sps_df.columns.str.endswith('_qty')].max().max()
 
     # Get a discrete color palette from Plotly
     color_palette = pc.qualitative.Plotly
@@ -225,13 +227,13 @@ def get_sps_fig(sps_df, theme):
 
     fig.update_layout(
         template=theme,
-        title_text="SPS",
-        hovermode="x unified",
+        title_text='SPS',
+        hovermode='x unified',
         legend=dict(
-            orientation="h",
-            yanchor="bottom",
+            orientation='h',
+            yanchor='bottom',
             y=1.02,
-            xanchor="right",
+            xanchor='right',
             x=1
         ),
         xaxis=dict(
@@ -248,7 +250,7 @@ def get_sps_fig(sps_df, theme):
         yaxis1=dict(
             showgrid=False,
             range=[0, max_value * 1.05],
-            title="value $",
+            title='value $',
         ),
     )
 

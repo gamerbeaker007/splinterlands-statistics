@@ -3,7 +3,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from src.api import spl
+from src.api import spl, hive, coingecko
 
 
 def filter_items(deed, df, param):
@@ -48,3 +48,23 @@ def get_deeds_value(account_name):
                          'deeds_qty': deeds_owned,
                          'deeds_price_found_qty': deeds_price_found,
                          'deeds_value': deeds_total}, index=[0])
+
+
+def get_staked_dec_value(account_name):
+    dec_staked_value = 0
+    dec_staked_qty = 0
+
+    dec_staked_df = spl.get_staked_dec_df(account_name)
+    if not dec_staked_df.empty:
+        dec_staked_qty = dec_staked_df.amount.sum()
+        token_market = hive.get_market_with_retry('DEC')
+        hive_in_dollar = float(coingecko.get_current_hive_price())
+
+        if token_market:
+            hive_value = float(token_market["highestBid"])
+            dec_staked_value = round(hive_value * hive_in_dollar * dec_staked_qty, 2)
+
+    return pd.DataFrame({'date': datetime.today().strftime('%Y-%m-%d'),
+                         'account_name': account_name,
+                         'dec_staked_qty': dec_staked_qty,
+                         'dec_staked_value': dec_staked_value}, index=[0])

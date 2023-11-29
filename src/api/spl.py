@@ -257,3 +257,7 @@ def is_season_reward_claimed(account, current_season_data):
     logging.info("Continue season results are claimed for account: " + str(account))
     return True
 
+
+def get_staked_dec_df(account_name):
+    address = land_url + "land/stake/decstaked?player=" + str(account_name)
+    return pd.DataFrame(http.get(address).json()['data'])
