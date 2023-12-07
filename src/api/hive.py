@@ -8,6 +8,8 @@ import requests
 from hiveengine.api import Api
 from hiveengine.rpc import RPCErrorDoRetry
 
+from src.api import spl
+
 PRIMARY_URL = 'https://api2.hive-engine.com/rpc/'
 SECONDARY_URL = 'https://api.hive-engine.com/'
 HIVE_BLOG_URL = 'https://api.hive.blog'
@@ -119,4 +121,29 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
             last_id = transactions[0][0]
 
             get_hive_transactions(account_name, from_date, till_date, last_id-1, results)
+    return results
+
+
+def get_land_operations(account, from_date, till_date, last_id, results=None):
+    if results is None:
+        results = []
+
+    limit = 100
+
+    history = account.get_account_history(last_id, limit, only_ops=['custom_json'])
+    done = False
+    for h in history:
+        timestamp = h['timestamp']
+        # Assume time of Hive is always UTC
+        # https://developers.hive.io/tutorials-recipes/understanding-dynamic-global-properties.html#time
+        timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+        last_id = h['index']
+        if from_date < timestamp < till_date:
+            if h['id'] == 'sm_land_operation':
+                results.append(spl.get_transaction(h['trx_id']))
+        else:
+           done = True
+
+    if not done:
+        get_land_operations(account, from_date, till_date, last_id-1, results=results)
     return results

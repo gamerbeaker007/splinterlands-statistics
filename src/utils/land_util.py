@@ -1,7 +1,9 @@
+import json
 import logging
 from datetime import datetime
 
 import pandas as pd
+from beem.account import Account
 
 from src.api import spl, hive, coingecko
 
@@ -68,3 +70,35 @@ def get_staked_dec_value(account_name):
                          'account_name': account_name,
                          'dec_staked_qty': dec_staked_qty,
                          'dec_staked_value': dec_staked_value}, index=[0])
+
+def process_land_transactions(transactions):
+    results = pd.DataFrame()
+    for transaction in transactions:
+        info = transaction['trx_info']
+        data = json.loads(info['data'])
+
+        if data['op'] == 'harvest_all':
+            result = pd.DataFrame(json.loads(info['result'])['result']['data']['results'])
+        elif data['op'] == 'harvest_resources':
+            result = pd.DataFrame(json.loads(info['result'])['result']['data'], index=[0])
+        else:
+            logging.error('other land operation: ' + str(data['op']))
+            raise Exception('unknown land operation: ' + str(data['op']))
+
+        result['trx_id'] = info['id']
+        result['op'] = data['op']
+        result['region_uid'] = data['region_uid']
+        result['auto_buy_grain'] = data['auto_buy_grain']
+        result['created_date'] = info['created_date']
+        result['player'] = info['player']
+        result['created_date'] = info['created_date']
+        results = pd.concat([results, result], ignore_index=True)
+
+    results.reindex(sorted(results.columns), axis=1)
+    return results
+
+
+def get_land_operations(account_name, from_date, till_date):
+    acc = Account(account_name)
+    land_transactions = hive.get_land_operations(acc, from_date, till_date, -1)
+    return process_land_transactions(land_transactions)

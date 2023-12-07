@@ -192,9 +192,20 @@ def get_player_tournaments_ids(username):
     return tournaments_ids
 
 
-def get_spl_transaction(trx_id):
+def get_market_transaction(trx_id):
     # https://api.splinterlands.io/market/status?id=d8f8593d637ebdd0bca7994dd7e1a15d9f12efa7-0
     address = base_url + "market/status?id=" + str(trx_id)
+
+    result = http.get(address)
+    if result.status_code == 200:
+        return result.json()
+    else:
+        return None
+
+
+def get_transaction(trx_id):
+    # https://api.splinterlands.com/transactions/lookup?trx_id=247d6ac02bbfd5b8c38528535baa0d8298697a57'
+    address = base_url + "transactions/lookup?trx_id=" + str(trx_id)
 
     result = http.get(address)
     if result.status_code == 200:

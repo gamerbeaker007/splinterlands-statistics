@@ -105,7 +105,7 @@ def get_purchased_sold_cards(account_name, start_date, end_date):
             progress_util.update_season_msg("Collecting bought and sold cards transaction: "
                                             + str(index) + "/" + str(count))
             # TODO look into a way to parallel process
-            result = spl.get_spl_transaction(row.values[0])
+            result = spl.get_market_transaction(row.values[0])
             purchases = pd.concat([purchases, pd.DataFrame(result['cards'])])
 
         purchases['edition_name'] = purchases.apply(lambda r: (Edition(r.edition)).name, axis=1)
