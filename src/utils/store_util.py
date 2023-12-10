@@ -3,7 +3,7 @@ import os
 
 import pandas as pd
 
-from src import portfolio, collection_store, battle_store, season_balances_info, season_battle_info
+from src import portfolio, collection_store, battle_store, season_balances_info, season_battle_info, land
 from src.api import spl
 from src.configuration import store, config
 from src.static.static_values_enum import Format
@@ -173,6 +173,9 @@ def update_battle_log():
 
     progress_util.set_daily_title('Update portfolio')
     portfolio.update_portfolios()
+
+    progress_util.set_daily_title('Update land')
+    land.update_land_data()
 
     save_stores()
     progress_util.update_daily_msg('Done')
