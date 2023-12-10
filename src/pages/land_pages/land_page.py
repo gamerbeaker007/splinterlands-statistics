@@ -1,8 +1,10 @@
 import dash_bootstrap_components as dbc
+import pandas as pd
 from dash import html, Output, Input, dcc, ctx
 
 from main import app
-from src.pages.land import land_ids
+from src.configuration import store
+from src.pages.land_pages import land_ids
 from src.pages.navigation_pages import nav_ids
 from src.utils import store_util
 
@@ -43,12 +45,11 @@ def update_user_list(tigger):
               )
 def update_filter_data(account):
     print("Trigger id: " + str(ctx.triggered_id))
+    # Filter before processing is done
+    df = store.land.loc[(store.land.player == account)].copy()
+    df.created_date = pd.to_datetime(df.created_date)
+    columns = ['received_amount', 'grain_eaten', 'grain_rewards_eaten', 'resource_amount', 'tax_amount']
+    temp_df = df.groupby([df.created_date.dt.date, df.resource_symbol])[columns].sum().reset_index()
+    # temp_df = temp_df.pivot(index='created_date', columns='resource_symbol', values=columns)
 
-
-# @app.callback(Output(portfolio_ids.total_all_portfolio_graph, 'figure'),
-#               Input(portfolio_ids.filtered_portfolio_df, 'data'),
-#               Input(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
-#               Input(nav_ids.theme_store, 'data'),
-#               )
-# def update_portfolio_total_graph(filtered_df, combined_users, theme):
-#
+    return temp_df
