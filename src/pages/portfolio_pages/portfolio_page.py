@@ -1,8 +1,9 @@
+import logging
 from datetime import datetime
 
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, Output, Input, dcc
+from dash import html, Output, Input, dcc, ctx
 from dash.exceptions import PreventUpdate
 
 from main import app
@@ -64,6 +65,8 @@ def update_user_list(tigger):
               )
 def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
     filtered_users = []
+    print("Trigger id: " + str(ctx.triggered_id))
+    start_time = datetime.now()
     for user in combine_users:
         if not store.portfolio.empty and not store.portfolio.loc[(store.portfolio.account_name == user)].empty:
             filtered_users.append(user)
@@ -94,8 +97,14 @@ def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
             investment_df['total_investment_value'] = investment_df.total_sum_value.cumsum()
             portfolio_df = portfolio_df.merge(investment_df[['date', 'total_investment_value']], on='date', how='outer')
         portfolio_df.sort_values('date', inplace=True)
+        end_time = datetime.now()
+        delta = end_time - start_time
+        logging.info("Time difference in seconds: " + str(delta.total_seconds()))
         return portfolio_df.to_json(date_format='iso', orient='split')
     else:
+        end_time = datetime.now()
+        delta = end_time - start_time
+        logging.info("Time difference in seconds: " + str(delta.total_seconds()))
         return pd.DataFrame().to_json(date_format='iso', orient='split')
 
 

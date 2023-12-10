@@ -1,6 +1,10 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
+## 0.11.0
+- Update load portfolio improve load time 
+- First land implementation
+
 ## 0.10.0
 - Add monitor of staked DEC
 - Update ordering of portfolio ALL graph

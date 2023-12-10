@@ -1,5 +1,8 @@
 import logging
 from datetime import date
+
+from dash.exceptions import PreventUpdate
+
 from main import app
 
 import dash_bootstrap_components as dbc
@@ -93,9 +96,7 @@ def update_user_list(tigger):
      Input(portfolio_ids.amount, 'value')],
 )
 def deposit_action(deposit_clicks, account, my_date, amount):
-    text = ''
     updated = False
-    class_name = 'text-warning'
     if ctx.triggered_id == portfolio_ids.deposit and account:
         if not config.read_only:
             portfolio_util.update_investment(account, amount, my_date)
@@ -106,6 +107,8 @@ def deposit_action(deposit_clicks, account, my_date, amount):
         else:
             text = 'This is not allowed in read-only mode'
             class_name = 'text-danger'
+    else:
+        raise PreventUpdate
 
     return updated, html.Div(text, className=class_name)
 
@@ -132,6 +135,8 @@ def withdraw_action(withdraw_clicks, account, my_date, amount):
         else:
             text = 'This is not allowed in read-only mode'
             class_name = 'text-danger'
+    else:
+        raise PreventUpdate
 
     return updated, html.Div(text, className=class_name)
 
