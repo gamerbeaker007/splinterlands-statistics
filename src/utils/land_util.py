@@ -81,8 +81,10 @@ def process_land_transactions(transactions):
         process = True
         if data['op'] == 'harvest_all':
             result = pd.DataFrame(json.loads(info['result'])['result']['data']['results'])
-        elif data['op'] == 'harvest_resources':
+        elif data['op'] in ['harvest_resources', 'mine_sps', 'mine_research']:
             result = pd.DataFrame(json.loads(info['result'])['result']['data'], index=[0])
+        elif data['op'] == 'tax_collection':
+            result = pd.DataFrame(json.loads(info['result'])['result']['data'])
         else:
             logging.info('Ignore other land operation: ' + str(data['op']))
             process = False
@@ -101,7 +103,7 @@ def process_land_transactions(transactions):
     return results
 
 
-def get_land_operations(account_name, from_date, till_date):
+def get_land_operations(account_name, from_date):
     acc = Account(account_name)
-    land_transactions = hive.get_land_operations(acc, from_date, till_date, -1)
+    land_transactions = hive.get_land_operations(acc, from_date, -1)
     return process_land_transactions(land_transactions)

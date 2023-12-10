@@ -72,13 +72,13 @@ def find_one_with_retry(contract_name, table_name, query):
                 sleep(1)
             except Exception as e:
                 logging.warning('find_one_with_retry - fail with backup url rethrow exception')
-                raise Exception('find_one_with_retry - fail with backup url rethrow exception' 
+                raise Exception('find_one_with_retry - fail with backup url rethrow exception'
                                 ' contract: ' + str(contract_name) +
                                 ' table_name: ' + str(table_name) +
                                 ' query: ' + str(query) +
                                 ' stop update .....')
     if not success:
-        raise Exception('find_one_with_retry failed 20 times.' 
+        raise Exception('find_one_with_retry failed 20 times.'
                         ' contract:' + str(contract_name) +
                         ' table_name:' + str(table_name) +
                         ' query:' + str(query) +
@@ -120,11 +120,11 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
         if from_date < timestamp:
             last_id = transactions[0][0]
 
-            get_hive_transactions(account_name, from_date, till_date, last_id-1, results)
+            get_hive_transactions(account_name, from_date, till_date, last_id - 1, results)
     return results
 
 
-def get_land_operations(account, from_date, till_date, last_id, results=None):
+def get_land_operations(account, from_date, last_id, results=None):
     if results is None:
         results = []
 
@@ -136,14 +136,15 @@ def get_land_operations(account, from_date, till_date, last_id, results=None):
         timestamp = h['timestamp']
         # Assume time of Hive is always UTC
         # https://developers.hive.io/tutorials-recipes/understanding-dynamic-global-properties.html#time
-        timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+        timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S').astimezone(pytz.utc)
         last_id = h['index']
-        if from_date < timestamp < till_date:
+        if from_date < timestamp:
             if h['id'] == 'sm_land_operation':
                 results.append(spl.get_transaction(h['trx_id']))
         else:
-           done = True
+            done = True
+            break
 
     if not done:
-        get_land_operations(account, from_date, till_date, last_id-1, results=results)
+        get_land_operations(account, from_date, last_id - 1, results=results)
     return results
