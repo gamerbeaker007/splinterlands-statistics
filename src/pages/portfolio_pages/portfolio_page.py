@@ -1,9 +1,8 @@
-import logging
 from datetime import datetime
 
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, Output, Input, dcc, ctx
+from dash import html, Output, Input, dcc, State
 from dash.exceptions import PreventUpdate
 
 from main import app
@@ -104,11 +103,10 @@ def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
 
 @app.callback(Output(portfolio_ids.total_all_portfolio_graph, 'figure'),
               Input(portfolio_ids.filtered_portfolio_df, 'data'),
-              Input(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
+              State(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
               Input(nav_ids.theme_store, 'data'),
               )
 def update_portfolio_total_graph(filtered_df, combined_users, theme):
-
     if not filtered_df:
         return chart_util.blank_fig(theme)
     else:

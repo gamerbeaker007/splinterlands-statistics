@@ -96,7 +96,9 @@ def process_land_transactions(transactions):
             result['auto_buy_grain'] = data['auto_buy_grain']
             result['created_date'] = info['created_date']
             result['player'] = info['player']
-            result['created_date'] = info['created_date']
+            result['created_date'] = info['created_date']  # spl created date
+            result['timestamp'] = transaction['timestamp']  # timestamp hive transaction
+
             results = pd.concat([results, result], ignore_index=True)
 
     results = results.reindex(sorted(results.columns), axis=1)

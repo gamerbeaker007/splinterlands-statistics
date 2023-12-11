@@ -5,6 +5,7 @@ from time import sleep
 
 import pytz
 import requests
+from dateutil.parser import isoparse
 from hiveengine.api import Api
 from hiveengine.rpc import RPCErrorDoRetry
 
@@ -133,14 +134,12 @@ def get_land_operations(account, from_date, last_id, results=None):
     history = account.get_account_history(last_id, limit, only_ops=['custom_json'])
     done = False
     for h in history:
-        timestamp = h['timestamp']
-        # Assume time of Hive is always UTC
-        # https://developers.hive.io/tutorials-recipes/understanding-dynamic-global-properties.html#time
-        timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S').astimezone(pytz.utc)
+        timestamp = isoparse(h['timestamp'])
         last_id = h['index']
         if from_date < timestamp:
             if h['id'] == 'sm_land_operation':
-                results.append(spl.get_transaction(h['trx_id']))
+                results.append({'trx_info': spl.get_transaction(h['trx_id'])['trx_info'],
+                                'timestamp': timestamp})
         else:
             done = True
             break
