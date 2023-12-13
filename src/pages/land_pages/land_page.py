@@ -30,6 +30,7 @@ layout = dbc.Container([
         ),
     ]),
     dbc.Row(dcc.Graph(id=land_ids.all_graph), className='mb-3'),
+    dbc.Row(dcc.Graph(id=land_ids.cumsum_graph), className='mb-3'),
 ])
 
 
@@ -51,7 +52,7 @@ def update_filter_data(account):
         df = store.land.loc[(store.land.player == account)].copy()
         df.created_date = pd.to_datetime(df.created_date)
         columns = ['received_amount', 'grain_eaten', 'grain_rewards_eaten', 'resource_amount', 'tax_amount']
-        temp_df = df.groupby([df.created_date.dt.date, df.resource_symbol])[columns].sum().reset_index()
+        temp_df = df.groupby([df.created_date.dt.date, df.resource_symbol, df.player])[columns].sum().reset_index()
         # temp_df = temp_df.pivot(index='created_date', columns='resource_symbol', values=columns)
 
         return temp_df.to_json(date_format='iso', orient='split')
@@ -74,4 +75,20 @@ def update_land_total_graph(filtered_df, theme):
         return chart_util.blank_fig(theme)
     else:
         return land_graph.plot_land_all(temp_df, theme)
+
+
+@app.callback(Output(land_ids.cumsum_graph, 'figure'),
+              Input(land_ids.filtered_land_df, 'data'),
+              Input(nav_ids.theme_store, 'data'),
+              )
+def update_land_total_graph(filtered_df, theme):
+    if not filtered_df:
+        return chart_util.blank_fig(theme)
+    else:
+        temp_df = pd.read_json(filtered_df, orient='split')
+
+    if temp_df.empty:
+        return chart_util.blank_fig(theme)
+    else:
+        return land_graph.plot_cumsum(temp_df, theme)
 
