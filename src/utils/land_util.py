@@ -6,6 +6,7 @@ import pandas as pd
 from beem.account import Account
 
 from src.api import spl, hive, coingecko
+from src.utils import progress_util
 
 
 def filter_items(deed, df, param):
@@ -111,4 +112,6 @@ def process_land_transactions(transactions):
 def get_land_operations(account_name, from_date):
     acc = Account(account_name)
     land_transactions = hive.get_land_operations(acc, from_date, -1)
+    progress_util.update_daily_msg('...processing land data for \'' + str(account_name) + '\'')
+
     return process_land_transactions(land_transactions)

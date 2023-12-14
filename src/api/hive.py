@@ -10,6 +10,7 @@ from hiveengine.api import Api
 from hiveengine.rpc import RPCErrorDoRetry
 
 from src.api import spl
+from src.utils import progress_util
 
 PRIMARY_URL = 'https://api2.hive-engine.com/rpc/'
 SECONDARY_URL = 'https://api.hive-engine.com/'
@@ -125,7 +126,7 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
     return results
 
 
-def get_land_operations(account, from_date, last_id, results=None):
+def get_land_operations(account, from_date, last_id, results=None, days_to_process=None):
     if results is None:
         results = []
 
@@ -135,6 +136,16 @@ def get_land_operations(account, from_date, last_id, results=None):
     done = False
     for h in history:
         timestamp = isoparse(h['timestamp'])
+
+        if not days_to_process:
+            days_to_process = (timestamp - from_date).days + 1
+
+        days_to_go = (timestamp - from_date).days
+        pct = (days_to_go/days_to_process*100-100)*-1
+        progress_util.update_daily_msg('...retrieve land date for \'' + str(account.name) +
+                                       '\' - days to go: ' + str(days_to_go) + ' - ' + str(round(pct)) + '%',
+                                       log=False)
+
         last_id = h['index']
         if from_date < timestamp:
             if h['id'] == 'sm_land_operation':
@@ -145,5 +156,5 @@ def get_land_operations(account, from_date, last_id, results=None):
             break
 
     if not done:
-        get_land_operations(account, from_date, last_id - 1, results=results)
+        get_land_operations(account, from_date, last_id - 1, results=results, days_to_process=days_to_process)
     return results

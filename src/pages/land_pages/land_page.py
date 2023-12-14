@@ -57,14 +57,12 @@ def update_user_list(tigger):
               Input(land_ids.dropdown_user_selection_land, 'value'),
               )
 def update_filter_data(account):
-    print("Trigger id: " + str(ctx.triggered_id))
     if not store.land.empty:
         # Filter before processing is done
         df = store.land.loc[(store.land.player == account)].copy()
         df.created_date = pd.to_datetime(df.created_date)
         columns = ['received_amount', 'grain_eaten', 'grain_rewards_eaten', 'resource_amount', 'tax_amount']
         temp_df = df.groupby([df.created_date.dt.date, df.resource_symbol, df.player])[columns].sum().reset_index()
-        # temp_df = temp_df.pivot(index='created_date', columns='resource_symbol', values=columns)
 
         return temp_df.to_json(date_format='iso', orient='split')
     else:
@@ -75,7 +73,6 @@ def update_filter_data(account):
               Input(land_ids.dropdown_user_selection_land, 'value'),
               )
 def update_filter_tax_data(account):
-    print("Trigger TAX id: " + str(ctx.triggered_id))
     if not store.land.empty:
         # Filter before processing is done
         df = store.land.loc[(store.land.player == account) & (store.land.op == 'tax_collection')].copy()
