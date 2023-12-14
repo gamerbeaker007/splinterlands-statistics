@@ -85,6 +85,9 @@ def process_land_transactions(transactions):
             result = pd.DataFrame(json.loads(info['result'])['result']['data'], index=[0])
         elif data['op'] == 'tax_collection':
             result = pd.DataFrame(json.loads(info['result'])['result']['data'])
+            for token in result.tokens.values[0]:
+                result[token['token'] + '_received_tax'] = token['received']
+            result.drop('tokens', axis=1, inplace=True)
         else:
             logging.info('Ignore other land operation: ' + str(data['op']))
             process = False

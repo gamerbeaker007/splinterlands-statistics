@@ -1,3 +1,4 @@
+import pandas as pd
 import plotly.express as px
 
 
@@ -28,35 +29,39 @@ def plot_land_all(land_df, theme):
 
 
 def plot_cumsum(land_df, theme):
-    # Calculate the difference between resource_amount and tax_amount
-    land_df['amount_difference'] = land_df['resource_amount'] - land_df['tax_amount'] - land_df['grain_eaten'] - \
-                                   land_df['grain_rewards_eaten']
-
-    # Experiment to get correct grain amount
-    # On one day received amount - tax.
-    # For grain received minus consumed grain by other harvest
-    temp_df = land_df.pivot(index='created_date', columns='resource_symbol',
+    land_df = land_df.pivot(index='created_date', columns='resource_symbol',
                             values=['received_amount', 'grain_eaten', 'grain_rewards_eaten', 'resource_amount',
                                     'tax_amount'])
-    temp_df['SPS_earned'] = temp_df[('resource_amount', 'SPS')] - temp_df[('tax_amount', 'SPS')]
-    temp_df['RESEARCH_earned'] = temp_df[('resource_amount', 'RESEARCH')] - temp_df[('tax_amount', 'RESEARCH')]
-    temp_df['GRAIN_earned'] = (temp_df[('received_amount', 'GRAIN')]
-                               - temp_df[('grain_eaten', 'SPS')]
-                               - temp_df[('grain_eaten', 'RESEARCH')])
+    land_df = land_df.fillna(0)
 
-    # Calculate cumulative sum for each resource_symbol
-    temp_df['sps_cumsum'] = temp_df['SPS_earned'].cumsum()
-    temp_df['grain_cumsum'] = temp_df['GRAIN_earned'].cumsum()
+    result_df = pd.DataFrame()
 
-    land_df['received_sum'] = land_df.groupby('resource_symbol')['received_amount'].cumsum()
+    if ('received_amount', 'GRAIN') in land_df.columns:
+        land_df['GRAIN_earned'] = (land_df[('received_amount', 'GRAIN')]
+                                   + land_df[('grain_rewards_eaten', 'GRAIN')]
+                                   - land_df[('grain_eaten', 'GRAIN')])
+        if ('received_amount', 'SPS') in land_df.columns:
+            land_df['GRAIN_earned'] = land_df['GRAIN_earned'] -  land_df[('grain_eaten', 'SPS')]
+        if ('received_amount', 'RESEARCH') in land_df.columns:
+            land_df['GRAIN_earned'] = land_df['GRAIN_earned'] - land_df[('grain_eaten', 'RESEARCH')]
+
+        result_df['GRAIN'] = land_df['GRAIN_earned'].cumsum()
+
+    if ('received_amount', 'RESEARCH') in land_df.columns:
+        land_df['RESEARCH_earned'] = land_df[('received_amount', 'RESEARCH')]
+        result_df['RESEARCH'] = land_df['RESEARCH_earned'].cumsum()
+
+    if ('received_amount', 'SPS') in land_df.columns:
+        land_df['SPS_earned'] = land_df[('received_amount', 'SPS')]
+        result_df['SPS'] = land_df['SPS_earned'].cumsum()
 
     # Plot with Plotly Express
-    fig = px.line(land_df,
-                  x='created_date',
-                  y='received_sum',
-                  color='resource_symbol',
-                  title='Cumulative Sum of received amount for Each Resource Symbol',
+    fig = px.line(result_df,
+                  x=result_df.index,
+                  y=result_df.columns,
+                  title='Cumulative Sum of received amount for each resource',
                   log_y=True)
+
     fig.update_layout(
         template=theme,
         xaxis=dict(

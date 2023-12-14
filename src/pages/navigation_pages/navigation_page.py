@@ -48,7 +48,7 @@ navbar = dbc.Navbar(
                         dbc.NavItem(dbc.NavLink('Nemesis', href='/nemesis')),
                         dbc.NavItem(dbc.NavLink('Season', href='/season')),
                         dbc.NavItem(dbc.NavLink('Portfolio', href='/portfolio')),
-                        dbc.NavItem(dbc.NavLink('Land', href='/land_pages')),
+                        dbc.NavItem(dbc.NavLink('Land', href='/land')),
                         dbc.NavItem(dbc.NavLink('Config', href='/config')),
                     ],
                     brand_href='/',
@@ -114,7 +114,7 @@ def display_page(pathname, search, search_hash):
         return season_page.layout
     if pathname == '/portfolio':
         return portfolio_page.layout
-    if pathname == '/land_pages':
+    if pathname == '/land':
         return land_page.layout
     if pathname == '/config':
         return config_page.layout
