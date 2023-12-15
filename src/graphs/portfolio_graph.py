@@ -9,8 +9,13 @@ def plot_portfolio_total(portfolio_df, combined_users, theme):
     portfolio_df.sort_values('date', inplace=True)
     if 'total_investment_value' in portfolio_df.columns.tolist():
         column_data = portfolio_df[['total_value', 'total_investment_value']].columns
+
+        # add last investment value to the last row for visual effect
+        last_investment_value = portfolio_df['total_investment_value'].dropna().tolist()[-1]
+        portfolio_df['total_investment_value'].iloc[-1] = last_investment_value
     else:
         column_data = portfolio_df[['total_value']].columns
+
 
     fig = px.line(portfolio_df,
                   x='date',
