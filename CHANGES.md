@@ -2,6 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ## 0.11.0
+- FIX: Sell cards crash 
 - Update load portfolio improve load time 
 - First land implementation
 - Add last investment marker for visual effect.
