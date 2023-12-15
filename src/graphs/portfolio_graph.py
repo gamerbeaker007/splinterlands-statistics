@@ -12,10 +12,9 @@ def plot_portfolio_total(portfolio_df, combined_users, theme):
 
         # add last investment value to the last row for visual effect
         last_investment_value = portfolio_df['total_investment_value'].dropna().tolist()[-1]
-        portfolio_df['total_investment_value'].iloc[-1] = last_investment_value
+        portfolio_df.loc[portfolio_df.index[-1], 'total_investment_value'] = last_investment_value
     else:
         column_data = portfolio_df[['total_value']].columns
-
 
     fig = px.line(portfolio_df,
                   x='date',
