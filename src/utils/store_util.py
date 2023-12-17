@@ -3,7 +3,7 @@ import os
 
 import pandas as pd
 
-from src import portfolio, collection_store, battle_store, season_balances_info, season_battle_info
+from src import portfolio, collection_store, battle_store, season_balances_info, season_battle_info, land
 from src.api import spl
 from src.configuration import store, config
 from src.static.static_values_enum import Format
@@ -35,6 +35,14 @@ def get_store_names():
     return stores_arr
 
 
+def validate_store_name(name):
+    for store_name, _store in store.__dict__.items():
+        if isinstance(_store, pd.DataFrame):
+            if name == store_name:
+                return True
+    return False
+
+
 def get_store_file(name):
     return os.path.join(config.store_dir, str(name + config.file_extension))
 
@@ -53,6 +61,14 @@ def save_stores():
     for store_name in get_store_names():
         store_file = get_store_file(store_name)
         store.__dict__[store_name].sort_index().to_csv(store_file)
+
+
+def save_single_store(store_name):
+    if validate_store_name(store_name):
+        store_file = get_store_file(store_name)
+        store.__dict__[store_name].sort_index().to_csv(store_file)
+    else:
+        logging.error("Invalid store name")
 
 
 def get_account_names():
@@ -173,6 +189,9 @@ def update_battle_log():
 
     progress_util.set_daily_title('Update portfolio')
     portfolio.update_portfolios()
+
+    progress_util.set_daily_title('Update land')
+    land.update_land_data()
 
     save_stores()
     progress_util.update_daily_msg('Done')

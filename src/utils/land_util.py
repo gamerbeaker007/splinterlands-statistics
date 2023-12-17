@@ -1,9 +1,12 @@
+import json
 import logging
 from datetime import datetime
 
 import pandas as pd
+from beem.account import Account
 
 from src.api import spl, hive, coingecko
+from src.utils import progress_util
 
 
 def filter_items(deed, df, param):
@@ -68,3 +71,47 @@ def get_staked_dec_value(account_name):
                          'account_name': account_name,
                          'dec_staked_qty': dec_staked_qty,
                          'dec_staked_value': dec_staked_value}, index=[0])
+
+
+def process_land_transactions(transactions):
+    results = pd.DataFrame()
+    for transaction in transactions:
+        info = transaction['trx_info']
+        data = json.loads(info['data'])
+
+        process = True
+        if data['op'] == 'harvest_all':
+            result = pd.DataFrame(json.loads(info['result'])['result']['data']['results'])
+        elif data['op'] in ['harvest_resources', 'mine_sps', 'mine_research']:
+            result = pd.DataFrame(json.loads(info['result'])['result']['data'], index=[0])
+        elif data['op'] == 'tax_collection':
+            result = pd.DataFrame(json.loads(info['result'])['result']['data'])
+            for token in result.tokens.values[0]:
+                result[token['token'] + '_received_tax'] = token['received']
+            result.drop('tokens', axis=1, inplace=True)
+        else:
+            logging.info('Ignore other land operation: ' + str(data['op']))
+            process = False
+
+        if process:
+            result['trx_id'] = info['id']
+            result['op'] = data['op']
+            result['region_uid'] = data['region_uid']
+            result['auto_buy_grain'] = data['auto_buy_grain']
+            result['created_date'] = info['created_date']
+            result['player'] = info['player']
+            result['created_date'] = info['created_date']  # spl created date
+            result['timestamp'] = transaction['timestamp']  # timestamp hive transaction
+
+            results = pd.concat([results, result], ignore_index=True)
+
+    results = results.reindex(sorted(results.columns), axis=1)
+    return results
+
+
+def get_land_operations(account_name, from_date):
+    acc = Account(account_name)
+    land_transactions = hive.get_land_operations(acc, from_date, -1)
+    progress_util.update_daily_msg('...processing land data for \'' + str(account_name) + '\'')
+
+    return process_land_transactions(land_transactions)

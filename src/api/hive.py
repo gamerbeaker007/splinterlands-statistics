@@ -5,8 +5,12 @@ from time import sleep
 
 import pytz
 import requests
+from dateutil.parser import isoparse
 from hiveengine.api import Api
 from hiveengine.rpc import RPCErrorDoRetry
+
+from src.api import spl
+from src.utils import progress_util
 
 PRIMARY_URL = 'https://api2.hive-engine.com/rpc/'
 SECONDARY_URL = 'https://api.hive-engine.com/'
@@ -70,13 +74,13 @@ def find_one_with_retry(contract_name, table_name, query):
                 sleep(1)
             except Exception as e:
                 logging.warning('find_one_with_retry - fail with backup url rethrow exception')
-                raise Exception('find_one_with_retry - fail with backup url rethrow exception' 
+                raise Exception('find_one_with_retry - fail with backup url rethrow exception'
                                 ' contract: ' + str(contract_name) +
                                 ' table_name: ' + str(table_name) +
                                 ' query: ' + str(query) +
                                 ' stop update .....')
     if not success:
-        raise Exception('find_one_with_retry failed 20 times.' 
+        raise Exception('find_one_with_retry failed 20 times.'
                         ' contract:' + str(contract_name) +
                         ' table_name:' + str(table_name) +
                         ' query:' + str(query) +
@@ -118,5 +122,39 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
         if from_date < timestamp:
             last_id = transactions[0][0]
 
-            get_hive_transactions(account_name, from_date, till_date, last_id-1, results)
+            get_hive_transactions(account_name, from_date, till_date, last_id - 1, results)
+    return results
+
+
+def get_land_operations(account, from_date, last_id, results=None, days_to_process=None):
+    if results is None:
+        results = []
+
+    limit = 100
+
+    history = account.get_account_history(last_id, limit, only_ops=['custom_json'])
+    done = False
+    for h in history:
+        timestamp = isoparse(h['timestamp'])
+
+        if not days_to_process:
+            days_to_process = (timestamp - from_date).days + 1
+
+        days_to_go = (timestamp - from_date).days
+        pct = (days_to_go/days_to_process*100-100)*-1
+        progress_util.update_daily_msg('...retrieve land date for \'' + str(account.name) +
+                                       '\' - days to go: ' + str(days_to_go) + ' - ' + str(round(pct)) + '%',
+                                       log=False)
+
+        last_id = h['index']
+        if from_date < timestamp:
+            if h['id'] == 'sm_land_operation':
+                results.append({'trx_info': spl.get_transaction(h['trx_id'])['trx_info'],
+                                'timestamp': timestamp})
+        else:
+            done = True
+            break
+
+    if not done:
+        get_land_operations(account, from_date, last_id - 1, results=results, days_to_process=days_to_process)
     return results

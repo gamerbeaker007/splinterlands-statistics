@@ -2,7 +2,7 @@ from datetime import datetime
 
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, Output, Input, dcc
+from dash import html, Output, Input, dcc, State
 from dash.exceptions import PreventUpdate
 
 from main import app
@@ -42,8 +42,7 @@ layout = dbc.Container([
         dbc.Col(portfolio_editions.get_edition_layout(), className='mb-3'),
         dbc.Col(portfolio_sps.get_sps_layout(), className='mb-3'),
 
-]
-),
+    ]),
 
     dbc.Row(dcc.Graph(id=portfolio_ids.all_portfolio_graph), className='mb-3'),
 ])
@@ -68,8 +67,10 @@ def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
         if not store.portfolio.empty and not store.portfolio.loc[(store.portfolio.account_name == user)].empty:
             filtered_users.append(user)
 
-    store.view_portfolio_accounts = pd.DataFrame({'account_name': filtered_users})
-    store_util.save_stores()
+    # only save when changed
+    if store.view_portfolio_accounts.account_name.tolist() != combine_users:
+        store.view_portfolio_accounts = pd.DataFrame({'account_name': filtered_users})
+        store_util.save_single_store('view_portfolio_accounts')
 
     if filtered_users:
         portfolio_df = store.portfolio.copy()
@@ -93,6 +94,7 @@ def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
             investment_df['total_sum_value'] = investment_df.sum(axis=1, numeric_only=True)
             investment_df['total_investment_value'] = investment_df.total_sum_value.cumsum()
             portfolio_df = portfolio_df.merge(investment_df[['date', 'total_investment_value']], on='date', how='outer')
+
         portfolio_df.sort_values('date', inplace=True)
         return portfolio_df.to_json(date_format='iso', orient='split')
     else:
@@ -101,11 +103,10 @@ def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
 
 @app.callback(Output(portfolio_ids.total_all_portfolio_graph, 'figure'),
               Input(portfolio_ids.filtered_portfolio_df, 'data'),
-              Input(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
+              State(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
               Input(nav_ids.theme_store, 'data'),
               )
 def update_portfolio_total_graph(filtered_df, combined_users, theme):
-
     if not filtered_df:
         return chart_util.blank_fig(theme)
     else:

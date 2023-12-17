@@ -90,10 +90,15 @@ def get_purchased_sold_cards(account_name, start_date, end_date):
             df1 = pd.DataFrame({'spl_id': json.loads(operation['json'])['items']})
             sm_market_purchase = pd.concat([sm_market_purchase, df1])
         elif operation['id'] == 'sm_sell_cards':
-            cards = json.loads(operation['json'])
-            for card in cards:
-                df1 = pd.DataFrame({'card': card['cards']})
+            card_op = json.loads(operation['json'])
+            if isinstance(card_op, dict):
+                df1 = pd.DataFrame({'card': card_op['cards']})
                 potential_sell = pd.concat([potential_sell, df1])
+            else:
+                for card in card_op:
+                    df1 = pd.DataFrame({'card': card['cards']})
+                    potential_sell = pd.concat([potential_sell, df1])
+
 
     # process purchases
     purchases = pd.DataFrame()
@@ -105,7 +110,7 @@ def get_purchased_sold_cards(account_name, start_date, end_date):
             progress_util.update_season_msg("Collecting bought and sold cards transaction: "
                                             + str(index) + "/" + str(count))
             # TODO look into a way to parallel process
-            result = spl.get_spl_transaction(row.values[0])
+            result = spl.get_market_transaction(row.values[0])
             purchases = pd.concat([purchases, pd.DataFrame(result['cards'])])
 
         purchases['edition_name'] = purchases.apply(lambda r: (Edition(r.edition)).name, axis=1)
