@@ -1,8 +1,8 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
-## 0.11.0
-- FIX portfolio graph error when no investments are done 
+## 0.11.1
+- FIX: portfolio graph error when no investments are done 
 
 ## 0.11.0
 - FIX: Sell cards crash 
