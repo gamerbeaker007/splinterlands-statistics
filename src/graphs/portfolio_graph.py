@@ -7,7 +7,8 @@ from src.static.static_values_enum import Edition
 
 def plot_portfolio_total(portfolio_df, combined_users, theme):
     portfolio_df.sort_values('date', inplace=True)
-    if 'total_investment_value' in portfolio_df.columns.tolist():
+    if 'total_investment_value' in portfolio_df.columns.tolist() \
+            and not portfolio_df['total_investment_value'].dropna().empty:
         column_data = portfolio_df[['total_value', 'total_investment_value']].columns
 
         # add last investment value to the last row for visual effect
