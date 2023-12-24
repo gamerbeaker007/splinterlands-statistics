@@ -23,14 +23,14 @@ def get_mana_div(mana):
         'height': '50px',
         'position': 'relative',
     }
-    img_style = {'background-image': 'url(' + str(url) + ')',
-                 'background-size': '100%',
+    img_style = {'backgroundImage': 'url(' + str(url) + ')',
+                 'backgroundSize': '100%',
                  'height': '50px',
                  'width': '50px'}
 
     text_style = {
-        'text-align': 'center',
-        'padding-top': '10px'
+        'textAlign': 'center',
+        'paddingTop': '10px'
     }
 
     return dbc.Col(style=div_style,

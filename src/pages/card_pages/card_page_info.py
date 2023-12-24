@@ -31,12 +31,12 @@ def update_top_cards(filtered_df, filter_settings):
             [
                 html.H5('Battle statistics'),
                 html.P(str(row.card_name) + '\t\t★ ' + str(row.level),
-                       style={'margin-bottom': '5px'}),
+                       style={'marginBottom': '5px'}),
                 html.P('Battles (W-L): ' + str(int(row.win)) + '-' + str(int(row.loss)),
-                       style={'margin-bottom': '5px'}),
+                       style={'marginBottom': '5px'}),
                 html.P('Battle count: ' + str(int(row.battles)),
-                       style={'margin-bottom': '5px'}),
+                       style={'marginBottom': '5px'}),
                 html.P('Win: ' + str(row.win_percentage) + '%',
-                       style={'margin-bottom': '5px'}),
+                       style={'marginBottom': '5px'}),
             ],
         )

@@ -1,6 +1,6 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, dcc, Output, Input
+from dash import html, dcc, Output, Input, ctx
 from dash.exceptions import PreventUpdate
 from dateutil import parser
 
@@ -119,6 +119,7 @@ def update_modern_battle_graph(filtered_df, theme):
     if not filtered_df:
         raise PreventUpdate
 
+    print("TIGGER: " + str(ctx.triggered_id))
     filtered_df = pd.read_json(filtered_df, orient='split')
     if filtered_df.empty:
         return chart_util.blank_fig(theme)

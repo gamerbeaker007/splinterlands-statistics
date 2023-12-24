@@ -1,6 +1,9 @@
 import json
 import logging
+import time
 from threading import Thread
+
+from dash import ctx
 
 from src.api import spl
 from src.configuration import store, config
@@ -15,6 +18,21 @@ store_util.update_season_end_dates()
 
 def migrate_data():
     pass
+
+
+def measure_duration(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        duration = end_time - start_time
+
+        # Log the duration
+        logging.info(f"Function '{func.__name__}' took {duration:.4f} seconds to execute. tigger: '{ctx.triggered_id}'")
+
+        return result
+
+    return wrapper
 
 
 def main():

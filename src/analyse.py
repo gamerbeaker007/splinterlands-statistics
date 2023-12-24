@@ -160,12 +160,13 @@ def filter_element(input_df, filter_settings):
     all_true = True
     all_false = True
     for element in Element:
-        active = filter_settings[element.name]
-        if active:
-            all_false = False
-            list_of_colors.append(element.value)
-        else:
-            all_true = False
+        if element.name in filter_settings:
+            active = filter_settings[element.name]
+            if active:
+                all_false = False
+                list_of_colors.append(element.value)
+            else:
+                all_true = False
     if all_true or all_false:
         return input_df
     else:
@@ -177,16 +178,14 @@ def filter_edition(input_df, filter_settings):
         return input_df
 
     list_of_edition_values = []
-    all_true = True
-    all_false = True
     for edition in Edition:
-        active = filter_settings[edition.name]
-        if active:
-            all_false = False
-            list_of_edition_values.append(edition.value)
-        else:
-            all_true = False
-    if all_true or all_false:
+        if edition.name in filter_settings:
+            active = filter_settings[edition.name]
+            if active:
+                list_of_edition_values.append(edition.value)
+
+    # When no items are select or all items are selected do not filter
+    if len(list_of_edition_values) == 0 or len(list_of_edition_values) == len(Edition):
         return input_df
     else:
         return input_df.loc[input_df.edition.isin(list_of_edition_values)]
@@ -197,16 +196,12 @@ def filter_card_type(input_df, filter_settings):
         return input_df
 
     values = []
-    all_true = True
-    all_false = True
     for card_type in CardType:
-        active = filter_settings[card_type.name]
-        if active:
-            all_false = False
-            values.append(card_type.value)
-        else:
-            all_true = False
-    if all_true or all_false:
+        if card_type.name in filter_settings:
+            active = filter_settings[card_type.name]
+            if active:
+                values.append(card_type.value)
+    if len(values) == 0 or len(values) == len(CardType):
         return input_df
     else:
         return input_df.loc[input_df.card_type.isin(values)]
@@ -217,25 +212,22 @@ def filter_rarity(input_df, filter_settings):
         return input_df
 
     values = []
-    all_true = True
-    all_false = True
     for rarity in Rarity:
-        active = filter_settings[rarity.name]
-        if active:
-            all_false = False
-            values.append(rarity.value)
-        else:
-            all_true = False
-    if all_true or all_false:
+        if rarity.name in filter_settings:
+            active = filter_settings[rarity.name]
+            if active:
+                values.append(rarity.value)
+    if len(values) == 0 or len(values) == len(Rarity):
         return input_df
     else:
         return input_df.loc[input_df.rarity.isin(values)]
 
 
-def filter_battle_count(input_df, value):
-    if input_df.empty:
-        return input_df
-    return input_df.loc[(input_df.battles >= value)]
+def filter_battle_count(input_df, filter_settings):
+    if not input_df.empty and 'minimal-battles' in filter_settings:
+        return input_df.loc[(input_df.battles >= filter_settings['minimal-battles'])]
+
+    return input_df
 
 
 def filter_mana_cap(input_df, filter_settings):
@@ -243,23 +235,22 @@ def filter_mana_cap(input_df, filter_settings):
         return input_df
 
     total_df = pd.DataFrame()
-    all_true = True
-    all_false = True
+    filtered = False
     for mana_cap in ManaCap:
-        active = filter_settings[mana_cap.name]
-        if active:
-            all_false = False
-            min_value = int(mana_cap.value.split('-')[0])
-            max_value = int(mana_cap.value.split('-')[1])
+        if mana_cap.name in filter_settings:
+            active = filter_settings[mana_cap.name]
+            if active:
+                filtered = True
+                min_value = int(mana_cap.value.split('-')[0])
+                max_value = int(mana_cap.value.split('-')[1])
 
-            temp_df = input_df.loc[(input_df.mana_cap >= min_value) & (input_df.mana_cap <= max_value)]
-            total_df = pd.concat([total_df, temp_df])
-        else:
-            all_true = False
-    if all_true or all_false:
-        return input_df
-    else:
+                temp_df = input_df.loc[(input_df.mana_cap >= min_value) & (input_df.mana_cap <= max_value)]
+                total_df = pd.concat([total_df, temp_df])
+
+    if filtered:
         return total_df
+    else:
+        return input_df
 
 
 def filter_format(input_df, filter_settings):
@@ -267,54 +258,50 @@ def filter_format(input_df, filter_settings):
         return input_df
 
     total_df = pd.DataFrame()
-    all_true = True
-    all_false = True
+    filtered = False
     for battle_format in Format:
-        active = filter_settings[battle_format.value]
-        if active:
-            all_false = False
+        if battle_format.value in filter_settings:
+            active = filter_settings[battle_format.value]
+            if active:
+                filtered = True
+                temp_df = input_df.loc[(input_df.format == battle_format.value)]
+                total_df = pd.concat([total_df, temp_df])
 
-            temp_df = input_df.loc[(input_df.format == battle_format.value)]
-            total_df = pd.concat([total_df, temp_df])
-        else:
-            all_true = False
-    if all_true or all_false:
-        return input_df
-    else:
+    if filtered:
         return total_df
+    else:
+        return input_df
 
 
 def filter_date(input_df, filter_settings):
     if input_df.empty:
         return input_df
-    from_date = filter_settings['from_date']
-    input_df.created_date = pd.to_datetime(input_df.created_date)
-    input_df = input_df.loc[input_df.created_date > pd.to_datetime(from_date)]
-
+    if 'from_date' in filter_settings:
+        from_date = filter_settings['from_date']
+        input_df.created_date = pd.to_datetime(input_df.created_date)
+        input_df = input_df.loc[input_df.created_date > pd.to_datetime(from_date)]
     return input_df
 
 
 def filter_rule_sets(input_df, filter_settings):
-    rule_sets = filter_settings['rule_sets']
-    if input_df.empty or not rule_sets:
-        return input_df
+    if not input_df.empty and 'rule_sets' in filter_settings:
+        rule_sets = filter_settings['rule_sets']
+        return input_df.loc[(input_df.ruleset1.isin(rule_sets) |
+                             input_df.ruleset2.isin(rule_sets) |
+                             input_df.ruleset3.isin(rule_sets))]
+    return input_df
 
-    return input_df.loc[(input_df.ruleset1.isin(rule_sets) |
-                         input_df.ruleset2.isin(rule_sets) |
-                         input_df.ruleset3.isin(rule_sets))]
 
-
-def sort_by(input_df, sorts):
-    if input_df.empty:
-        return input_df
-
-    columns = []
-    for sort in sorts:
-        if sort == 'percentage':
-            columns.append('win_percentage')
-        else:
-            columns.append(sort)
-    return input_df.sort_values(columns, ascending=False)
+def sort_by(input_df, filter_settings):
+    if not input_df.empty and 'sort_by' in filter_settings:
+        columns = []
+        for sort in filter_settings['sort_by']:
+            if sort == 'percentage':
+                columns.append('win_percentage')
+            else:
+                columns.append(sort)
+        return input_df.sort_values(columns, ascending=False)
+    return input_df
 
 
 def get_daily_battle_stats(daily_df):

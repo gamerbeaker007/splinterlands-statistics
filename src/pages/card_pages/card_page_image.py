@@ -26,6 +26,6 @@ def update_top_cards(filtered_df, filter_settings):
         row = filtered_df.iloc[0]
         return dbc.Card(
             dbc.CardBody(
-                dbc.CardImg(src=row.url, top=True, style={'height': '300px', 'object-fit': 'contain'}),
+                dbc.CardImg(src=row.url, top=True, style={'height': '300px', 'objectFit': 'contain'}),
             )
         )

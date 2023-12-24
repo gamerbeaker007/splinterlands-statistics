@@ -4,6 +4,7 @@ from dash import html, Output, Input, dash_table, dcc
 from dash_bootstrap_components import Container
 
 from src import analyse
+from src.pages.filter_pages import filter_editions, filter_ids
 from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.static.static_values_enum import MatchType, CardType
@@ -26,6 +27,10 @@ layout: Container = dbc.Container([
                              id='dropdown-match-type-selection-losing',
                              className='dbc'))
     ]),
+    dbc.Row([
+        dbc.Col(filter_editions.layout),
+    ], className='mb-3'),
+
     dbc.Row([
         html.Div(id='battle-count', className='dbc'),
     ]),
@@ -81,9 +86,10 @@ def update_user_list(tigger):
               Input('dropdown-type-selection-losing', 'value'),
               Input('dropdown-user-selection-losing', 'value'),
               Input('dropdown-match-type-selection-losing', 'value'),
+              Input(filter_ids.filter_settings, 'data'),
               Input(nav_ids.trigger_daily, 'data'),
               )
-def filter_battle_df(filter_type, filter_user, filter_match_type, trigger_daily):
+def filter_battle_df(filter_type, filter_user, filter_match_type, filter_settings, trigger_daily):
     df = analyse.get_losing_df(filter_account=filter_user, filter_match_type=filter_match_type, filter_type=filter_type)
     bc = analyse.get_losing_battles_count(filter_user, filter_match_type, filter_type)
     return df.to_json(date_format='iso', orient='split'), \

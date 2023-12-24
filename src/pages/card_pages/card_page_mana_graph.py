@@ -4,12 +4,14 @@ import plotly.express as px
 from dash import Output, Input, dcc
 
 from main import app
+from src.configuration import config
 from src.pages.card_pages import card_page_ids
 from src.pages.navigation_pages import nav_ids
 from src.utils import chart_util
 
+
 layout = dbc.Row([
-    dcc.Graph(id=card_page_ids.card_mana_cap_graph),
+    dcc.Graph(id=card_page_ids.card_mana_cap_graph)
 ])
 
 
@@ -35,7 +37,8 @@ def update_mana_cap_card_graph(filtered_df, theme):
                      x='bucket',
                      y='count',
                      color='card_name',
-                     height=200)
+                     height=200,
+                     )
         fig.update_layout(template=theme,
                           showlegend=False,
                           margin=dict(l=10, r=20, t=20, b=10),

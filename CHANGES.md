@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - FIX: Add price calculation for CREDITS these are not on hive engine
 - Main page: Add small padding on cards, especially for rebellion cards
 - Card page: Add battle count per mana cap
+- Make filter options re-usable
 
 
 ## 0.11.1

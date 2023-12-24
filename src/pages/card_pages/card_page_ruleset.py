@@ -30,12 +30,12 @@ def update_top_cards(filtered_df):
         if not top_5.empty:
             result_layout.append(html.H6("Most payed with ruleset (5)"))
             for index, value in top_5.items():
-                result_layout.append(html.P(str(index) + " (" + str(value) + ")", style={'margin-bottom': '5px'}))
+                result_layout.append(html.P(str(index) + " (" + str(value) + ")", style={'marginBottom': '5px'}))
 
         match_type = filtered_df.match_type.value_counts()
         if not match_type.empty:
-            result_layout.append(html.H6("Match type used", style={'margin-top': '20px'}))
+            result_layout.append(html.H6("Match type used", style={'marginTop': '20px'}))
             for index, value in match_type.items():
-                result_layout.append(html.P(str(index) + " (" + str(value) + ")", style={'margin-bottom': '5px'}))
+                result_layout.append(html.P(str(index) + " (" + str(value) + ")", style={'marginBottom': '5px'}))
 
     return html.Div(result_layout)
