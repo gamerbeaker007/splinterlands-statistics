@@ -3,13 +3,12 @@ import pandas as pd
 from dash import html, Output, Input, State
 
 from main import app
-from src import analyse
-from src.pages.card_pages import card_page_ids
+from src.pages.card_pages import card_page_ids, card_page_mana_graph
 
-layout = dbc.Row(id=card_page_ids.card_info, style={'position': 'absolute',
-                                                    'top': '50%',
-                                                    'left': '50%',
-                                                    'transform': 'translate(-50%,-50%)'})
+layout = dbc.Row([
+        html.Div(id=card_page_ids.card_info),
+        html.Div(card_page_mana_graph.layout),
+    ])
 
 
 @app.callback(
@@ -40,5 +39,4 @@ def update_top_cards(filtered_df, filter_settings):
                 html.P('Win: ' + str(row.win_percentage) + '%',
                        style={'margin-bottom': '5px'}),
             ],
-            className='mb-3',
         )

@@ -2,15 +2,15 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import Output, Input
 from dash import html
-from dash.exceptions import PreventUpdate
 
 from main import app
 from src.pages.card_pages import card_page_ids
 
-layout = dbc.Row(id=card_page_ids.card_ruleset, style={'position': 'absolute',
-                                                       'top': '50%',
-                                                       'left': '50%',
-                                                       'transform': 'translate(-50%,-50%)'})
+layout = dbc.Row(id=card_page_ids.card_ruleset,
+                 style={'position': 'absolute',
+                        'top': '50%',
+                        'left': '50%',
+                        'transform': 'translate(-50%,-50%)'})
 
 
 @app.callback(

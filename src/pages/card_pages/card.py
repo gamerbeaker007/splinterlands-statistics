@@ -31,6 +31,7 @@ def get_card_columns(account, df, number, detailed=True, make_link=True):
                             dbc.CardBody(body),
                         ],
                         className='mb-3 card-hover',
+                        style={'padding': '10px'},
                     ),
                     href='card?card_id=' + str(row.card_detail_id) + '#account=' + account,
                     style={'text-decoration': 'none',
@@ -45,6 +46,7 @@ def get_card_columns(account, df, number, detailed=True, make_link=True):
                         dbc.CardBody(body),
                     ],
                     className='mb-3',
+                    style={'padding': '10px'}
                 )
             )
 

@@ -12,11 +12,10 @@ layout = dbc.Container([
     dbc.Row(card_page_filter.layout),
 
     dbc.Row([
-        dbc.Col(card_page_info.layout, style={'position': 'relative'}),
+        dbc.Col(card_page_info.layout),
         dbc.Col(card_page_image.layout),
         dbc.Col(card_page_ruleset.layout, style={'position': 'relative'}),
-    ]),
-
+    ], className='mb3'),
     dbc.Row(top_cards.layout),
     dbc.Row(weakest_cards.layout),
 

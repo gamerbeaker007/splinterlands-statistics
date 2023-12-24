@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file.
 ## 0.12.0
 - FIX: Add list of un-trade-able items on hive engine so no accidental value can be applied (GOLD potion had value on hive engine for a while)
 - FIX: Add price calculation for CREDITS these are not on hive engine
-- 
+- Main page: Add small padding on cards, especially for rebellion cards
+- Card page: Add battle count per mana cap
 
 
 ## 0.11.1

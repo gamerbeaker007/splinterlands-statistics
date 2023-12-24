@@ -1,12 +1,11 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, Output, Input, State
-from dash.exceptions import PreventUpdate
+from dash import Output, Input, State
+
 from main import app
-from src import analyse
 from src.pages.card_pages import card_page_ids
 
-layout = dbc.Row(id=card_page_ids.card_image)
+layout = dbc.Row(id=card_page_ids.card_image, style={'height': '100%'})
 
 
 @app.callback(
@@ -26,12 +25,7 @@ def update_top_cards(filtered_df, filter_settings):
         filtered_df = filtered_df.loc[filtered_df.card_name == selected_card]
         row = filtered_df.iloc[0]
         return dbc.Card(
-            [
-                dbc.CardBody([
-                    dbc.CardImg(src=row.url, top=True, style={'height': '300px', 'object-fit': 'contain'}),
-                ]
-                ),
-            ],
-            style={'height': '350px'},
-            className='mb-3',
+            dbc.CardBody(
+                dbc.CardImg(src=row.url, top=True, style={'height': '300px', 'object-fit': 'contain'}),
+            )
         )
