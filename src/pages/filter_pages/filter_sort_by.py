@@ -3,10 +3,10 @@ import threading
 import dash_bootstrap_components as dbc
 from dash import Output, Input, dcc, State
 
-from main import app, measure_duration
+from src.pages.main_dash import app
+from src.utils.trace_logging import measure_duration
 from src.pages.filter_pages import filter_ids
 
-filter_settings_lock = threading.Lock()
 
 layout = dbc.InputGroup(
     [
@@ -32,7 +32,5 @@ layout = dbc.InputGroup(
 )
 @measure_duration
 def sort_by(sorts, filter_settings):
-    # Acquire the lock before updating the shared resource
-    with filter_settings_lock:
-        filter_settings['sort_by'] = sorts
-        return filter_settings
+    filter_settings['sort_by'] = sorts
+    return filter_settings

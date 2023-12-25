@@ -5,17 +5,14 @@ import pandas as pd
 from dash import html, Output, Input, dash_table, dcc, State
 from dash.exceptions import PreventUpdate
 
-from main import app, measure_duration
 from src import analyse
 from src.configuration import store
 from src.pages.card_pages import card
 from src.pages.filter_pages import filter_user, filter_card_type, filter_rarity, filter_element, \
     filter_editions, filter_ids, filter_sort_by, filter_group_levels, filter_battle_format, \
     filter_ruleset, filter_season, filter_mana_cap, filter_battle_count
-
-# This line need to be here to be tread safe cannot be place in
-filter_settings_lock = threading.Lock()
-
+from src.pages.main_dash import app
+from src.utils.trace_logging import measure_duration
 layout = dbc.Container([
     dbc.Row([
         html.H1('Statistics battles'),
@@ -62,7 +59,6 @@ layout = dbc.Container([
     dcc.Store(id=filter_ids.filter_settings, data={}),
 
 ])
-
 
 
 @app.callback(
@@ -142,34 +138,30 @@ def update_top_cards(filtered_df, stored_filter_settings):
               Input(filter_ids.filter_settings, 'data'))
 @measure_duration
 def filter_battle_df(filter_settings):
-    with filter_settings_lock:
-        print(str(len(filter_settings)) + "filter settings: " + str(filter_settings))
-        if filter_settings is {} or 'account' not in filter_settings:
-            raise PreventUpdate
+    if filter_settings is {} or 'account' not in filter_settings:
+        raise PreventUpdate
 
-        # Filter before processing is done
-        df = analyse.filter_battles(store.battle_big, filter_account=filter_settings['account'])
-        df = analyse.filter_date(df, filter_settings)
-        df = analyse.filter_mana_cap(df, filter_settings)
-        df = analyse.filter_rule_sets(df, filter_settings)
-        df = analyse.filter_format(df, filter_settings)
+    # Filter before processing is done
+    df = analyse.filter_battles(store.battle_big, filter_account=filter_settings['account'])
+    df = analyse.filter_date(df, filter_settings)
+    df = analyse.filter_mana_cap(df, filter_settings)
+    df = analyse.filter_rule_sets(df, filter_settings)
+    df = analyse.filter_format(df, filter_settings)
 
-        # Processing
-        group_levels = False
-        if 'group_levels' in filter_settings:
-            group_levels = filter_settings['group_levels']
+    # Processing
+    group_levels = False
+    if 'group_levels' in filter_settings:
+        group_levels = filter_settings['group_levels']
 
-        df = analyse.process_battles_win_percentage(df,
-                                                    group_levels=group_levels)
+    df = analyse.process_battles_win_percentage(df,
+                                                group_levels=group_levels)
 
-        # Filter after processing is done
-        df = analyse.filter_element(df, filter_settings)
-        df = analyse.filter_edition(df, filter_settings)
-        df = analyse.filter_card_type(df, filter_settings)
-        df = analyse.filter_rarity(df, filter_settings)
-        df = analyse.filter_battle_count(df, filter_settings)
-        df = analyse.sort_by(df, filter_settings)
+    # Filter after processing is done
+    df = analyse.filter_element(df, filter_settings)
+    df = analyse.filter_edition(df, filter_settings)
+    df = analyse.filter_card_type(df, filter_settings)
+    df = analyse.filter_rarity(df, filter_settings)
+    df = analyse.filter_battle_count(df, filter_settings)
+    df = analyse.sort_by(df, filter_settings)
 
-        return df.to_json(date_format='iso', orient='split')
-
-
+    return df.to_json(date_format='iso', orient='split')

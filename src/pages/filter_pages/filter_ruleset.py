@@ -3,13 +3,13 @@ import threading
 import dash_bootstrap_components as dbc
 from dash import Output, Input, dcc, ctx, State
 
-from main import app, measure_duration
+from src.pages.main_dash import app
+from src.utils.trace_logging import measure_duration
 from src.pages.filter_pages import filter_style, filter_ids
 
 from src.static.static_values_enum import Element
 from src.utils import store_util
 
-filter_settings_lock = threading.Lock()
 
 layout = dbc.InputGroup(
     [
@@ -34,7 +34,5 @@ layout = dbc.InputGroup(
 )
 @measure_duration
 def filter_ruleset(rule_sets, filter_settings):
-    # Acquire the lock before updating the shared resource
-    with filter_settings_lock:
-        filter_settings['rule_sets'] = rule_sets
-        return filter_settings
+    filter_settings['rule_sets'] = rule_sets
+    return filter_settings

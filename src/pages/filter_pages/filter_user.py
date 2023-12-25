@@ -1,14 +1,11 @@
-import threading
-
 import dash_bootstrap_components as dbc
 from dash import Output, Input, dcc, State
 
-from main import app, measure_duration
 from src.pages.filter_pages import filter_ids
+from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.utils import store_util
-
-filter_settings_lock = threading.Lock()
+from src.utils.trace_logging import measure_duration
 
 layout = dbc.InputGroup(
     [
@@ -34,10 +31,8 @@ def update_filter_user(account,
                        trigger_daily,
                        filter_settings,
                        ):
-    # Acquire the lock before updating the shared resource
-    with filter_settings_lock:
-        filter_settings['account'] = account
-        return filter_settings
+    filter_settings['account'] = account
+    return filter_settings
 
 
 @app.callback(

@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Main page: Add small padding on cards, especially for rebellion cards
 - Card page: Add battle count per mana cap
 - Make filter options re-usable
+- Add Trace option when this option is enable it will log some timing information of all callbacks
 
 
 ## 0.11.1

@@ -3,10 +3,10 @@ import threading
 import dash_bootstrap_components as dbc
 from dash import Output, Input, State
 
-from main import app, measure_duration
+from src.pages.main_dash import app
+from src.utils.trace_logging import measure_duration
 from src.pages.filter_pages import filter_ids
 
-filter_settings_lock = threading.Lock()
 
 layout = dbc.InputGroup(
     [
@@ -29,9 +29,7 @@ layout = dbc.InputGroup(
 )
 @measure_duration
 def update_minimal_battle_filter(value, filter_settings):
-    # Acquire the lock before updating the shared resource
-    with filter_settings_lock:
-        if not value:
-            value = 0
-        filter_settings['minimal-battles'] = value
-        return filter_settings
+    if not value:
+        value = 0
+    filter_settings['minimal-battles'] = value
+    return filter_settings

@@ -157,17 +157,12 @@ def filter_element(input_df, filter_settings):
         return input_df
 
     list_of_colors = []
-    all_true = True
-    all_false = True
     for element in Element:
         if element.name in filter_settings:
             active = filter_settings[element.name]
             if active:
-                all_false = False
                 list_of_colors.append(element.value)
-            else:
-                all_true = False
-    if all_true or all_false:
+    if len(list_of_colors) == 0 or len(list_of_colors) == len(Element):
         return input_df
     else:
         return input_df.loc[(input_df.color.isin(list_of_colors) | input_df.secondary_color.isin(list_of_colors))]
@@ -286,9 +281,10 @@ def filter_date(input_df, filter_settings):
 def filter_rule_sets(input_df, filter_settings):
     if not input_df.empty and 'rule_sets' in filter_settings:
         rule_sets = filter_settings['rule_sets']
-        return input_df.loc[(input_df.ruleset1.isin(rule_sets) |
-                             input_df.ruleset2.isin(rule_sets) |
-                             input_df.ruleset3.isin(rule_sets))]
+        if len(rule_sets) != 0:
+            return input_df.loc[(input_df.ruleset1.isin(rule_sets) |
+                                 input_df.ruleset2.isin(rule_sets) |
+                                 input_df.ruleset3.isin(rule_sets))]
     return input_df
 
 

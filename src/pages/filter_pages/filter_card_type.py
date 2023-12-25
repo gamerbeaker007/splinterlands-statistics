@@ -3,11 +3,11 @@ import threading
 import dash_bootstrap_components as dbc
 from dash import Output, Input, ctx, State
 
-from main import app, measure_duration
+from src.pages.main_dash import app
+from src.utils.trace_logging import measure_duration
 from src.pages.filter_pages import filter_style, filter_page, filter_ids
 from src.static.static_values_enum import CardType
 
-filter_settings_lock = threading.Lock()
 
 layout = dbc.ButtonGroup(filter_page.get_filter_buttons(CardType))
 for card_type in CardType:
@@ -21,14 +21,11 @@ for card_type in CardType:
     )
     @measure_duration
     def on_click_card_type(n_clicks, filter_settings, style):
-        # Acquire the lock before updating the shared resource
-        with filter_settings_lock:
-            setting = ctx.inputs_list[0]['id'].split('-')[0]
-            active = filter_style.is_active(n_clicks)
-            filter_settings[setting] = active
-            if active:
-                style['backgroundColor'] = filter_style.btn_active_color
-            else:
-                style['backgroundColor'] = filter_style.btn_inactive_color
-            return filter_settings, style
-
+        setting = ctx.inputs_list[0]['id'].split('-')[0]
+        active = filter_style.is_active(n_clicks)
+        filter_settings[setting] = active
+        if active:
+            style['backgroundColor'] = filter_style.btn_active_color
+        else:
+            style['backgroundColor'] = filter_style.btn_inactive_color
+        return filter_settings, style
