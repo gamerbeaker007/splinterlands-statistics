@@ -150,7 +150,7 @@ def filter_battle_df(filter_settings):
     df = analyse.filter_format(df, filter_settings)
 
     # Processing
-    group_levels = False
+    group_levels = True
     if 'group_levels' in filter_settings:
         group_levels = filter_settings['group_levels']
 
