@@ -4,11 +4,12 @@ from dash import html, Output, Input, State
 
 from main import app
 from src.pages.card_pages import card_page_ids, card_page_mana_graph
+from src.utils.trace_logging import measure_duration
 
 layout = dbc.Row([
-        html.Div(id=card_page_ids.card_info),
-        html.Div(card_page_mana_graph.layout),
-    ])
+    html.Div(id=card_page_ids.card_info),
+    html.Div(card_page_mana_graph.layout),
+])
 
 
 @app.callback(
@@ -16,6 +17,7 @@ layout = dbc.Row([
     Input(card_page_ids.filtered_cards_top_df, 'data'),
     State(card_page_ids.filter_cards_settings, 'data')
 )
+@measure_duration
 def update_top_cards(filtered_df, filter_settings):
     if not filtered_df:
         return "No card selected"

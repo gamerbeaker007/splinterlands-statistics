@@ -1,5 +1,3 @@
-import threading
-
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dash_table, dcc, State
@@ -13,6 +11,7 @@ from src.pages.filter_pages import filter_user, filter_card_type, filter_rarity,
     filter_ruleset, filter_season, filter_mana_cap, filter_battle_count
 from src.pages.main_dash import app
 from src.utils.trace_logging import measure_duration
+
 layout = dbc.Container([
     dbc.Row([
         html.H1('Statistics battles'),
@@ -46,7 +45,7 @@ layout = dbc.Container([
     dbc.Row(id='top-cards'),
     dbc.Row([
         dbc.Accordion(
-        dbc.AccordionItem(html.Div(id='main-table-div', className='dbc'),
+            dbc.AccordionItem(html.Div(id='main-table-div', className='dbc'),
                               title='Complete table',
                               id='complete-table-accordion-item'
                               ),
@@ -134,8 +133,10 @@ def update_top_cards(filtered_df, stored_filter_settings):
     return result_layout
 
 
-@app.callback(Output('filtered-battle-df', 'data'),
-              Input(filter_ids.filter_settings, 'data'))
+@app.callback(
+    Output('filtered-battle-df', 'data'),
+    Input(filter_ids.filter_settings, 'data'),
+)
 @measure_duration
 def filter_battle_df(filter_settings):
     if filter_settings is {} or 'account' not in filter_settings:

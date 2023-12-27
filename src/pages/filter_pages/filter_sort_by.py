@@ -1,19 +1,16 @@
-import threading
-
 import dash_bootstrap_components as dbc
 from dash import Output, Input, dcc, State
 
+from src.pages.filter_pages import filter_ids
 from src.pages.main_dash import app
 from src.utils.trace_logging import measure_duration
-from src.pages.filter_pages import filter_ids
-
 
 layout = dbc.InputGroup(
     [
         dbc.InputGroupText('Sort by'),
         dcc.Dropdown(options=['battles', 'percentage', 'win', 'loss'],
                      value=['battles'],
-                     id='dropdown-sort-by-selection',
+                     id=filter_ids.filter_sort_by_dropdown,
                      multi=True,
                      className='dbc',
                      style={'width': '50%'},
@@ -26,7 +23,7 @@ layout = dbc.InputGroup(
 
 @app.callback(
     Output(filter_ids.filter_settings, 'data'),
-    Input('dropdown-sort-by-selection', 'value'),
+    Input(filter_ids.filter_sort_by_dropdown, 'value'),
     State(filter_ids.filter_settings, 'data'),
     prevent_initial_call=True,
 )

@@ -8,6 +8,7 @@ from src.api import spl
 from src.configuration import config
 from src.pages.config_pages import config_page_ids
 from src.utils import store_util
+from src.utils.trace_logging import measure_duration
 
 
 def get_div_style():
@@ -69,6 +70,7 @@ layout = dbc.Container([
     Input(config_page_ids.account_name_input, 'value'),
     Input(config_page_ids.add_button, 'n_clicks'),
 )
+@measure_duration
 def add_remove(account_name, add_clicks):
     text = ''
     added = False
@@ -96,6 +98,7 @@ def add_remove(account_name, add_clicks):
     Input(config_page_ids.account_name_input, 'value'),
     Input(config_page_ids.remove_button, 'n_clicks'),
 )
+@measure_duration
 def add_remove(account_name, remove_clicks):
     text = ''
     removed = False
@@ -119,6 +122,7 @@ def add_remove(account_name, remove_clicks):
     Input(config_page_ids.account_added, 'data'),
     Input(config_page_ids.account_removed, 'data'),
 )
+@measure_duration
 def get_accounts(added, removed):
     current_account_names = store_util.get_account_names()
     return html.P(', '.join(current_account_names))
@@ -127,6 +131,7 @@ def get_accounts(added, removed):
 @app.callback(
     Input(config_page_ids.account_added, 'data'),
 )
+@measure_duration
 def update_daily(added):
     if added:
         store_util.update_data(battle_update=True, season_update=False)

@@ -4,11 +4,10 @@ import plotly.express as px
 from dash import Output, Input, dcc
 
 from main import app
-from src.configuration import config
 from src.pages.card_pages import card_page_ids
 from src.pages.navigation_pages import nav_ids
 from src.utils import chart_util
-
+from src.utils.trace_logging import measure_duration
 
 layout = dbc.Row([
     dcc.Graph(id=card_page_ids.card_mana_cap_graph)
@@ -20,9 +19,10 @@ layout = dbc.Row([
     Input(card_page_ids.filtered_cards_battle_df, 'data'),
     Input(nav_ids.theme_store, 'data'),
 )
+@measure_duration
 def update_mana_cap_card_graph(filtered_df, theme):
     if not filtered_df:
-        return "No card selected"
+        return chart_util.blank_fig(theme)
 
     filtered_df = pd.read_json(filtered_df, orient='split')
     fig = chart_util.blank_fig(theme)

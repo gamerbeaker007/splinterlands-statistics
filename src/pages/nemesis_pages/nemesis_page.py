@@ -10,6 +10,7 @@ from src.pages.navigation_pages import nav_ids
 from src.pages.nemesis_pages import nemesis_page_ids, nemesis_page_opponent, nemesis_page_battles
 from src.static.static_values_enum import MatchType
 from src.utils import store_util
+from src.utils.trace_logging import measure_duration
 
 layout = dbc.Container([
     dbc.Row(html.H1("Nemesis"), className='mb-3'),
@@ -70,18 +71,23 @@ layout = dbc.Container([
 ])
 
 
-@app.callback(Output(nemesis_page_ids.dropdown_user_selection, 'value'),
-              Output(nemesis_page_ids.dropdown_user_selection, 'options'),
-              Input(nav_ids.trigger_daily, 'data'),
-              )
+@app.callback(
+    Output(nemesis_page_ids.dropdown_user_selection, 'value'),
+    Output(nemesis_page_ids.dropdown_user_selection, 'options'),
+    Input(nav_ids.trigger_daily, 'data'),
+)
+@measure_duration
 def update_user_list(tigger):
     return store_util.get_first_account_name(), store_util.get_account_names()
 
 
-@app.callback(Output(nemesis_page_ids.dropdown_against_selection, 'value'),
-              Output(nemesis_page_ids.dropdown_against_selection, 'options'),
-              Input(nemesis_page_ids.dropdown_user_selection, 'value'),
-              Input(nav_ids.trigger_daily, 'data'))
+@app.callback(
+    Output(nemesis_page_ids.dropdown_against_selection, 'value'),
+    Output(nemesis_page_ids.dropdown_against_selection, 'options'),
+    Input(nemesis_page_ids.dropdown_user_selection, 'value'),
+    Input(nav_ids.trigger_daily, 'data'),
+)
+@measure_duration
 def update_account_value(account, daily_trigger):
     if not account:
         raise PreventUpdate
@@ -93,10 +99,12 @@ def update_account_value(account, daily_trigger):
         return None, None
 
 
-@app.callback(Output(nemesis_page_ids.dropdown_match_type_selection, 'value'),
-              Output(nemesis_page_ids.dropdown_match_type_selection, 'options'),
-              Input(nav_ids.trigger_daily, 'data'),
-              )
+@app.callback(
+    Output(nemesis_page_ids.dropdown_match_type_selection, 'value'),
+    Output(nemesis_page_ids.dropdown_match_type_selection, 'options'),
+    Input(nav_ids.trigger_daily, 'data'),
+)
+@measure_duration
 def update_match_types_list(tigger):
     return 'ALL', ['ALL'] + MatchType.list_values()
 
@@ -107,6 +115,7 @@ def update_match_types_list(tigger):
     State(nemesis_page_ids.dropdown_user_selection, 'value'),
     State(nemesis_page_ids.dropdown_match_type_selection, 'value'),
 )
+@measure_duration
 def nemesis(filtered_df, account, match_type):
     filtered_df = pd.read_json(filtered_df, orient='split')
 
@@ -133,19 +142,23 @@ def nemesis(filtered_df, account, match_type):
         ]),
 
 
-@app.callback(Output(nemesis_page_ids.filtered_nemesis_df, 'data'),
-              Input(nemesis_page_ids.dropdown_user_selection, 'value'),
-              Input(nemesis_page_ids.dropdown_match_type_selection, 'value'),
-              )
+@app.callback(
+    Output(nemesis_page_ids.filtered_nemesis_df, 'data'),
+    Input(nemesis_page_ids.dropdown_user_selection, 'value'),
+    Input(nemesis_page_ids.dropdown_match_type_selection, 'value'),
+)
+@measure_duration
 def filter_nemesis_df(account, filter_match_type):
     df = analyse.get_top_3_losing_account(account, filter_match_type)
     return df.to_json(date_format='iso', orient='split')
 
 
-@app.callback(Output(nemesis_page_ids.filtered_against_df, 'data'),
-              Input(nemesis_page_ids.dropdown_user_selection, 'value'),
-              Input(nemesis_page_ids.dropdown_against_selection, 'value'),
-              )
+@app.callback(
+    Output(nemesis_page_ids.filtered_against_df, 'data'),
+    Input(nemesis_page_ids.dropdown_user_selection, 'value'),
+    Input(nemesis_page_ids.dropdown_against_selection, 'value'),
+)
+@measure_duration
 def filter_opponent_df(account, opponent):
     if not account or not opponent:
         raise PreventUpdate

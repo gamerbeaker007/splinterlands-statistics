@@ -5,6 +5,7 @@ from dash import html
 
 from main import app
 from src.pages.card_pages import card_page_ids
+from src.utils.trace_logging import measure_duration
 
 layout = dbc.Row(id=card_page_ids.card_ruleset,
                  style={'position': 'absolute',
@@ -17,6 +18,7 @@ layout = dbc.Row(id=card_page_ids.card_ruleset,
     Output(card_page_ids.card_ruleset, 'children'),
     Input(card_page_ids.filtered_cards_battle_df, 'data'),
 )
+@measure_duration
 def update_top_cards(filtered_df):
     if not filtered_df:
         return "No card selected"

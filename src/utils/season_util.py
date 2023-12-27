@@ -1,6 +1,9 @@
+import datetime
+
+from dateutil import parser
+
 from src.configuration import store
 from src.utils import store_util
-from dateutil import parser
 
 
 def get_season_played():
@@ -17,6 +20,8 @@ def first_played_season():
 
 
 def get_season_end_date(season_id):
-    season_end_date = store.season_end_dates.loc[(store.season_end_dates.id == int(season_id) - 1)].end_date.iloc[0]
-    from_date = parser.parse(season_end_date)
-    return from_date
+    if season_id != '':
+        season_end_date = store.season_end_dates.loc[(store.season_end_dates.id == int(season_id) - 1)].end_date.iloc[0]
+        from_date = parser.parse(season_end_date)
+        return from_date
+    return datetime.date(2018, 5, 26)  # start of splinterlands

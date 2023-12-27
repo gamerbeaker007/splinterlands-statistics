@@ -1,10 +1,11 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, State
-from dash.exceptions import PreventUpdate
+
 from main import app
 from src.pages.card_pages import card_page_ids, card
 from src.static.static_values_enum import CardType
+from src.utils.trace_logging import measure_duration
 
 layout = dbc.Row([dbc.Row(html.H1("Top paired cards")),
                   dbc.Row(id=card_page_ids.top_paired_cards)])
@@ -15,6 +16,7 @@ layout = dbc.Row([dbc.Row(html.H1("Top paired cards")),
     Input(card_page_ids.filtered_cards_top_df, 'data'),
     State(card_page_ids.filter_cards_settings, 'data')
 )
+@measure_duration
 def update_top_cards(filtered_df, stored_filter_settings):
     if not filtered_df:
         return "No card selected"

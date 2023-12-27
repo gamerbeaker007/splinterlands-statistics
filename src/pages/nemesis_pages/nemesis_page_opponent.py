@@ -6,6 +6,7 @@ from dash.exceptions import PreventUpdate
 
 from main import app
 from src.pages.nemesis_pages import nemesis_page_ids
+from src.utils.trace_logging import measure_duration
 
 layout = dbc.Row(id=nemesis_page_ids.opponent_stats, className='mb-3')
 
@@ -14,6 +15,7 @@ layout = dbc.Row(id=nemesis_page_ids.opponent_stats, className='mb-3')
     Output(nemesis_page_ids.opponent_stats, 'children'),
     Input(nemesis_page_ids.filtered_against_df, 'data'),
 )
+@measure_duration
 def update_opponent(filtered_df):
     if not filtered_df:
         raise PreventUpdate
@@ -32,8 +34,8 @@ def update_opponent(filtered_df):
                                        (filtered_df.result == 'loss')].result.count()
                 col_result.append(html.H6(str(index) + ':', style={'marginTop': '10px', 'marginBottom': '0px'}))
                 col_result.append(html.P('Encounters: ' + str(value), style={'marginBottom': '0px'}))
-                col_result.append(html.P('Win/Loss: ' + str(win) + '-' + str(loss),style={'marginBottom': '0px'}))
-                col_result.append(html.P('Win pct : ' + str(round(win/(win+loss)*100, 2)) + '%',
+                col_result.append(html.P('Win/Loss: ' + str(win) + '-' + str(loss), style={'marginBottom': '0px'}))
+                col_result.append(html.P('Win pct : ' + str(round(win / (win + loss) * 100, 2)) + '%',
                                          style={'marginBottom': '0px'}))
                 result_layout.append(dbc.Col(children=col_result))
 

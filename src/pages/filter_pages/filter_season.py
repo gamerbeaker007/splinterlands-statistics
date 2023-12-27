@@ -1,26 +1,24 @@
-import threading
-
 import dash_bootstrap_components as dbc
 from dash import Output, Input, dcc, State
 
-from src.pages.main_dash import app
-from src.utils.trace_logging import measure_duration
 from src.pages.filter_pages import filter_ids
+from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.utils import season_util
+from src.utils.trace_logging import measure_duration
 
 date_fmt = '%Y-%m-%d %H:%M (UTC)'
 
 layout = dbc.InputGroup(
     [
         dbc.InputGroupText('Since season'),
-        dcc.Dropdown(id='dropdown-season-selection',
+        dcc.Dropdown(id=filter_ids.filter_season_dropdown,
                      clearable=False,
                      value=season_util.first_played_season(),
                      options=season_util.get_season_played(),
                      style={'width': '85px'},
                      className='dbc'),
-        dbc.InputGroupText(id='filter-from-date',
+        dbc.InputGroupText(id=filter_ids.filter_from_date_text,
                            children=season_util
                            .get_season_end_date(season_util.first_played_season())
                            .strftime(date_fmt))
@@ -32,8 +30,8 @@ layout = dbc.InputGroup(
 
 @app.callback(
     Output(filter_ids.filter_settings, 'data'),
-    Output('filter-from-date', 'children'),
-    Input('dropdown-season-selection', 'value'),
+    Output(filter_ids.filter_from_date_text, 'children'),
+    Input(filter_ids.filter_season_dropdown, 'value'),
     State(filter_ids.filter_settings, 'data'),
     prevent_initial_call=True,
 )
@@ -49,8 +47,8 @@ def filter_season_df(season_id, filter_settings):
 
 
 @app.callback(
-    Output('dropdown-season-selection', 'options'),
-    Output('dropdown-season-selection', 'value'),
+    Output(filter_ids.filter_season_dropdown, 'options'),
+    Output(filter_ids.filter_season_dropdown, 'value'),
     Input(nav_ids.trigger_daily, 'data'),
     prevent_initial_call=True,
 )

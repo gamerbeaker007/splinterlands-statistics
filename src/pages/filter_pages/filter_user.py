@@ -10,7 +10,7 @@ from src.utils.trace_logging import measure_duration
 layout = dbc.InputGroup(
     [
         dbc.InputGroupText('Account'),
-        dcc.Dropdown(id='dropdown-user-selection',
+        dcc.Dropdown(id=filter_ids.filter_user_dropdown,
                      className='dbc',
                      style={'width': '70%'},
                      ),
@@ -22,7 +22,7 @@ layout = dbc.InputGroup(
 
 @app.callback(
     Output(filter_ids.filter_settings, 'data'),
-    Input('dropdown-user-selection', 'value'),
+    Input(filter_ids.filter_user_dropdown, 'value'),
     Input(nav_ids.trigger_daily, 'data'),
     State(filter_ids.filter_settings, 'data'),
 )
@@ -36,8 +36,8 @@ def update_filter_user(account,
 
 
 @app.callback(
-    Output('dropdown-user-selection', 'value'),
-    Output('dropdown-user-selection', 'options'),
+    Output(filter_ids.filter_user_dropdown, 'value'),
+    Output(filter_ids.filter_user_dropdown, 'options'),
     Input(nav_ids.trigger_daily, 'data'),
 )
 @measure_duration

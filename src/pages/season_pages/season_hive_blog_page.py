@@ -1,15 +1,15 @@
+import dash_bootstrap_components as dbc
+from dash import html, Output, Input, ctx, dcc
 from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import Trigger
 
 from main import app
-import dash_bootstrap_components as dbc
-from dash import html, Output, Input, ctx, dcc
-
 from src import season_balances_info, market_info
 from src.configuration import store, progress
 from src.pages.navigation_pages import nav_ids
 from src.pages.season_pages import season_ids
 from src.utils import store_util, progress_util, tournaments_info, hive_blog
+from src.utils.trace_logging import measure_duration
 
 layout = dbc.Accordion(
     dbc.AccordionItem([
@@ -52,6 +52,7 @@ layout = dbc.Accordion(
     Input(season_ids.dropdown_user_selection_season_blog, 'value'),
     prevent_initial_call=True,
 )
+@measure_duration
 def generate_hive_blog(n_clicks, users):
     if season_ids.generate_blog == ctx.triggered_id:
         if not users:
@@ -117,10 +118,12 @@ def generate_hive_blog(n_clicks, users):
     return None, ''
 
 
-@app.callback(Output(season_ids.dropdown_user_selection_season_blog, 'value'),
-              Output(season_ids.dropdown_user_selection_season_blog, 'options'),
-              Input(nav_ids.trigger_daily, 'data'),
-              )
+@app.callback(
+    Output(season_ids.dropdown_user_selection_season_blog, 'value'),
+    Output(season_ids.dropdown_user_selection_season_blog, 'options'),
+    Input(nav_ids.trigger_daily, 'data'),
+)
+@measure_duration
 def update_user_list(tigger):
     return store_util.get_last_portfolio_selection(), store_util.get_account_names()
 
@@ -131,6 +134,7 @@ def update_user_list(tigger):
     Input(season_ids.generate_blog, 'n_clicks'),
     Input(season_ids.update_season_btn, 'n_clicks'),
 )
+@measure_duration
 def validate_buttons(n_clicks_generate_blog, n_clicks_update_season_btn):
     if not ctx.triggered_id:
         raise PreventUpdate
@@ -159,6 +163,7 @@ def check_button_status():
     Output(season_ids.clipboard_div, 'style'),
     Input(season_ids.hive_blog_content, 'data')
 )
+@measure_duration
 def update_copy_to_clipboard(hive_blog_txt):
     if not hive_blog_txt:
         return '', {'display': 'none'}
@@ -170,6 +175,7 @@ def update_copy_to_clipboard(hive_blog_txt):
     Output(season_ids.text_output_temp, 'children'),
     Input(season_ids.copy_to_clipboard, 'n_clicks')
 )
+@measure_duration
 def update_copy_to_clipboard(n_clicks):
     if ctx.triggered_id == season_ids.copy_to_clipboard:
         return html.P('Text is copied to clipboard')

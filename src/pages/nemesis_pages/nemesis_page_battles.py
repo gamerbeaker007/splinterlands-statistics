@@ -12,6 +12,7 @@ from src.api import spl
 from src.configuration import config
 from src.pages.nemesis_pages import nemesis_page_ids
 from src.static.static_values_enum import MatchType
+from src.utils.trace_logging import measure_duration
 
 layout = dbc.Row(id=nemesis_page_ids.opponent_battles)
 
@@ -95,6 +96,7 @@ def get_match_type_col(match_type, is_brawl):
     Output(nemesis_page_ids.opponent_battles, 'children'),
     Input(nemesis_page_ids.filtered_against_df, 'data'),
 )
+@measure_duration
 def update_battles(filtered_df):
     if not filtered_df:
         raise PreventUpdate

@@ -13,6 +13,7 @@ from src.pages.portfolio_pages import portfolio_deposit, portfolio_editions, por
 from src.static import static_values_enum
 from src.static.static_values_enum import Edition
 from src.utils import chart_util, store_util
+from src.utils.trace_logging import measure_duration
 
 layout = dbc.Container([
     dcc.Store(id=portfolio_ids.filtered_portfolio_df),
@@ -33,7 +34,7 @@ layout = dbc.Container([
                 className='mb-3',
             ),
         ),
-        dbc.Col(portfolio_deposit.get_deposit_layout(),className='mb-3'),
+        dbc.Col(portfolio_deposit.get_deposit_layout(), className='mb-3'),
     ]),
     dbc.Row(id=portfolio_ids.update_values_row, className='mb-3'),
     dbc.Row(dcc.Graph(id=portfolio_ids.total_all_portfolio_graph), className='mb-3'),
@@ -48,27 +49,34 @@ layout = dbc.Container([
 ])
 
 
-@app.callback(Output(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
-              Output(portfolio_ids.dropdown_user_selection_portfolio, 'options'),
-              Input(nav_ids.trigger_daily, 'data'),
-              )
+@app.callback(
+    Output(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
+    Output(portfolio_ids.dropdown_user_selection_portfolio, 'options'),
+    Input(nav_ids.trigger_daily, 'data'),
+)
+@measure_duration
 def update_user_list(tigger):
     return store_util.get_last_portfolio_selection(), store_util.get_account_names()
 
 
-@app.callback(Output(portfolio_ids.filtered_portfolio_df, 'data'),
-              Input(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
-              Input(portfolio_ids.trigger_portfolio_update, 'data'),
-              Input(nav_ids.trigger_daily, 'data'),
-              )
+@app.callback(
+    Output(portfolio_ids.filtered_portfolio_df, 'data'),
+    Input(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
+    Input(portfolio_ids.trigger_portfolio_update, 'data'),
+    Input(nav_ids.trigger_daily, 'data'),
+)
+@measure_duration
 def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
+    if len(combine_users) == 0:
+        raise PreventUpdate
+
     filtered_users = []
     for user in combine_users:
         if not store.portfolio.empty and not store.portfolio.loc[(store.portfolio.account_name == user)].empty:
             filtered_users.append(user)
 
     # only save when changed
-    if store.view_portfolio_accounts.account_name.tolist() != combine_users:
+    if store.view_portfolio_accounts.empty or store.view_portfolio_accounts.account_name.tolist() != combine_users:
         store.view_portfolio_accounts = pd.DataFrame({'account_name': filtered_users})
         store_util.save_single_store('view_portfolio_accounts')
 
@@ -101,11 +109,13 @@ def update_filter_data(combine_users, trigger_portfolio, trigger_daily):
         return pd.DataFrame().to_json(date_format='iso', orient='split')
 
 
-@app.callback(Output(portfolio_ids.total_all_portfolio_graph, 'figure'),
-              Input(portfolio_ids.filtered_portfolio_df, 'data'),
-              State(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
-              Input(nav_ids.theme_store, 'data'),
-              )
+@app.callback(
+    Output(portfolio_ids.total_all_portfolio_graph, 'figure'),
+    Input(portfolio_ids.filtered_portfolio_df, 'data'),
+    State(portfolio_ids.dropdown_user_selection_portfolio, 'value'),
+    Input(nav_ids.theme_store, 'data'),
+)
+@measure_duration
 def update_portfolio_total_graph(filtered_df, combined_users, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
@@ -118,10 +128,12 @@ def update_portfolio_total_graph(filtered_df, combined_users, theme):
         return portfolio_graph.plot_portfolio_total(temp_df, combined_users, theme)
 
 
-@app.callback(Output(portfolio_ids.all_portfolio_graph, 'figure'),
-              Input(portfolio_ids.filtered_portfolio_df, 'data'),
-              Input(nav_ids.theme_store, 'data'),
-              )
+@app.callback(
+    Output(portfolio_ids.all_portfolio_graph, 'figure'),
+    Input(portfolio_ids.filtered_portfolio_df, 'data'),
+    Input(nav_ids.theme_store, 'data'),
+)
+@measure_duration
 def update_portfolio_all_graph(filtered_df, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
@@ -168,7 +180,9 @@ def create_value_card(title, text, image_url):
 @app.callback(
     Output(portfolio_ids.update_values_row, 'children'),
     Input(portfolio_ids.filtered_portfolio_df, 'data'),
-    Input(portfolio_ids.total_all_portfolio_graph, 'clickData'))
+    Input(portfolio_ids.total_all_portfolio_graph, 'clickData'),
+)
+@measure_duration
 def display_click_data(filtered_portfolio_df, click_data):
     if not filtered_portfolio_df:
         raise PreventUpdate
@@ -235,12 +249,12 @@ def display_click_data(filtered_portfolio_df, click_data):
 
         sps_columns = value_row.index[
             value_row.index.str.startswith("sps_value")
-            ]
+        ]
         sps_value = value_row[sps_columns].sum()
 
         sps_staked_columns = value_row.index[
             value_row.index.str.startswith("spsp_value")
-            ]
+        ]
         sps_staked_value = value_row[sps_staked_columns].sum()
 
         other_columns = value_row.index[
@@ -275,7 +289,7 @@ def display_click_data(filtered_portfolio_df, click_data):
             "List: " + str(round(card_list_value, 2)) + " $",
             html.Br(),
             "Market: " + str(round(card_market_value, 2)) + " $",
-            ], static_values_enum.cards_icon_url),
+        ], static_values_enum.cards_icon_url),
         create_value_card("DEC",
                           [
                               "Liquid: " + str(round(dec_value, 2)) + " $",
