@@ -1,3 +1,5 @@
+from io import StringIO
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import dash_table
@@ -7,6 +9,7 @@ from dash_bootstrap_components import Container
 
 from src import analyse
 from src.configuration import store
+from src.pages.card_pages import card
 from src.pages.filter_pages import filter_season, filter_ruleset, \
     filter_battle_format, filter_mana_cap, filter_element, filter_rarity, filter_editions, filter_card_type, \
     filter_user, filter_ids, filter_battle_count, filter_group_levels
@@ -54,25 +57,19 @@ layout: Container = dbc.Container([
         dbc.Col(filter_group_levels.layout),
     ]),
 
-    # dbc.Row(id='top-cards'),
+    dbc.Row(id=losing_ids.losing_cards),
     dbc.Row([
         dbc.Accordion(
-            dbc.AccordionItem(html.Div(id=losing_ids.complete_table, className='dbc'),
-                              title='Complete table',
-                              id='complete-table-accordion-item'
-                              ),
-            start_collapsed=False,
-            id='accordion',
+            dbc.AccordionItem(
+                id=losing_ids.complete_table,
+                title='Complete table',
+            ),
+            start_collapsed=True,
+            id=losing_ids.accordion,
         )
     ]),
     dcc.Store(id=filter_ids.filter_settings, data={}),
 
-    # dbc.Row([
-    #     html.Div(id='battle-count', className='dbc'),
-    # ]),
-    # dbc.Row([
-    #     html.Div(id='losing-table', className='dbc'),
-    # ]),
     dcc.Store(id=losing_ids.filtered_losing_df)
 
 ])
@@ -110,10 +107,10 @@ def filter_battle_df(filter_settings):
     if not group_levels:
         columns.append('level')
 
-    df = df.groupby(columns, as_index=False).agg(number_of_losses=pd.NamedAgg(column='xp', aggfunc='count'),
+    df = df.groupby(columns, as_index=False).agg(battles=pd.NamedAgg(column='xp', aggfunc='count'),
                                                  level=pd.NamedAgg(column='level', aggfunc='max'))
     # count the losses with the filtered data
-    df.sort_values('number_of_losses', ascending=False, inplace=True)
+    df.sort_values('battles', ascending=False, inplace=True)
 
     return df.to_json(date_format='iso', orient='split')
 
@@ -124,7 +121,7 @@ def filter_battle_df(filter_settings):
 )
 @measure_duration
 def update_losing_table(filtered_df):
-    df = pd.read_json(filtered_df, orient='split')
+    df = pd.read_json(StringIO(filtered_df), orient='split')
     if not df.empty:
         df['url_markdown'] = df.apply(lambda row: analyse.get_image_url_markdown(row['card_name'],
                                                                                  row['level'],
@@ -133,14 +130,14 @@ def update_losing_table(filtered_df):
                                                                row['level'],
                                                                row['edition']), axis=1)
 
-        df = df[['url_markdown', 'card_name', 'level', 'number_of_losses']]
+        df = df[['url_markdown', 'card_name', 'level', 'battles']]
         return dash_table.DataTable(
             # columns=[{'name': i, 'id': i} for i in df.columns],
             columns=[
                 {'id': 'url_markdown', 'name': 'Card', 'presentation': 'markdown'},
                 {'id': 'card_name', 'name': 'Name'},
                 {'id': 'level', 'name': 'Level'},
-                {'id': 'number_of_losses', 'name': 'Numer of losses'},
+                {'id': 'battles', 'name': 'battles'},
 
             ],
             data=df.to_dict('records'),
@@ -155,30 +152,24 @@ def update_losing_table(filtered_df):
         ),
     else:
         return dash_table.DataTable()
-#
-#
-# @app.callback(
-#     Output('dropdown-user-selection-losing', 'value'),
-#     Output('dropdown-user-selection-losing', 'options'),
-#     Input(nav_ids.trigger_daily, 'data'),
-# )
-# @measure_duration
-# def update_user_list(tigger):
-#     return store_util.get_first_account_name(), store_util.get_account_names()
-#
-#
-# @app.callback(
-#     Output('filtered-losing-df', 'data'),
-#     Output('battle-count', 'children'),
-#     Input('dropdown-type-selection-losing', 'value'),
-#     Input('dropdown-user-selection-losing', 'value'),
-#     Input('dropdown-match-type-selection-losing', 'value'),
-#     # Input(filter_ids.filter_settings, 'data'),
-#     Input(nav_ids.trigger_daily, 'data'),
-# )
-# @measure_duration
-# def filter_battle_df(filter_type, filter_user, filter_match_type, trigger_daily):
-#     df = analyse.get_losing_df(filter_account=filter_user, filter_match_type=filter_match_type, filter_type=filter_type)
-#     bc = analyse.get_losing_battles_count(filter_user, filter_match_type, filter_type)
-#     return df.to_json(date_format='iso', orient='split'), \
-#         html.Div('Battle count: ' + str(bc))
+
+
+@app.callback(
+    Output(losing_ids.losing_cards, 'children'),
+    Input(losing_ids.filtered_losing_df, 'data'),
+)
+@measure_duration
+def update_top_cards(filtered_df):
+    if not filtered_df:
+        raise PreventUpdate
+
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
+
+    result_layout = []
+    if not filtered_df.empty:
+        filtered_df['url'] = filtered_df.apply(lambda row: analyse.get_image_url(row['card_name'],
+                                                                                 row['level'],
+                                                                                 row['edition']), axis=1)
+        result_layout = card.get_card_columns(filtered_df, 5, detailed=False)
+
+    return result_layout

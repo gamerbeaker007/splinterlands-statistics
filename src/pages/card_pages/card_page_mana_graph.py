@@ -1,3 +1,5 @@
+from io import StringIO
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
@@ -24,7 +26,7 @@ def update_mana_cap_card_graph(filtered_df, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
 
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
     fig = chart_util.blank_fig(theme)
     if not filtered_df.empty:
         bins = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -32,7 +34,7 @@ def update_mana_cap_card_graph(filtered_df, theme):
         bucket_labels = [f"{start}-{end}" for start, end in zip(bins[:-1], bins[1:])]
         filtered_df['bucket'] = pd.cut(filtered_df['mana_cap'], bins, labels=bucket_labels, right=False)
 
-        grouped_data = filtered_df.groupby(['bucket', 'card_name']).size().reset_index(name='count')
+        grouped_data = filtered_df.groupby(['bucket', 'card_name'], observed=False).size().reset_index(name='count')
         fig = px.bar(grouped_data,
                      x='bucket',
                      y='count',

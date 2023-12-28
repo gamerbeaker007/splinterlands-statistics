@@ -1,3 +1,5 @@
+from io import StringIO
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import Output, Input
@@ -25,7 +27,7 @@ def update_top_cards(filtered_df):
 
     result_layout = []
 
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
     if not filtered_df.empty:
         ruleset_played = pd.concat([filtered_df.ruleset1, filtered_df.ruleset2, filtered_df.ruleset3]).value_counts()
         top_5 = ruleset_played.head(5)

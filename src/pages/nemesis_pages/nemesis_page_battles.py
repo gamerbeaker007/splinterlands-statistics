@@ -1,4 +1,5 @@
 import json
+from io import StringIO
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -102,7 +103,7 @@ def update_battles(filtered_df):
         raise PreventUpdate
     result_layout = []
 
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
     if not filtered_df.empty:
         last_battles = filtered_df.sort_values(by='created_date').head(5).battle_id.tolist()
         account = filtered_df.account.tolist()[0]

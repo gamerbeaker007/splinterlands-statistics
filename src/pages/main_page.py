@@ -1,3 +1,5 @@
+from io import StringIO
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dash_table, dcc, State
@@ -69,7 +71,7 @@ def update_main_table(filtered_df):
     if not filtered_df:
         raise PreventUpdate
 
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if not filtered_df.empty:
         return dash_table.DataTable(id='top-cards-table',
@@ -124,11 +126,11 @@ def update_top_cards(filtered_df, stored_filter_settings):
 
     account_name = stored_filter_settings['account']
 
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     result_layout = []
     if not filtered_df.empty:
-        result_layout = card.get_card_columns(account_name, filtered_df, 5)
+        result_layout = card.get_card_columns(filtered_df, 5, account=account_name)
 
     return result_layout
 

@@ -1,3 +1,5 @@
+from io import StringIO
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, dcc, Input, Output, State
@@ -26,7 +28,7 @@ layout = dbc.Container([
                 ],
             ),
         ),
-        dbc.Col(html.H3("VS", style={'text-align': 'center'})),
+        dbc.Col(html.H3("VS", style={'textAlign': 'center'})),
         dbc.Col(
             dbc.InputGroup(
                 [
@@ -117,7 +119,7 @@ def update_match_types_list(tigger):
 )
 @measure_duration
 def nemesis(filtered_df, account, match_type):
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if not filtered_df.empty:
         li = []

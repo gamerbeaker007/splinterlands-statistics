@@ -1,3 +1,5 @@
+from io import StringIO
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import Output, Input
@@ -21,7 +23,7 @@ def update_opponent(filtered_df):
         raise PreventUpdate
     result_layout = []
 
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
     if not filtered_df.empty:
         match_type = filtered_df.match_type.value_counts()
         if not match_type.empty:

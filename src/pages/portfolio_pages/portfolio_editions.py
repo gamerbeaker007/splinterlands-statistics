@@ -1,3 +1,5 @@
+from io import StringIO
+
 import pandas as pd
 from dash import Output, Input, dcc
 
@@ -24,7 +26,7 @@ def update_portfolio_editions_graph(filtered_df, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
     else:
-        portfolio_df = pd.read_json(filtered_df, orient='split')
+        portfolio_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if portfolio_df.empty:
         return chart_util.blank_fig(theme)

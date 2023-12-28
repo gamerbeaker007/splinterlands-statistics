@@ -1,3 +1,5 @@
+from io import StringIO
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dcc
@@ -105,7 +107,7 @@ def update_land_total_graph(filtered_df, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
     else:
-        temp_df = pd.read_json(filtered_df, orient='split')
+        temp_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if temp_df.empty:
         return chart_util.blank_fig(theme)
@@ -123,7 +125,7 @@ def update_land_total_graph(filtered_df, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
     else:
-        temp_df = pd.read_json(filtered_df, orient='split')
+        temp_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if temp_df.empty:
         return chart_util.blank_fig(theme)
@@ -141,7 +143,7 @@ def update_land_tax_row(filtered_df, theme):
     if not filtered_df:
         return None
     else:
-        temp_df = pd.read_json(filtered_df, orient='split')
+        temp_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if temp_df.empty:
         return chart_util.blank_fig(theme)

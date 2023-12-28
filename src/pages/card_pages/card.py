@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import html
 
 
-def get_card_columns(account, df, number, detailed=True, make_link=True):
+def get_card_columns(df, number, detailed=True, account=None):
     df = df.head(number)
     cards = []
     for index, row in df.iterrows():
@@ -27,7 +27,7 @@ def get_card_columns(account, df, number, detailed=True, make_link=True):
                                style={'textAlign': 'center', 'marginBottom': '5px'}
                                ))
 
-        if make_link:
+        if account:
             cards.append(
                 dbc.CardLink(
                     dbc.Card(children=[

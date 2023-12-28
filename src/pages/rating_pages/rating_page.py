@@ -1,6 +1,8 @@
+from io import StringIO
+
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, dcc, Output, Input, ctx
+from dash import html, dcc, Output, Input
 from dash.exceptions import PreventUpdate
 from dateutil import parser
 
@@ -125,8 +127,7 @@ def update_modern_battle_graph(filtered_df, theme):
     if not filtered_df:
         raise PreventUpdate
 
-    print("TIGGER: " + str(ctx.triggered_id))
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
     if filtered_df.empty:
         return chart_util.blank_fig(theme)
     else:
@@ -143,7 +144,7 @@ def update_modern_graph(filtered_df, theme):
     if not filtered_df:
         raise PreventUpdate
 
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
     if not filtered_df.empty:
         df = filtered_df.loc[(store.rating.format == Format.modern.value)]
         return rating_graph.create_rating_graph(df, theme)
@@ -161,7 +162,7 @@ def update_wild_graph(filtered_df, theme):
     if not filtered_df:
         raise PreventUpdate
 
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
     if not filtered_df.empty:
         df = filtered_df.loc[(store.rating.format == Format.wild.value)]
         return rating_graph.create_rating_graph(df, theme)

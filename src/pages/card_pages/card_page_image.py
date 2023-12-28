@@ -1,3 +1,5 @@
+from io import StringIO
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import Output, Input, State
@@ -19,7 +21,7 @@ def update_top_cards(filtered_df, filter_settings):
     if not filtered_df:
         return "No card selected"
 
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if not filtered_df.empty:
         # remove the card that is being searched for

@@ -1,3 +1,5 @@
+from io import StringIO
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, State
@@ -21,7 +23,7 @@ def update_weakest_cards(filtered_df, stored_filter_settings):
     if not filtered_df:
         return "No card selected"
 
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     result_layout = []
 
@@ -31,13 +33,13 @@ def update_weakest_cards(filtered_df, stored_filter_settings):
         if not summoners_df.empty:
             result_layout.append(dbc.Row(html.H3("Most lost against  summoner (2)")))
             result_layout.append(
-                dbc.Row(card.get_card_columns(account, summoners_df, 2, detailed=False, make_link=False)))
+                dbc.Row(card.get_card_columns(summoners_df, 2, detailed=False)))
 
         monsters_df = filtered_df.loc[filtered_df.card_type == CardType.monster.value]
         if not monsters_df.empty:
             result_layout.append(dbc.Row(html.H3("Most lost against units (5)")))
             result_layout.append(
-                dbc.Row(card.get_card_columns(account, monsters_df, 5, detailed=False, make_link=False)))
+                dbc.Row(card.get_card_columns(monsters_df, 5, detailed=False)))
 
         return result_layout
     else:

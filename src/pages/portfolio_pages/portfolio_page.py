@@ -1,4 +1,5 @@
 from datetime import datetime
+from io import StringIO
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -120,7 +121,7 @@ def update_portfolio_total_graph(filtered_df, combined_users, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
     else:
-        temp_df = pd.read_json(filtered_df, orient='split')
+        temp_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if temp_df.empty:
         return chart_util.blank_fig(theme)
@@ -138,7 +139,7 @@ def update_portfolio_all_graph(filtered_df, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
     else:
-        temp_df = pd.read_json(filtered_df, orient='split')
+        temp_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if temp_df.empty:
         return chart_util.blank_fig(theme)
@@ -187,7 +188,7 @@ def display_click_data(filtered_portfolio_df, click_data):
     if not filtered_portfolio_df:
         raise PreventUpdate
     else:
-        filtered_portfolio_df = pd.read_json(filtered_portfolio_df, orient='split')
+        filtered_portfolio_df = pd.read_json(StringIO(filtered_portfolio_df), orient='split')
 
     if click_data:
         target_date = click_data['points'][0]['x']
