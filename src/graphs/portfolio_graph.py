@@ -170,6 +170,7 @@ def get_editions_fig(editions_df, theme):
         template=theme,
         title_text='Editions',
         hovermode='x unified',
+        margin=dict(l=10, r=10),
         legend=dict(
             orientation='h',
             yanchor='bottom',
@@ -234,6 +235,7 @@ def get_sps_fig(sps_df, theme):
         template=theme,
         title_text='SPS',
         hovermode='x unified',
+        margin=dict(l=10, r=10),
         legend=dict(
             orientation='h',
             yanchor='bottom',

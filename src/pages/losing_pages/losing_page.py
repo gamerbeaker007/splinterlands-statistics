@@ -82,7 +82,9 @@ layout: Container = dbc.Container([
 )
 @measure_duration
 def filter_battle_df(filter_settings):
-    if filter_settings is {} or 'account' not in filter_settings:
+    if (filter_settings is {}
+            or 'account' not in filter_settings
+            or filter_settings['account'] == ''):
         raise PreventUpdate
 
     # Filter before processing is done
@@ -97,7 +99,6 @@ def filter_battle_df(filter_settings):
     df = analyse.filter_edition(df, filter_settings)
     df = analyse.filter_card_type(df, filter_settings)
     df = analyse.filter_rarity(df, filter_settings)
-    df = analyse.filter_battle_count(df, filter_settings)
     # df = analyse.sort_by(df, filter_settings)
 
     group_levels = True
@@ -110,6 +111,9 @@ def filter_battle_df(filter_settings):
 
     df = df.groupby(columns, as_index=False).agg(battles=pd.NamedAgg(column='xp', aggfunc='count'),
                                                  level=pd.NamedAgg(column='level', aggfunc='max'))
+
+    df = analyse.filter_battle_count(df, filter_settings)
+
     # count the losses with the filtered data
     df.sort_values('battles', ascending=False, inplace=True)
 
@@ -122,6 +126,9 @@ def filter_battle_df(filter_settings):
 )
 @measure_duration
 def update_losing_table(filtered_df):
+    if not filtered_df:
+        raise PreventUpdate
+
     df = pd.read_json(StringIO(filtered_df), orient='split')
     if not df.empty:
         df['url_markdown'] = df.apply(lambda row: analyse.get_image_url_markdown(row['card_name'],

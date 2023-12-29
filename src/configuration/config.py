@@ -55,14 +55,13 @@ read_only = args.read_only
 if file_dir_prefix:
     logging.info('Store variable found using store dir: ' + str(args.store))
 
-
 store_dir = os.path.join(os.getcwd(), 'store', file_dir_prefix)
 if not os.path.isdir(store_dir):
     os.mkdir(store_dir)
 
 card_details_df = spl.get_card_details()
 settings = spl.get_settings()
-dark_theme = 'cyborg'
+dark_theme = 'slate'
 light_theme = 'minty'
 current_theme = dark_theme
 file_extension = '.csv'

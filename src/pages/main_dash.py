@@ -5,7 +5,7 @@ from dash_extensions.enrich import LogTransform, TriggerTransform, DashProxy, No
 
 from src.configuration import config
 
-dbc_css = 'https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css'
+dbc_css = 'https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates@V1.1.1/dbc.min.css'
 load_figure_template([config.dark_theme, config.light_theme])
 
 app = DashProxy(
