@@ -32,14 +32,14 @@ def update_top_cards(filtered_df):
         ruleset_played = pd.concat([filtered_df.ruleset1, filtered_df.ruleset2, filtered_df.ruleset3]).value_counts()
         top_5 = ruleset_played.head(5)
         if not top_5.empty:
-            result_layout.append(html.H6("Most payed with ruleset (5)"))
+            result_layout.append(html.H6("Most played with ruleset top 5"))
             for index, value in top_5.items():
-                result_layout.append(html.P(str(index) + " (" + str(value) + ")", style={'marginBottom': '5px'}))
+                result_layout.append(html.P(str(index) + ": " + str(value), style={'marginBottom': '5px'}))
 
         match_type = filtered_df.match_type.value_counts()
         if not match_type.empty:
             result_layout.append(html.H6("Match type used", style={'marginTop': '20px'}))
             for index, value in match_type.items():
-                result_layout.append(html.P(str(index) + " (" + str(value) + ")", style={'marginBottom': '5px'}))
+                result_layout.append(html.P(str(index) + ": " + str(value), style={'marginBottom': '5px'}))
 
     return html.Div(result_layout)
