@@ -5,6 +5,7 @@ from dash import html
 
 from main import app
 from src.configuration import config
+from src.pages.filter_pages import filter_style
 from src.static.static_values_enum import Element, CardType, Edition, Rarity
 
 
@@ -31,16 +32,18 @@ def get_filter_buttons(enumeration):
                            'height': '30px',
                            'padding': '5px'}
                 ),
-            ], style={'border-radius': rounding,
-                      'border-style': 'none',
-                      'width': '40px',
-                      'height': '40px',
-                      'padding': '0px',
-                      'margin-top': '3px',
-                      'margin-bottom': '3px',
-                      'display': 'flex',
-                      'justify-content': 'center',
-                      'align-items': 'center'},
+            ], style={
+                'backgroundColor': filter_style.btn_inactive_color,
+                'borderRadius': rounding,
+                'borderStyle': 'none',
+                'width': '40px',
+                'height': '40px',
+                'padding': '0px',
+                'marginTop': '3px',
+                'marginBottom': '3px',
+                'display': 'flex',
+                'justifyContent': 'center',
+                'alignItems': 'center'},
         ),
         )
     return buttons
@@ -58,13 +61,15 @@ def get_filter_buttons_text(enumeration):
         buttons.append(dbc.Button(
             id=enum.name + '-filter-button',
             children=[
-                html.P(enum.value, style={'padding-top': '7px'}),
-            ], style={'border-radius': rounding,
-                      'border-style': 'none',
-                      'width': '65px',
-                      'height': '40px',
-                      'padding': '0px',
-                      'text-align': 'center'},
+                html.P(enum.value, style={'paddingTop': '7px'}),
+            ], style={
+                'backgroundColor': filter_style.btn_inactive_color,
+                'borderRadius': rounding,
+                'borderStyle': 'none',
+                'width': '65px',
+                'height': '40px',
+                'padding': '0px',
+                'textAlign': 'center'},
         ),
         )
     return buttons

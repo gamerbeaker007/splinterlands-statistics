@@ -11,6 +11,9 @@ parser = argparse.ArgumentParser(description='A sample program with command line
 parser.add_argument('-d', '--debug',
                     action='store_true',
                     help='Enable debug mode')
+parser.add_argument('-t', '--trace',
+                    action='store_true',
+                    help='This will enable trace logging (durations)')
 parser.add_argument('-l', '--log-level',
                     choices=['WARN', 'ERR', 'DEBUG', 'INFO'],
                     default='INFO', help='Set log level')
@@ -39,9 +42,11 @@ root_logger.addHandler(console_handler)
 root_logger.setLevel(args.log_level)
 logging.info('Log level:' + str(args.log_level))
 logging.info('Debug mode:' + str(args.debug))
+logging.info('Trace mode:' + str(args.trace))
 logging.info('Server mode:' + str(args.server_mode))
 logging.info('Read only mode:' + str(args.read_only))
 
+trace = args.trace
 debug = args.debug
 file_dir_prefix = args.store
 server_mode = args.server_mode
@@ -50,14 +55,13 @@ read_only = args.read_only
 if file_dir_prefix:
     logging.info('Store variable found using store dir: ' + str(args.store))
 
-
 store_dir = os.path.join(os.getcwd(), 'store', file_dir_prefix)
 if not os.path.isdir(store_dir):
     os.mkdir(store_dir)
 
 card_details_df = spl.get_card_details()
 settings = spl.get_settings()
-dark_theme = 'cyborg'
+dark_theme = 'slate'
 light_theme = 'minty'
 current_theme = dark_theme
 file_extension = '.csv'

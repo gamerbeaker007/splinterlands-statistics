@@ -1,6 +1,8 @@
+from io import StringIO
+
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, Output, Input, dcc, ctx
+from dash import html, Output, Input, dcc
 
 from main import app
 from src.configuration import store
@@ -8,6 +10,7 @@ from src.graphs import land_graph
 from src.pages.land_pages import land_ids
 from src.pages.navigation_pages import nav_ids
 from src.utils import store_util, chart_util
+from src.utils.trace_logging import measure_duration
 
 layout = dbc.Container([
     dcc.Store(id=land_ids.harvest_land_df),
@@ -45,17 +48,21 @@ layout = dbc.Container([
 ])
 
 
-@app.callback(Output(land_ids.dropdown_user_selection_land, 'value'),
-              Output(land_ids.dropdown_user_selection_land, 'options'),
-              Input(nav_ids.trigger_daily, 'data'),
-              )
+@app.callback(
+    Output(land_ids.dropdown_user_selection_land, 'value'),
+    Output(land_ids.dropdown_user_selection_land, 'options'),
+    Input(nav_ids.trigger_daily, 'data'),
+)
+@measure_duration
 def update_user_list(tigger):
     return store_util.get_first_account_name(), store_util.get_account_names()
 
 
-@app.callback(Output(land_ids.harvest_land_df, 'data'),
-              Input(land_ids.dropdown_user_selection_land, 'value'),
-              )
+@app.callback(
+    Output(land_ids.harvest_land_df, 'data'),
+    Input(land_ids.dropdown_user_selection_land, 'value'),
+)
+@measure_duration
 def update_filter_data(account):
     if not store.land.empty:
         # Filter before processing is done
@@ -69,9 +76,11 @@ def update_filter_data(account):
         return None
 
 
-@app.callback(Output(land_ids.tax_land_df, 'data'),
-              Input(land_ids.dropdown_user_selection_land, 'value'),
-              )
+@app.callback(
+    Output(land_ids.tax_land_df, 'data'),
+    Input(land_ids.dropdown_user_selection_land, 'value'),
+)
+@measure_duration
 def update_filter_tax_data(account):
     if not store.land.empty:
         # Filter before processing is done
@@ -88,15 +97,17 @@ def update_filter_tax_data(account):
         return None
 
 
-@app.callback(Output(land_ids.all_graph, 'figure'),
-              Input(land_ids.harvest_land_df, 'data'),
-              Input(nav_ids.theme_store, 'data'),
-              )
+@app.callback(
+    Output(land_ids.all_graph, 'figure'),
+    Input(land_ids.harvest_land_df, 'data'),
+    Input(nav_ids.theme_store, 'data'),
+)
+@measure_duration
 def update_land_total_graph(filtered_df, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
     else:
-        temp_df = pd.read_json(filtered_df, orient='split')
+        temp_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if temp_df.empty:
         return chart_util.blank_fig(theme)
@@ -104,15 +115,17 @@ def update_land_total_graph(filtered_df, theme):
         return land_graph.plot_land_all(temp_df, theme)
 
 
-@app.callback(Output(land_ids.cumsum_graph, 'figure'),
-              Input(land_ids.harvest_land_df, 'data'),
-              Input(nav_ids.theme_store, 'data'),
-              )
+@app.callback(
+    Output(land_ids.cumsum_graph, 'figure'),
+    Input(land_ids.harvest_land_df, 'data'),
+    Input(nav_ids.theme_store, 'data'),
+)
+@measure_duration
 def update_land_total_graph(filtered_df, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
     else:
-        temp_df = pd.read_json(filtered_df, orient='split')
+        temp_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if temp_df.empty:
         return chart_util.blank_fig(theme)
@@ -120,15 +133,17 @@ def update_land_total_graph(filtered_df, theme):
         return land_graph.plot_cumsum(temp_df, theme)
 
 
-@app.callback(Output(land_ids.tax_row, 'children'),
-              Input(land_ids.tax_land_df, 'data'),
-              Input(nav_ids.theme_store, 'data'),
-              )
+@app.callback(
+    Output(land_ids.tax_row, 'children'),
+    Input(land_ids.tax_land_df, 'data'),
+    Input(nav_ids.theme_store, 'data'),
+)
+@measure_duration
 def update_land_tax_row(filtered_df, theme):
     if not filtered_df:
         return None
     else:
-        temp_df = pd.read_json(filtered_df, orient='split')
+        temp_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if temp_df.empty:
         return chart_util.blank_fig(theme)

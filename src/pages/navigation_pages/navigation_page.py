@@ -8,17 +8,19 @@ from dash_iconify import DashIconify
 
 from main import app
 from src.configuration import progress, config
-from src.pages import main_page, losing_page
-from src.pages.land_pages import land_page
-from src.pages.rating_pages import rating_page
-from src.pages.season_pages import season_page
+from src.pages import main_page
 from src.pages.card_pages import card_page, card_page_filter
 from src.pages.config_pages import config_page
-from src.pages.shared_modules import styles
+from src.pages.land_pages import land_page
+from src.pages.losing_pages import losing_page
 from src.pages.navigation_pages import nav_ids
 from src.pages.nemesis_pages import nemesis_page
 from src.pages.portfolio_pages import portfolio_page
+from src.pages.rating_pages import rating_page
+from src.pages.season_pages import season_page
+from src.pages.shared_modules import styles
 from src.utils import store_util
+from src.utils.trace_logging import measure_duration
 
 SPL_LOGO = 'https://d36mxiodymuqjm.cloudfront.net/website/icons/img_icon_splinterlands.svg'
 
@@ -30,7 +32,8 @@ navbar = dbc.Navbar(
                 dbc.Row(
                     [
                         dbc.Col(html.Img(src=SPL_LOGO, height='150px')),
-                        dbc.Col(dbc.NavbarBrand('SPL Battle statistics (' + config.APP_VERSION + ')', className='ms-2')),
+                        dbc.Col(
+                            dbc.NavbarBrand('SPL Battle statistics (' + config.APP_VERSION + ')', className='ms-2')),
                     ],
                     align='center',
                     className='g-0',
@@ -85,17 +88,22 @@ layout = html.Div([
 ])
 
 
-@app.callback(Output(nav_ids.theme_store, 'data'),
-              Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
-              )
+@app.callback(
+    Output(nav_ids.theme_store, 'data'),
+    Input(ThemeSwitchAIO.ids.switch('theme'), 'value'),
+)
+@measure_duration
 def update_theme(toggle):
     return config.light_theme if toggle else config.dark_theme
 
 
-@app.callback(Output('page-content', 'children'),
-              Input('url', 'pathname'),
-              Input('url', 'search'),
-              Input('url', 'hash'))
+@app.callback(
+    Output('page-content', 'children'),
+    Input('url', 'pathname'),
+    Input('url', 'search'),
+    Input('url', 'hash'),
+)
+@measure_duration
 def display_page(pathname, search, search_hash):
     if pathname == '/':
         return main_page.layout
@@ -122,9 +130,11 @@ def display_page(pathname, search, search_hash):
         return '404 Page Error! Please choose a link'
 
 
-@app.callback(Output(nav_ids.progress_daily, 'children'),
-              Output(nav_ids.progress_season, 'children'),
-              Trigger(nav_ids.interval_global, 'n_intervals'))
+@app.callback(
+    Output(nav_ids.progress_daily, 'children'),
+    Output(nav_ids.progress_season, 'children'),
+    Trigger(nav_ids.interval_global, 'n_intervals'),
+)
 def update_progress():
     ret_val_daily = determine_notification(daily=True)
     ret_val_season = determine_notification()
@@ -207,10 +217,12 @@ def determine_notification(daily=False):
             disallowClose=True,
         )
 
+
 @app.callback(
     Output(nav_ids.trigger_daily, 'data'),
     Input(nav_ids.load_new_values, 'n_clicks'),
 )
+@measure_duration
 def update_daily_button(n_clicks):
     if ctx.triggered_id == nav_ids.load_new_values and not config.server_mode:
         store_util.update_data(battle_update=True, season_update=False)

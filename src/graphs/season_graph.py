@@ -1,9 +1,9 @@
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from src.static.static_values_enum import Leagues
-import plotly.express as px
-import plotly.graph_objects as go
 
 
 def plot_season_stats_battle(season_df, theme):
@@ -42,6 +42,7 @@ def plot_season_stats_battle(season_df, theme):
             xanchor="right",
             x=1
         ),
+        margin=dict(l=10, r=10),
         xaxis=dict(
             tickvals=season_df.season,
         ),
@@ -102,6 +103,7 @@ def plot_season_stats_rating(season_df, theme):
 
     fig.update_layout(
         template=theme,
+        margin=dict(l=10, r=10),
         legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -197,7 +199,8 @@ def plot_season_stats_earnings(season_df_sps,
     if not season_df_unclaimed_sps.empty:
         season_df_sps_combined['total_sps'] = season_df_sps_combined['total']
         season_df_unclaimed_sps = season_df_unclaimed_sps.copy().sort_values(by=['season_id']).fillna(0)
-        season_df_unclaimed_sps['total_unclaimed_sps'] = season_df_unclaimed_sps.drop(['season_id'], axis=1).sum(axis=1, numeric_only=True)
+        season_df_unclaimed_sps['total_unclaimed_sps'] = season_df_unclaimed_sps.drop(['season_id'], axis=1).sum(axis=1,
+                                                                                                                 numeric_only=True)
         season_df_sps_combined = season_df_sps_combined.merge(season_df_unclaimed_sps, on=['season_id', 'player'])
         season_df_sps_combined['total'] = season_df_sps_combined.total_sps + season_df_sps_combined.total_unclaimed_sps
 
@@ -265,7 +268,7 @@ def plot_season_stats_earnings(season_df_sps,
     fig.update_layout(
         template=theme,
         height=480 * rows,  # px
-
+        margin=dict(l=10, r=10),
         legend=dict(
             x=0,
             y=1,

@@ -9,6 +9,7 @@ filter_cards_settings = 'filter-cards-settings'
 card_info = 'card-info'
 card_image = 'card-image'
 card_ruleset = 'card-ruleset'
+card_mana_cap_graph = 'card-mana-cap-graph'
 
 top_paired_cards = 'top-paired-cards'
 weakest_against_cards = 'weakest-against-cards'

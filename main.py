@@ -1,12 +1,9 @@
-import json
 import logging
 from threading import Thread
 
-from src.api import spl
-from src.configuration import store, config
+from src.configuration import config
 from src.pages.main_dash import app
 from src.pages.navigation_pages import navigation_page
-from src.static.static_values_enum import Format, MatchType
 from src.utils import store_util, update
 
 store_util.load_stores()

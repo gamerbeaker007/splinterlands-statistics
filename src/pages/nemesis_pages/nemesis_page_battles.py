@@ -1,4 +1,5 @@
 import json
+from io import StringIO
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -12,6 +13,7 @@ from src.api import spl
 from src.configuration import config
 from src.pages.nemesis_pages import nemesis_page_ids
 from src.static.static_values_enum import MatchType
+from src.utils.trace_logging import measure_duration
 
 layout = dbc.Row(id=nemesis_page_ids.opponent_battles)
 
@@ -23,14 +25,14 @@ def get_mana_div(mana):
         'height': '50px',
         'position': 'relative',
     }
-    img_style = {'background-image': 'url(' + str(url) + ')',
-                 'background-size': '100%',
+    img_style = {'backgroundImage': 'url(' + str(url) + ')',
+                 'backgroundSize': '100%',
                  'height': '50px',
                  'width': '50px'}
 
     text_style = {
-        'text-align': 'center',
-        'padding-top': '10px'
+        'textAlign': 'center',
+        'paddingTop': '10px'
     }
 
     return dbc.Col(style=div_style,
@@ -95,12 +97,13 @@ def get_match_type_col(match_type, is_brawl):
     Output(nemesis_page_ids.opponent_battles, 'children'),
     Input(nemesis_page_ids.filtered_against_df, 'data'),
 )
+@measure_duration
 def update_battles(filtered_df):
     if not filtered_df:
         raise PreventUpdate
     result_layout = []
 
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
     if not filtered_df.empty:
         last_battles = filtered_df.sort_values(by='created_date').head(5).battle_id.tolist()
         account = filtered_df.account.tolist()[0]

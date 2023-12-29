@@ -1,12 +1,14 @@
+from io import StringIO
+
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, Output, Input, State
-from dash.exceptions import PreventUpdate
-from main import app
-from src import analyse
-from src.pages.card_pages import card_page_ids
+from dash import Output, Input, State
 
-layout = dbc.Row(id=card_page_ids.card_image)
+from main import app
+from src.pages.card_pages import card_page_ids
+from src.utils.trace_logging import measure_duration
+
+layout = dbc.Row(id=card_page_ids.card_image, style={'height': '100%'})
 
 
 @app.callback(
@@ -14,11 +16,12 @@ layout = dbc.Row(id=card_page_ids.card_image)
     Input(card_page_ids.filtered_cards_top_df, 'data'),
     State(card_page_ids.filter_cards_settings, 'data')
 )
+@measure_duration
 def update_top_cards(filtered_df, filter_settings):
     if not filtered_df:
         return "No card selected"
 
-    filtered_df = pd.read_json(filtered_df, orient='split')
+    filtered_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if not filtered_df.empty:
         # remove the card that is being searched for
@@ -26,12 +29,7 @@ def update_top_cards(filtered_df, filter_settings):
         filtered_df = filtered_df.loc[filtered_df.card_name == selected_card]
         row = filtered_df.iloc[0]
         return dbc.Card(
-            [
-                dbc.CardBody([
-                    dbc.CardImg(src=row.url, top=True, style={'height': '300px', 'object-fit': 'contain'}),
-                ]
-                ),
-            ],
-            style={'height': '350px'},
-            className='mb-3',
+            dbc.CardBody(
+                dbc.CardImg(src=row.url, top=True, style={'height': '300px', 'objectFit': 'contain'}),
+            )
         )

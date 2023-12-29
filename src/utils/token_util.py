@@ -6,16 +6,6 @@ import pandas as pd
 from src.api import spl, coingecko, hive
 
 
-def calculate_value(all_tokens, hive_in_dollar, token, highest_bid):
-    if token in all_tokens:
-        quantity = all_tokens[token]
-        hive_value = float(highest_bid)
-        value = hive_value * hive_in_dollar
-        return quantity, round(quantity * value, 2)
-    else:
-        return None, None
-
-
 def get_all_tokens(account_name):
     all_assets = {}
     for token in spl.get_balances(account_name):
@@ -24,22 +14,47 @@ def get_all_tokens(account_name):
 
 
 def calculate_prices(df, all_tokens, hive_in_dollar):
+    # Exclude this list because they are not on hive engine.
+    # Currently,  calculate value on hive engine because to be conservative lower values iso of internal SPL market.
+    exclude_list = [
+        'BLDSTONE',
+        'CREDITS',
+        'DEC-B',  # has no value any more unable to get out of splinterlands
+        'GLADIUS',
+        'GOLD',
+        'GP',
+        'GRAIN',
+        'LEGENDARY',
+        'MERITS',
+        'TC',
+        'PURCHASED_ENERGY',
+        'PWRSTONE',
+        'VOUCHER-TOTAL'  # already done via VOUCHER and VOUCHER-G
+        'SPSP-OUT'
+    ]
 
     for token in all_tokens:
-        if token == 'SPSP':
-            token_market = hive.get_market_with_retry('SPS')
-        elif token == 'DICE':
-            token_market = hive.get_market_with_retry('SLDICE')
-        else:
-            token_market = hive.get_market_with_retry(token)
+        if token not in exclude_list:
+            if token == 'SPSP':
+                token_market = hive.get_market_with_retry('SPS')
+            elif token == 'DICE':
+                token_market = hive.get_market_with_retry('SLDICE')
+            elif token == 'VOUCHER-G':
+                token_market = hive.get_market_with_retry('VOUCHER')
+            else:
+                token_market = hive.get_market_with_retry(token)
 
-        if token_market:
-            quantity = all_tokens[token]
-            hive_value = float(token_market["highestBid"])
-            value = round(hive_value * hive_in_dollar * quantity, 2)
-            if quantity:
-                df[str(token.lower()) + '_qty'] = quantity
-                df[str(token.lower()) + '_value'] = value
+            if token_market:
+                quantity = all_tokens[token]
+                hive_value = float(token_market["highestBid"])
+                value = round(hive_value * hive_in_dollar * quantity, 2)
+                if quantity:
+                    df[str(token.lower()) + '_qty'] = quantity
+                    df[str(token.lower()) + '_value'] = value
+
+        if token == 'CREDITS':
+            df[str(token.lower()) + '_qty'] = all_tokens[token]
+            df[str(token.lower()) + '_value'] = round(all_tokens[token] * 0.001, 2)
 
     return df
 

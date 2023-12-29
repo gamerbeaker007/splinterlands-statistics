@@ -5,10 +5,11 @@ from dash.exceptions import PreventUpdate
 from main import app
 from src.api import spl
 from src.configuration import config
-from src.pages.shared_modules import styles
 from src.pages.navigation_pages import nav_ids
 from src.pages.season_pages import season_ids
+from src.pages.shared_modules import styles
 from src.utils import store_util
+from src.utils.trace_logging import measure_duration
 from src.utils.update import SERVER_MODE_INTERVAL_IN_MINUTES
 
 layout = [
@@ -44,9 +45,12 @@ layout = [
 ]
 
 
-@app.callback(Output(season_ids.dropdown_user_selection_season, 'value'),
-              Output(season_ids.dropdown_user_selection_season, 'options'),
-              Input(nav_ids.trigger_daily, 'data'))
+@app.callback(
+    Output(season_ids.dropdown_user_selection_season, 'value'),
+    Output(season_ids.dropdown_user_selection_season, 'options'),
+    Input(nav_ids.trigger_daily, 'data'),
+)
+@measure_duration
 def update_user_list(daily_trigger):
     return store_util.get_first_account_name(), store_util.get_account_names()
 
@@ -56,6 +60,7 @@ def update_user_list(daily_trigger):
     Input(season_ids.update_season_btn, 'n_clicks'),
     prevent_initial_call=True,
 )
+@measure_duration
 def update_output(n_clicks):
     if season_ids.update_season_btn == ctx.triggered_id and not config.server_mode:
         store_util.update_data(battle_update=False, season_update=True)
@@ -69,6 +74,7 @@ def update_output(n_clicks):
     Input(season_ids.dropdown_user_selection_season, 'value'),
     Input(season_ids.trigger_season_update, 'data'),
 )
+@measure_duration
 def update_season_label(user, tigger):
     if not user:
         raise PreventUpdate

@@ -98,9 +98,10 @@ def plot_tax_cumsum(land_df, theme):
                  labels={'variable': 'Resource'})
 
     for col in numeric_columns:
+        mode = 'lines' if land_df_cumsum[col].size > 1 else 'markers'
         fig.add_scatter(x=land_df.created_date,
                         y=land_df_cumsum[col],
-                        mode='lines',
+                        mode=mode,
                         name=f'{col} Cumulative Sum')
 
     fig.update_layout(
