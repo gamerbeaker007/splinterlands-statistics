@@ -83,7 +83,7 @@ def plot_daily_stats_battle(daily_df, theme):
         else:
             secondary_y = True
         fig.add_trace(
-            get_scatter_trace(modern_daily_df, column, show_legend=True),
+            get_scatter_trace(modern_daily_df, column, show_legend=False),
             secondary_y=secondary_y,
             row=1,
             col=1

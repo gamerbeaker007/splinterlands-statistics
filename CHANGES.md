@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.12.1
+
+- FIX: double legend in rating page
+
 ## 0.12.0
 
 - FIX: Add list of un-trade-able items on hive engine so no accidental value can be applied, GOLD potion had value on
