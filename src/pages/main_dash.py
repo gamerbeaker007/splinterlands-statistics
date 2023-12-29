@@ -1,3 +1,5 @@
+import os
+
 from dash_bootstrap_templates import load_figure_template
 from dash_extensions.enrich import LogTransform, TriggerTransform, DashProxy, NoOutputTransform
 
@@ -7,7 +9,8 @@ dbc_css = 'https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.mi
 load_figure_template([config.dark_theme, config.light_theme])
 
 app = DashProxy(
-    assets_folder='./assets',
+    __name__,
+    assets_folder=os.path.join(os.getcwd(), 'assets'),
     transforms=[
         TriggerTransform(),
         LogTransform(),
