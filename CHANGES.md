@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - Main page: Add small padding on cards, especially for rebellion cards
 - Card page: Add graph that shows battles per mana cap
 - Make filters re-usable, home/losing pages
+- Losing page: Make filterable and show top 5 losing card. Keep complete table in accordion.
 - Add Trace option when this option is enable it will log some timing information of all callbacks
 - Update libraries to latest versions. Including templates, graphs visually update due to this change.
 
