@@ -57,10 +57,11 @@ def plot_portfolio_all(df, theme, skip_zero=True):
     for column in temp_df.columns.tolist():
         current_color = color_palette[color_index]
 
+        mode = 'lines' if temp_df[column].size > 1 else 'markers'
         if '_value' in column:
             trace = go.Scatter(x=temp_df.index,
                                y=temp_df[column],
-                               mode='lines',
+                               mode=mode,
                                connectgaps=True,
                                # legendgroup=legend_group,
                                # showlegend=False,
@@ -69,7 +70,7 @@ def plot_portfolio_all(df, theme, skip_zero=True):
         else:
             trace = go.Scatter(x=temp_df.index,
                                y=temp_df[column],
-                               mode='lines',
+                               mode=mode,
                                connectgaps=True,
                                # legendgroup=legend_group,
                                line=dict(color=current_color, dash='dash'),
@@ -126,16 +127,18 @@ def get_editions_fig(editions_df, theme):
             legend_group = edition
             current_color = color_palette[color_index]
 
+            mode = 'lines' if editions_df[str(edition) + '_market_value'].size > 1 else 'markers'
             market_value_trace = go.Scatter(x=editions_df.index,
                                             y=editions_df[str(edition) + '_market_value'],
-                                            mode='lines',
+                                            mode=mode,
                                             legendgroup=legend_group,
                                             line=dict(color=current_color),  # Set line color
                                             name=str(edition))
             fig.add_trace(market_value_trace)
+            mode = 'lines' if editions_df[str(edition) + '_bcx'].size > 1 else 'markers'
             bcx__trace = go.Scatter(x=editions_df.index,
                                     y=editions_df[str(edition) + '_bcx'],
-                                    mode='lines',
+                                    mode=mode,
                                     legendgroup=legend_group,
                                     showlegend=False,
                                     line=dict(color=current_color, dash='dash'),
@@ -149,16 +152,18 @@ def get_editions_fig(editions_df, theme):
     temp_df['all_value'] = temp_df.loc[:, temp_df.columns.str.endswith('_market_value')].sum(axis=1)
     temp_df['all_bcx'] = temp_df.loc[:, temp_df.columns.str.endswith('_bcx')].sum(axis=1)
     legend_group = 'combined'
+    mode = 'lines' if temp_df.all_value.size > 1 else 'markers'
     market_value_trace = go.Scatter(x=temp_df.index,
                                     y=temp_df.all_value,
-                                    mode='lines',
+                                    mode=mode,
                                     legendgroup=legend_group,
                                     line=dict(color=current_color),  # Set line color
                                     name=legend_group)
     fig.add_trace(market_value_trace)
+    mode = 'lines' if temp_df.all_bcx.size > 1 else 'markers'
     bcx__trace = go.Scatter(x=temp_df.index,
                             y=temp_df.all_bcx,
-                            mode='lines',
+                            mode=mode,
                             legendgroup=legend_group,
                             showlegend=False,
                             line=dict(color=current_color, dash='dash'),
@@ -212,10 +217,11 @@ def get_sps_fig(sps_df, theme):
         current_color = color_palette[color_index]
         legend_group = 'spsp' if 'spsp' in column else 'sps'
 
+        mode = 'lines' if sps_df[column].size > 1 else 'markers'
         if '_qty' in column:
             trace = go.Scatter(x=sps_df.index,
                                y=sps_df[column],
-                               mode='lines',
+                               mode=mode,
                                legendgroup=legend_group,
                                showlegend=False,
                                line=dict(color=current_color, dash='dash'),
@@ -224,7 +230,7 @@ def get_sps_fig(sps_df, theme):
         else:
             trace = go.Scatter(x=sps_df.index,
                                y=sps_df[column],
-                               mode='lines',
+                               mode=mode,
                                legendgroup=legend_group,
                                line=dict(color=current_color),  # Set line color
                                name=legend_group)
