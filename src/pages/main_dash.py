@@ -1,4 +1,3 @@
-import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
 from dash_extensions.enrich import LogTransform, TriggerTransform, DashProxy, NoOutputTransform
 
@@ -18,7 +17,7 @@ app = DashProxy(
         # BlockingCallbackTransform(),
         # ServersideOutputTransform(),
     ],
-    external_stylesheets=[dbc.themes.CYBORG, dbc_css, 'styles.css'],
+    external_stylesheets=[dbc_css, 'styles.css'],
     # meta_tags=[{'name': 'viewport', 'content': 'width=device-width'}],
     suppress_callback_exceptions=True,
     title="Splinterlands - statistics",

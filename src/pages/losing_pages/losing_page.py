@@ -63,6 +63,7 @@ layout: Container = dbc.Container([
             dbc.AccordionItem(
                 id=losing_ids.complete_table,
                 title='Complete table',
+                className='dbc',
             ),
             start_collapsed=True,
             id=losing_ids.accordion,
