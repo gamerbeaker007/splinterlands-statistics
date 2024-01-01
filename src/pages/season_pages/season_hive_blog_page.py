@@ -56,15 +56,16 @@ layout = dbc.Accordion(
 def generate_hive_blog(n_clicks, users):
     if season_ids.generate_blog == ctx.triggered_id:
         if not users:
-            return None, html.P(html.Div('No accounts selected', className='text-warning'))
+            return None, [html.P(html.Div('No accounts selected', className='text-warning'))]
         previous_season_id = store.season_end_dates.id.max() - 1
         sps_df = store_util.get_last_season_values(store.season_sps, users)
 
         for account in users:
             player_spd_df = sps_df.loc[sps_df.player == account]
             if player_spd_df.empty or not (player_spd_df.season_id == previous_season_id).all():
-                return None, html.P(
-                    html.Div('Latest season information is missing, use update season first', className='text-warning'))
+                return None, [html.P(
+                    html.Div('Latest season information is missing, use update season first',
+                             className='text-warning'))]
 
         progress_util.set_season_title('Generate hive blog')
         progress_util.update_season_msg('Start collecting last season data')
@@ -114,8 +115,8 @@ def generate_hive_blog(n_clicks, users):
 
         progress_util.set_season_title('Generate hive blog finished ')
         progress_util.update_season_msg('Done')
-        return post, ''
-    return None, ''
+        return post, [html.P(html.Div('Generation finished ready to copy', className='text-success'))]
+    return None, [html.P(html.Div('', className='text-warning'))]
 
 
 @app.callback(

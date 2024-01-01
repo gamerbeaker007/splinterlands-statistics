@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.12.2
+
+- FIX: hive blog generation, sometimes given callback error
+
 ## 0.12.1
 
 - FIX: double legend in rating page
