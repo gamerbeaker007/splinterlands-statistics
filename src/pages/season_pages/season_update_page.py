@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import Output, Input, ctx, dcc
 from dash.exceptions import PreventUpdate
 
-from main import app
+from src.pages.main_dash import app
 from src.api import spl
 from src.configuration import config
 from src.pages.navigation_pages import nav_ids

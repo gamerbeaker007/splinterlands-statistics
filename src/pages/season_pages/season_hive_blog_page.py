@@ -1,11 +1,11 @@
 import dash_bootstrap_components as dbc
-from dash import html, Output, Input, ctx, dcc
+from dash import html, Output, Input, ctx, dcc, State
 from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import Trigger
 
-from main import app
 from src import season_balances_info, market_info
 from src.configuration import store, progress
+from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.pages.season_pages import season_ids
 from src.utils import store_util, progress_util, tournaments_info, hive_blog
@@ -49,7 +49,7 @@ layout = dbc.Accordion(
     Output(season_ids.hive_blog_content, 'data'),
     Output(season_ids.error_hive_blog, 'children'),
     Input(season_ids.generate_blog, 'n_clicks'),
-    Input(season_ids.dropdown_user_selection_season_blog, 'value'),
+    State(season_ids.dropdown_user_selection_season_blog, 'value'),
     prevent_initial_call=True,
 )
 @measure_duration

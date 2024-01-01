@@ -6,7 +6,7 @@ from dash import html, dcc, Output, Input
 from dash.exceptions import PreventUpdate
 from dateutil import parser
 
-from main import app
+from src.pages.main_dash import app
 from src import analyse
 from src.configuration import store
 from src.graphs import rating_graph

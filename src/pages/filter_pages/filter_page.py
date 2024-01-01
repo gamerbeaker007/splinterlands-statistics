@@ -3,7 +3,7 @@ import os
 import dash_bootstrap_components as dbc
 from dash import html
 
-from main import app
+from src.pages.main_dash import app
 from src.configuration import config
 from src.pages.filter_pages import filter_style
 from src.static.static_values_enum import Element, CardType, Edition, Rarity

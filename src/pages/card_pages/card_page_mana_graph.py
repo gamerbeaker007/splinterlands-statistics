@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.express as px
 from dash import Output, Input, dcc
 
-from main import app
+from src.pages.main_dash import app
 from src.pages.card_pages import card_page_ids
 from src.pages.navigation_pages import nav_ids
 from src.utils import chart_util

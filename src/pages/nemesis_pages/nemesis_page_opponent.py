@@ -6,7 +6,7 @@ from dash import Output, Input
 from dash import html
 from dash.exceptions import PreventUpdate
 
-from main import app
+from src.pages.main_dash import app
 from src.pages.nemesis_pages import nemesis_page_ids
 from src.utils.trace_logging import measure_duration
 

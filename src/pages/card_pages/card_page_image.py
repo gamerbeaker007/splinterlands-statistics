@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import Output, Input, State
 
-from main import app
+from src.pages.main_dash import app
 from src.pages.card_pages import card_page_ids
 from src.utils.trace_logging import measure_duration
 

@@ -7,7 +7,7 @@ from dash import Output, Input, html
 from dash.exceptions import PreventUpdate
 from dateutil import parser
 
-from main import app
+from src.pages.main_dash import app
 from src import analyse
 from src.api import spl
 from src.configuration import config
