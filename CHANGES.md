@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## 0.12.2
 
-- FIX: hive blog generation, sometimes given callback error
+- FIX: hive blog generation, sometimes given callback error, error might still appear in console but generation is
+  completed
 
 ## 0.12.1
 

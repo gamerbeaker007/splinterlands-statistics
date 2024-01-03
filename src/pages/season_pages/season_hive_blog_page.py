@@ -120,7 +120,7 @@ def generate_hive_blog(n_clicks, users):
 
                 progress_util.set_season_title('Generate hive blog finished ')
                 progress_util.update_season_msg('Done')
-            message = [html.P(html.Div('Generation finished ready to copy', className='text-success'))]
+                message = [html.P(html.Div('Generation finished ready to copy', className='text-success'))]
     else:
         message = [html.P(html.Div('No accounts selected', className='text-warning'))]
 
