@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.13.0
+
+- FIX: portfolio staked DEC and SPS where counted double remove from Others category
+
 ## 0.12.2
 
 - FIX: hive blog generation, sometimes given callback error, error might still appear in console but generation is
