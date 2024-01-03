@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dcc
 
-from main import app
+from src.pages.main_dash import app
 from src.configuration import store
 from src.graphs import land_graph
 from src.pages.land_pages import land_ids

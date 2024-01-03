@@ -3,7 +3,7 @@ import logging
 import dash_bootstrap_components as dbc
 from dash import html, Output, Input, ctx, dcc
 
-from main import app
+from src.pages.main_dash import app
 from src.api import spl
 from src.configuration import config
 from src.pages.config_pages import config_page_ids

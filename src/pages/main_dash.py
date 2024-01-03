@@ -1,7 +1,8 @@
 import os
 
 from dash_bootstrap_templates import load_figure_template
-from dash_extensions.enrich import LogTransform, TriggerTransform, DashProxy, NoOutputTransform
+from dash_extensions.enrich import TriggerTransform, DashProxy, \
+    NoOutputTransform, LogTransform, MultiplexerTransform, BlockingCallbackTransform, CycleBreakerTransform
 
 from src.configuration import config
 
@@ -14,10 +15,10 @@ app = DashProxy(
     transforms=[
         TriggerTransform(),
         LogTransform(),
-        # MultiplexerTransform(),
+        MultiplexerTransform(),
         NoOutputTransform(),
-        # CycleBreakerTransform(),
-        # BlockingCallbackTransform(),
+        CycleBreakerTransform(),
+        BlockingCallbackTransform(),
         # ServersideOutputTransform(),
     ],
     external_stylesheets=[dbc_css, 'styles.css'],

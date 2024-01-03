@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import html, Output, Input, dcc
 
-from main import app
+from src.pages.main_dash import app
 from src.configuration import store
 from src.graphs import season_graph
 from src.pages.navigation_pages import nav_ids

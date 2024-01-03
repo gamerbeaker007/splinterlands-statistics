@@ -6,7 +6,7 @@ import pandas as pd
 from dash import html, Output, Input, dcc, State
 from dash.exceptions import PreventUpdate
 
-from main import app
+from src.pages.main_dash import app
 from src.configuration import store
 from src.graphs import portfolio_graph
 from src.pages.navigation_pages import nav_ids

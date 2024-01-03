@@ -6,7 +6,7 @@ from dash_bootstrap_templates import ThemeSwitchAIO
 from dash_extensions.enrich import Trigger
 from dash_iconify import DashIconify
 
-from main import app
+from src.pages.main_dash import app
 from src.configuration import progress, config
 from src.pages import main_page
 from src.pages.card_pages import card_page, card_page_filter

@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import dcc, Output, Input
 from dash.exceptions import PreventUpdate
 
-from main import app
+from src.pages.main_dash import app
 from src import analyse
 from src.configuration import store
 from src.pages.card_pages import card_page_ids

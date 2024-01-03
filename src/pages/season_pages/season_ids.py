@@ -2,7 +2,6 @@ season_update_label = 'season-update-label'
 dropdown_user_selection_season = 'dropdown-user-selection-season'
 dropdown_user_selection_season_blog = 'dropdown-user-selection-season-blog'
 
-
 update_season_btn = 'update-season-btn'
 
 clipboard_div = 'clipboard-div'
@@ -19,4 +18,3 @@ dropdown_token_selection = 'dropdown-token-selection'
 dropdown_skip_zero_selection = 'dropdown-skip-zero-selection'
 total_all_balance_graph = 'total-all-balance-graph'
 trigger_season_update = 'trigger-season-update'
-hive_blog_content = 'hive-blog-content'
