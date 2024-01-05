@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - FIX: portfolio staked DEC and SPS where counted double remove from Others category
 - FIX: since (season) filter was not determined correctly at startup
+- Update: nemesis page update, reversed order of the home team units so lineup matches.
 
 ## 0.12.2
 
