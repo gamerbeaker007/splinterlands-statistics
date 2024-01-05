@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## 0.13.0
 
 - FIX: portfolio staked DEC and SPS where counted double remove from Others category
+- FIX: since (season) filter was not determined correctly at startup
 
 ## 0.12.2
 
