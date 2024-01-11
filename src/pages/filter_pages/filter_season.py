@@ -14,8 +14,6 @@ layout = dbc.InputGroup(
         dbc.InputGroupText('Since season'),
         dcc.Dropdown(id=filter_ids.filter_season_dropdown,
                      clearable=False,
-                     value=season_util.first_played_season(),
-                     options=season_util.get_season_played(),
                      style={'width': '85px'},
                      className='dbc'),
         dbc.InputGroupText(id=filter_ids.filter_from_date_text,
@@ -50,7 +48,6 @@ def filter_season_df(season_id, filter_settings):
     Output(filter_ids.filter_season_dropdown, 'options'),
     Output(filter_ids.filter_season_dropdown, 'value'),
     Input(nav_ids.trigger_daily, 'data'),
-    prevent_initial_call=True,
 )
 @measure_duration
 def update_season_callback(trigger):

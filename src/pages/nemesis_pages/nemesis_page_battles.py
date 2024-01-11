@@ -7,10 +7,10 @@ from dash import Output, Input, html
 from dash.exceptions import PreventUpdate
 from dateutil import parser
 
-from src.pages.main_dash import app
 from src import analyse
 from src.api import spl
 from src.configuration import config
+from src.pages.main_dash import app
 from src.pages.nemesis_pages import nemesis_page_ids
 from src.static.static_values_enum import MatchType
 from src.utils.trace_logging import measure_duration
@@ -167,13 +167,19 @@ def get_team(my_team, is_win, home_team=True):
         url = analyse.get_image_url(card_name, my_team['summoner']['level'], my_team['summoner']['edition'])
         result.append(html.Img(src=url, style=summoner_style))
 
-    for unit in my_team['monsters']:
-        card_name = config.card_details_df.loc[unit['card_detail_id']]['name']
-        url = analyse.get_image_url(card_name, unit['level'],
-                                    unit['edition'])
-        result.append(html.Img(src=url, style=monster_style))
+        for unit in reversed(my_team['monsters']):
+            card_name = config.card_details_df.loc[unit['card_detail_id']]['name']
+            url = analyse.get_image_url(card_name, unit['level'],
+                                        unit['edition'])
+            result.append(html.Img(src=url, style=monster_style))
 
     if not home_team:
+        for unit in my_team['monsters']:
+            card_name = config.card_details_df.loc[unit['card_detail_id']]['name']
+            url = analyse.get_image_url(card_name, unit['level'],
+                                        unit['edition'])
+            result.append(html.Img(src=url, style=monster_style))
+
         card_name = config.card_details_df.loc[my_team['summoner']['card_detail_id']]['name']
         url = analyse.get_image_url(card_name, my_team['summoner']['level'], my_team['summoner']['edition'])
         result.append(html.Img(src=url, style=summoner_style))

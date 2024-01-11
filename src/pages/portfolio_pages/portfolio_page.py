@@ -6,9 +6,9 @@ import pandas as pd
 from dash import html, Output, Input, dcc, State
 from dash.exceptions import PreventUpdate
 
-from src.pages.main_dash import app
 from src.configuration import store
 from src.graphs import portfolio_graph
+from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.pages.portfolio_pages import portfolio_deposit, portfolio_editions, portfolio_sps, portfolio_ids
 from src.static import static_values_enum
@@ -264,7 +264,9 @@ def display_click_data(filtered_portfolio_df, click_data):
             ~value_row.index.str.startswith(tuple(card_list_value_columns)) &
             ~value_row.index.str.startswith(tuple(card_market_value_columns)) &
             ~value_row.index.str.startswith(tuple(dec_columns)) &
+            ~value_row.index.str.startswith(tuple(dec_staked_columns)) &
             ~value_row.index.str.startswith(tuple(sps_columns)) &
+            ~value_row.index.str.startswith(tuple(sps_staked_columns)) &
             ~value_row.index.str.startswith(tuple(land_columns))
             ]
         other_value = value_row[other_columns].sum()

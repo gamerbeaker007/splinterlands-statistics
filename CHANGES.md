@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.13.0
+
+- FIX: portfolio staked DEC and SPS where counted double remove from Others category
+- FIX: since (season) filter was not determined correctly at startup
+- Update: nemesis page update, reversed order of the home team units so lineup matches.
+
 ## 0.12.2
 
 - FIX: hive blog generation, sometimes given callback error, error might still appear in console but generation is
