@@ -33,7 +33,6 @@ for card_type in CardType:
         Output('{}-filter-button'.format(card_type.name), 'style'),
         Input(nav_ids.theme_store, 'data'),
         State('{}-filter-button'.format(card_type.name), 'style'),
-        prevent_initial_call=True,
     )
     def theme_switch_card_type(theme, style):
         return filter_style.determine_background_color(style)

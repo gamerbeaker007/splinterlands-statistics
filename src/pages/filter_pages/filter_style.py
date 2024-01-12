@@ -1,13 +1,15 @@
 from src.configuration import config
 
 btn_active_color_dark = '#222'
-btn_inactive_color_dark = '#01131B'
-
-btn_active_color_light = '#006969'
-btn_inactive_color_light = '#78C2AD'
+btn_inactive_color_dark = '#858585'
+# btn_inactive_color_dark = '#01131B'
 
 
-def button_get_inactive_color():
+btn_active_color_light = '#78C2AD'
+btn_inactive_color_light = '#858585'
+
+
+def button_get_inactive_color(print_=False):
     return btn_inactive_color_dark if config.current_theme == config.dark_theme else btn_inactive_color_light
 
 

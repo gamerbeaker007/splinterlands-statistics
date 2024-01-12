@@ -34,7 +34,6 @@ for element in Element:
         Output('{}-filter-button'.format(element.name), 'style'),
         Input(nav_ids.theme_store, 'data'),
         State('{}-filter-button'.format(element.name), 'style'),
-        prevent_initial_call=True,
     )
     def theme_switch_element(theme, style):
         return filter_style.determine_background_color(style)

@@ -34,7 +34,6 @@ for edition in Edition:
         Output('{}-filter-button'.format(edition.name), 'style'),
         Input(nav_ids.theme_store, 'data'),
         State('{}-filter-button'.format(edition.name), 'style'),
-        prevent_initial_call=True,
     )
     def theme_switch_edition(theme, style):
         return filter_style.determine_background_color(style)

@@ -34,7 +34,6 @@ for match_type in MatchType:
         Output('{}-filter-button'.format(match_type.name), 'style'),
         Input(nav_ids.theme_store, 'data'),
         State('{}-filter-button'.format(match_type.name), 'style'),
-        prevent_initial_call=True,
     )
     def theme_switch_match_type(theme, style):
         return filter_style.determine_background_color(style)

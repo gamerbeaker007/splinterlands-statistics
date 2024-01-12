@@ -35,7 +35,6 @@ for battle_format in Format:
         Output('{}-filter-button'.format(battle_format.name), 'style'),
         Input(nav_ids.theme_store, 'data'),
         State('{}-filter-button'.format(battle_format.name), 'style'),
-        prevent_initial_call=True,
     )
     def theme_switch_battle_format(theme, style):
         return filter_style.determine_background_color(style)

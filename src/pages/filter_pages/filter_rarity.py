@@ -34,7 +34,6 @@ for rarity in Rarity:
         Output('{}-filter-button'.format(rarity.name), 'style'),
         Input(nav_ids.theme_store, 'data'),
         State('{}-filter-button'.format(rarity.name), 'style'),
-        prevent_initial_call=True,
     )
     def theme_switch_rarity(theme, style):
         return filter_style.determine_background_color(style)
