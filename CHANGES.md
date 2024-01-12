@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## 0.14.0
 
 - Update filters to new icons add match type filter.
+- Make buttons switch theme
 
 ## 0.13.0
 

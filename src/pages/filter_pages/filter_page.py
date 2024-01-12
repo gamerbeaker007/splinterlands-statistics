@@ -34,7 +34,7 @@ def get_filter_buttons(enumeration):
                            'padding': '5px'}
                 ),
             ], style={
-                'backgroundColor': filter_style.btn_inactive_color,
+                'backgroundColor': filter_style.btn_inactive_color_dark,
                 'borderRadius': rounding,
                 'borderStyle': 'none',
                 'width': '40px',
@@ -64,7 +64,7 @@ def get_filter_buttons_text(enumeration):
             children=[
                 html.P(enum.value, style={'paddingTop': '7px'}),
             ], style={
-                'backgroundColor': filter_style.btn_inactive_color,
+                'backgroundColor': filter_style.btn_inactive_color_dark,
                 'borderRadius': rounding,
                 'borderStyle': 'none',
                 'width': '65px',
