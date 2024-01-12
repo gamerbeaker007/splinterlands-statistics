@@ -14,7 +14,7 @@ layout = dbc.InputGroup(
                   type='number',
                   pattern='[0-9]')
     ],
-    className='mb-3',
+    className='mb-3 dbc',
 )
 
 

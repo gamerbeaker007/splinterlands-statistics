@@ -24,15 +24,15 @@ class ExtendedEnum(Enum):
 
 
 class Format(ExtendedEnum):
-    modern = 'modern'
     wild = 'wild'
+    modern = 'modern'
 
 
 class MatchType(ExtendedEnum):
-    CHALLENGE = 'Challenge'
     RANKED = 'Ranked'
     TOURNAMENT = 'Tournament'
     BRAWL = 'Brawl'
+    CHALLENGE = 'Challenge'
 
 
 class CardType(ExtendedEnum):

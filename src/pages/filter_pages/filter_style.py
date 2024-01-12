@@ -1,5 +1,5 @@
 btn_active_color = '#222'
-btn_inactive_color = '#bdbfbe'
+btn_inactive_color = '#01131B'
 
 
 def is_active(n_clicks):

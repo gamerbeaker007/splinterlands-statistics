@@ -3,10 +3,10 @@ import os
 import dash_bootstrap_components as dbc
 from dash import html
 
-from src.pages.main_dash import app
 from src.configuration import config
 from src.pages.filter_pages import filter_style
-from src.static.static_values_enum import Element, CardType, Edition, Rarity
+from src.pages.main_dash import app
+from src.static.static_values_enum import Element, CardType, Edition, Rarity, MatchType, Format
 
 
 def get_filter_buttons(enumeration):
@@ -24,6 +24,7 @@ def get_filter_buttons(enumeration):
 
         buttons.append(dbc.Button(
             id=enum.name + '-filter-button',
+            title=enum.name.title(),
             children=[
                 html.Img(
                     src=get_icon_url(enumeration, enum.name),
@@ -78,15 +79,36 @@ def get_filter_buttons_text(enumeration):
 def get_icon_url(enum, name):
     # https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-edition-alpha.svg
     prefix = str(config.settings['asset_url']) + 'website/icons/'
+    next_prefix = 'https://next.splinterlands.com/assets/cards/'
 
     if enum == Element:
-        return prefix + 'icon-element-' + str(name) + '-2.svg'
+        # Other option https://next.splinterlands.com/assets/cards/icon_element_water_off.svg
+        return next_prefix + 'icon_element_' + str(name) + '_off.svg'
     elif enum == CardType:
-        return prefix + 'icon-type-' + str(name) + '.svg'
+        # https://next.splinterlands.com/assets/cards/icon_role_units_on.svg
+        if name == CardType.monster.name:
+            return next_prefix + 'icon_role_units_off.svg'
+        elif name == CardType.summoner.name:
+            return next_prefix + 'icon_role_summoners_off.svg'
+        else:
+            # fallback noattack_off.png
+            return next_prefix + 'noattack_off.png'
     elif enum == Edition:
         if name == Edition.soulbound.name:
             return app.get_asset_url(os.path.join('icons', 'img_overlay_' + str(name) + '.png'))
         else:
             return prefix + 'icon-edition-' + str(name) + '.svg'
     elif enum == Rarity:
-        return prefix + 'icon-rarity-' + str(name) + '.svg'
+        return next_prefix + str(name) + 'Off.svg'
+    elif enum == Format:
+        return next_prefix + 'icon_format_' + str(name) + '_off.svg'
+    elif enum == MatchType:
+        battle_prefix = str(config.settings['asset_url']) + 'website/nav/'
+        if MatchType.CHALLENGE.name == name:
+            return 'https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/img_challenge-sword.png'
+        elif MatchType.RANKED.name == name:
+            return battle_prefix + 'icon_nav_battle_active@2x.png'
+        elif MatchType.BRAWL.name == name:
+            return battle_prefix + 'icon_nav_guilds_active@2x.png'
+        elif MatchType.TOURNAMENT.name == name:
+            return battle_prefix + 'icon_nav_events_active@2x.png'

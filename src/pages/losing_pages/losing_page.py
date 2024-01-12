@@ -12,7 +12,7 @@ from src.configuration import store
 from src.pages.card_pages import card
 from src.pages.filter_pages import filter_season, filter_ruleset, \
     filter_battle_format, filter_mana_cap, filter_element, filter_rarity, filter_editions, filter_card_type, \
-    filter_user, filter_ids, filter_battle_count, filter_group_levels
+    filter_user, filter_ids, filter_battle_count, filter_group_levels, filter_match_type
 from src.pages.losing_pages import losing_ids
 from src.pages.main_dash import app
 from src.utils.trace_logging import measure_duration
@@ -38,7 +38,9 @@ layout: Container = dbc.Container([
         dbc.Col(filter_user.layout, md=4),
     ]),
     dbc.Row([
+        dbc.Col(filter_battle_format.layout),
         dbc.Col(filter_card_type.layout),
+        dbc.Col(filter_match_type.layout),
         dbc.Col(filter_rarity.layout),
         dbc.Col(filter_element.layout),
         dbc.Col(filter_editions.layout),
@@ -50,7 +52,6 @@ layout: Container = dbc.Container([
     dbc.Row([
         dbc.Col(filter_season.layout),
         dbc.Col(filter_ruleset.layout),
-        dbc.Col(filter_battle_format.layout),
     ]),
 
     dbc.Row([
@@ -93,6 +94,7 @@ def filter_battle_df(filter_settings):
     df = analyse.filter_mana_cap(df, filter_settings)
     df = analyse.filter_rule_sets(df, filter_settings)
     df = analyse.filter_format(df, filter_settings)
+    df = analyse.filter_match_type(df, filter_settings)
 
     # Filter after processing is done
     df = analyse.filter_element(df, filter_settings)

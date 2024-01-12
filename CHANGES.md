@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.14.0
+
+- Update filters to new icons add match type filter.
+
 ## 0.13.0
 
 - FIX: portfolio staked DEC and SPS where counted double remove from Others category

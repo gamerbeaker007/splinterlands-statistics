@@ -131,8 +131,9 @@ def process_battles_win_percentage(df, group_levels=False):
         total_df = win.merge(loss, on=merge_columns, how='outer')
         total_df = total_df.fillna(0)
 
-        if  group_levels:
-            total_df['level'] = total_df.apply(lambda row: df.loc[df.card_detail_id == row.card_detail_id].level.max(), axis=1)
+        if group_levels:
+            total_df['level'] = total_df.apply(lambda row: df.loc[df.card_detail_id == row.card_detail_id].level.max(),
+                                               axis=1)
 
         total_df['win_to_loss_ratio'] = total_df.win / total_df.loss
         total_df['battles'] = total_df.win + total_df.loss
@@ -184,6 +185,24 @@ def filter_edition(input_df, filter_settings):
         return input_df
     else:
         return input_df.loc[input_df.edition.isin(list_of_edition_values)]
+
+
+def filter_match_type(input_df, filter_settings):
+    if input_df.empty:
+        return input_df
+
+    list_of_match_type_values = []
+    for match_type in MatchType:
+        if match_type.name in filter_settings:
+            active = filter_settings[match_type.name]
+            if active:
+                list_of_match_type_values.append(match_type.value)
+
+    # When no items are select or all items are selected do not filter
+    if len(list_of_match_type_values) == 0 or len(list_of_match_type_values) == len(MatchType):
+        return input_df
+    else:
+        return input_df.loc[input_df.match_type.isin(list_of_match_type_values)]
 
 
 def filter_card_type(input_df, filter_settings):
@@ -339,5 +358,3 @@ def get_losing_battles(df, battle_ids):
         result_df = df.loc[df.battle_id.isin(battle_ids)]
 
     return result_df
-
-
