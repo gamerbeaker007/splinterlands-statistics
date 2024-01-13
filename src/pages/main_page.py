@@ -26,10 +26,10 @@ layout = dbc.Container([
     dbc.Row([
         dbc.Col(filter_battle_format.layout),
         dbc.Col(filter_card_type.layout),
+        dbc.Col(filter_match_type.layout),
         dbc.Col(filter_rarity.layout),
         dbc.Col(filter_element.layout),
         dbc.Col(filter_editions.layout),
-        dbc.Col(filter_match_type.layout),
     ], className='mb-3'),
     dbc.Row([
         dbc.Col(filter_season.layout),
@@ -41,8 +41,8 @@ layout = dbc.Container([
     ]),
 
     dbc.Row([
-        dbc.Col(filter_sort_by.layout),
         dbc.Col(filter_group_levels.layout),
+        dbc.Col(filter_sort_by.layout),
     ]),
 
     dbc.Row(id='top-cards'),

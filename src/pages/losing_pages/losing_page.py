@@ -22,17 +22,6 @@ layout: Container = dbc.Container([
         html.H1('Statistics losing battles'),
         html.P('Summoners and monster you lose most against'),
         dbc.Col(html.P('Filter on')),
-        # dbc.Col(dcc.Dropdown(id='dropdown-user-selection-losing',
-        #                      className='dbc'),
-        #         ),
-        # dbc.Col(dcc.Dropdown(options=['ALL'] + CardType.list_values(),
-        #                      value='ALL',
-        #                      id='dropdown-type-selection-losing',
-        #                      className='dbc')),
-        # dbc.Col(dcc.Dropdown(options=['ALL'] + MatchType.list_values(),
-        #                      value='ALL',
-        #                      id='dropdown-match-type-selection-losing',
-        #                      className='dbc'))
     ]),
     dbc.Row([
         dbc.Col(filter_user.layout, md=4),
@@ -46,14 +35,13 @@ layout: Container = dbc.Container([
         dbc.Col(filter_editions.layout),
     ], className='mb-3'),
     dbc.Row([
-        dbc.Col(filter_battle_count.layout),
+        dbc.Col(filter_season.layout),
         dbc.Col(filter_mana_cap.layout)
     ]),
     dbc.Row([
-        dbc.Col(filter_season.layout),
+        dbc.Col(filter_battle_count.layout),
         dbc.Col(filter_ruleset.layout),
     ]),
-
     dbc.Row([
         dbc.Col(filter_group_levels.layout),
     ]),

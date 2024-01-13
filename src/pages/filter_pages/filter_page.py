@@ -4,7 +4,6 @@ import dash_bootstrap_components as dbc
 from dash import html
 
 from src.configuration import config
-from src.pages.filter_pages import filter_style
 from src.pages.main_dash import app
 from src.static.static_values_enum import Element, CardType, Edition, Rarity, MatchType, Format
 
@@ -22,30 +21,33 @@ def get_filter_buttons(enumeration):
         else:
             rounding = '0% 0% 0% 0%'
 
-        buttons.append(dbc.Button(
-            id=enum.name + '-filter-button',
-            title=enum.name.title(),
-            children=[
-                html.Img(
-                    src=get_icon_url(enumeration, enum.name),
-                    className='round-sm-img',
-                    style={'width': '30px',
-                           'height': '30px',
-                           'padding': '5px'}
-                ),
-            ], style={
-                'backgroundColor': filter_style.button_get_inactive_color(),
-                'borderRadius': rounding,
-                'borderStyle': 'none',
-                'width': '40px',
-                'height': '40px',
-                'padding': '0px',
-                'marginTop': '3px',
-                'marginBottom': '3px',
-                'display': 'flex',
-                'justifyContent': 'center',
-                'alignItems': 'center'},
-        ),
+        buttons.append(
+            dbc.Button(
+                id=enum.name + '-filter-button',
+                title=enum.name.title(),
+                className='dbc bg-opacity-10 bg-dark',
+                children=[
+                    html.Img(
+                        src=get_icon_url(enumeration, enum.name),
+                        className='round-sm-img',
+                        style={'width': '30px',
+                               'height': '30px',
+                               'padding': '5px'}
+                    ),
+                ],
+                style={
+                    'borderRadius': rounding,
+                    'borderStyle': 'none',
+                    'width': '40px',
+                    'height': '40px',
+                    'padding': '0px',
+                    'marginTop': '3px',
+                    'marginBottom': '3px',
+                    'display': 'flex',
+                    'justifyContent': 'center',
+                    'alignItems': 'center'
+                },
+            ),
         )
     return buttons
 
@@ -61,10 +63,10 @@ def get_filter_buttons_text(enumeration):
 
         buttons.append(dbc.Button(
             id=enum.name + '-filter-button',
+            className='dbc bg-opacity-10 bg-dark',
             children=[
                 html.P(enum.value, style={'paddingTop': '7px'}),
             ], style={
-                'backgroundColor': filter_style.button_get_inactive_color(),
                 'borderRadius': rounding,
                 'borderStyle': 'none',
                 'width': '65px',
