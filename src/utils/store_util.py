@@ -237,3 +237,10 @@ def update_data(battle_update=True, season_update=False):
         logging.error("Exception during update data")
         logging.exception(e)
 
+
+def get_token():
+    if not store.secrets.empty:
+        row = store.secrets.iloc[0]
+        return "&v=" + str(row.version) + "&token=" + str(row.token) + "&username=" + str(row.username)
+    else:
+        return ""

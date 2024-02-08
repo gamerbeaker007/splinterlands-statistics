@@ -7,7 +7,7 @@ from dateutil import parser
 from requests.adapters import HTTPAdapter
 
 from src.api.logRetry import LogRetry
-from src.utils import progress_util
+from src.utils import progress_util, store_util
 
 base_url = "https://api2.splinterlands.com/"
 land_url = "https://vapi.splinterlands.com/"
@@ -36,7 +36,7 @@ def get_player_collection_df(username):
 
 
 def get_battle_history_df(account_name):
-    address = base_url + "battle/history?player=" + str(account_name)
+    address = base_url + "battle/history?player=" + str(account_name) + store_util.get_token()
 
     result = http.get(address)
     if result.status_code == 200:
@@ -238,7 +238,7 @@ def get_player_history_season_rewards_df(username):
     for row in result:
         df = pd.concat([df, pd.DataFrame(json.loads(row['data']), index=[0])], ignore_index=True)
     if not df.empty:
-            df = df.loc[df['type'] == 'league_season']
+        df = df.loc[df['type'] == 'league_season']
     return df
 
 

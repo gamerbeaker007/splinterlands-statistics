@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - Update filters to new icons add match type filter.
 - Make buttons switch theme
+- Add Possibility to add token information for battle API
 
 ## 0.13.0
 
