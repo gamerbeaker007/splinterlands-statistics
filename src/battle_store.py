@@ -144,7 +144,7 @@ def add_losing_battle_team(account, team, battle):
 
 def get_battles_to_process(account):
     battle_history = spl.get_battle_history_df(account)
-    if battle_history and \
+    if battle_history is not None and \
             not battle_history.empty and \
             not store.last_processed.empty and \
             not store.last_processed.loc[(store.last_processed.account == account)].empty:
@@ -158,7 +158,7 @@ def get_battles_to_process(account):
 def process_battle(account):
     battle_history = get_battles_to_process(account)
 
-    if battle_history:
+    if battle_history is not None:
         log_battle_note(len(battle_history.index))
         if not battle_history.empty:
             for index, battle in battle_history.iterrows():
