@@ -2,9 +2,9 @@ import dash_bootstrap_components as dbc
 from dash import Output, Input, ctx, dcc
 from dash.exceptions import PreventUpdate
 
-from src.pages.main_dash import app
 from src.api import spl
 from src.configuration import config
+from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.pages.season_pages import season_ids
 from src.pages.shared_modules import styles
@@ -86,11 +86,11 @@ def update_season_label(user, tigger):
         if spl.is_season_reward_claimed(user, current_season_data):
             if config.server_mode:
                 msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
-                      'result are in waiting to be process max waiting time: ' + \
+                      'results are in waiting to be process max waiting time: ' + \
                       str(SERVER_MODE_INTERVAL_IN_MINUTES) + " minutes"
             else:
                 msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
-                      'result are in press update seasons to process'
+                      'results are in press update seasons to process'
         else:
             msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
                   'results are NOT processed. Season rewards not claimed yet.'

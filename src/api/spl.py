@@ -36,7 +36,7 @@ def get_player_collection_df(username):
 
 
 def get_battle_history_df(account_name):
-    address = base_url + "battle/history?player=" + str(account_name) + store_util.get_token()
+    address = base_url + "battle/history?player=" + str(account_name) + store_util.get_full_token()
 
     result = http.get(address)
     if result.status_code == 200:
@@ -121,7 +121,7 @@ def get_balance_history_for_token_impl(username, token="DEC", offset=0, limit=10
         balance_history_link = "players/unclaimed_balance_history?token_type="
     else:
         balance_history_link = "players/balance_history?token_type="
-        
+
     address = base_url + str(balance_history_link) + str(token) + "&username=" + str(
         username) + "&offset=" + str(offset) + "&limit=" + str(limit) + store_util.get_token()
 

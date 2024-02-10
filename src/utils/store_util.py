@@ -238,9 +238,17 @@ def update_data(battle_update=True, season_update=False):
         logging.exception(e)
 
 
-def get_token():
+def get_full_token():
     if not store.secrets.empty:
         row = store.secrets.iloc[0]
         return "&v=" + str(row.version) + "&token=" + str(row.token) + "&username=" + str(row.username)
+    else:
+        return ""
+
+
+def get_token():
+    if not store.secrets.empty:
+        row = store.secrets.iloc[0]
+        return "&v=" + str(row.version) + "&token=" + str(row.token)
     else:
         return ""
