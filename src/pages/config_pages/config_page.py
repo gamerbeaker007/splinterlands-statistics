@@ -221,11 +221,11 @@ def update_remove(n_clicks, username, version, token):
 def update_alert(n_clicks):
     battles = spl.get_battle_history_df(store_util.get_first_account_name())
     if battles is not None:
-        children = [html.I(className="m-1 fas fa-check-circle"), "Battle API OK."]
+        children = [html.I(className="m-1 fas fa-check-circle"), "SPL API OK."]
         color = "success"
     else:
         children = [html.I(className="m-1 fas fa-exclamation-triangle"),
-                    "Battle API unreachable provide token information"]
+                    "SPL API unreachable provide token information"]
         color = "warning"
 
     return children, color
