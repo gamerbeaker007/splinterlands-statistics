@@ -1,18 +1,17 @@
 import logging
 
 import dash_bootstrap_components as dbc
-import pandas as pd
 from dash import html, Output, Input, ctx, dcc, State
 
 from src.api import spl
-from src.configuration import config, store
-from src.pages.config_pages import config_page_ids
+from src.configuration import config
+from src.pages.config_pages import config_page_ids, config_page_authorize, config_page_spl_api_ckeck
 from src.pages.main_dash import app
 from src.utils import store_util
 from src.utils.trace_logging import measure_duration
 
 
-def get_div_style():
+def get_readonly_style():
     if config.read_only:
         return {'display': 'none'}
     else:
@@ -28,87 +27,43 @@ def get_readonly_text():
 layout = dbc.Container([
     dbc.Row([
         html.H1('Add and remove accounts'),
-        html.P('Current account monitored: '),
+        html.P('Current accounts that are being monitored: '),
         html.Div(id=config_page_ids.current_accounts),
         dbc.Row([
             dbc.Col([
-                html.Div(id=config_page_ids.button_div,
-                         style=get_div_style(),
-                         className='dbc',
-                         children=[
-                             dbc.Input(id=config_page_ids.account_name_input,
-                                       type='text',
-                                       placeholder='account-name',
-                                       className='m-1 border border-dark',
-                                       style={"width": "20%"},
-                                       ),
-                             dbc.Button(
-                                 'Add',
-                                 id=config_page_ids.add_button,
-                                 color='primary',
-                                 className='m-1',
-                                 n_clicks=0
-                             ),
-                             dbc.Button(
-                                 'Remove',
-                                 id=config_page_ids.remove_button,
-                                 color='danger',
-                                 className='m-1',
-                                 n_clicks=0
-                             ),
-                         ]),
+                html.Div(
+                    style=get_readonly_style(),
+                    className='dbc',
+                    children=[
+                        dbc.Input(id=config_page_ids.account_name_input,
+                                  type='text',
+                                  placeholder='account-name',
+                                  className='m-1 border border-dark',
+                                  style={"width": "20%"},
+                                  ),
+                        dbc.Button(
+                            'Add',
+                            id=config_page_ids.add_button,
+                            color='primary',
+                            className='m-1',
+                            n_clicks=0
+                        ),
+                        dbc.Button(
+                            'Remove',
+                            id=config_page_ids.remove_button,
+                            color='danger',
+                            className='m-1',
+                            n_clicks=0
+                        ),
+                    ]),
             ]),
             html.Div(children=get_readonly_text()),
             html.Div(id=config_page_ids.account_text),
-
-            dbc.Row(
-                dbc.Col(style=get_div_style(),
-                        className='dbc',
-                        children=[
-                            dbc.Input(id=config_page_ids.username_input,
-                                      type='text',
-                                      placeholder='username',
-                                      style={"width": "20%"},
-                                      className='m-1 border border-dark'),
-                            dbc.Input(id=config_page_ids.version_input,
-                                      type='text',
-                                      placeholder='version',
-                                      style={"width": "20%"},
-                                      className='m-1 border border-dark'),
-                            dbc.Input(id=config_page_ids.token_input,
-                                      type='text',
-                                      placeholder='token',
-                                      style={"width": "20%"},
-                                      className='m-1 border border-dark'),
-                        ]),
-            ),
-            dbc.Row([
-                dbc.Col(
-                    dbc.Button(
-                        'Update token info',
-                        id=config_page_ids.update_button,
-                        style=get_div_style(),
-                        color='primary',
-                        className='m-1',
-                        n_clicks=0
-                    ),
-                    width=2
-                ),
-                dbc.Col(
-                    dbc.Alert(id=config_page_ids.alert,
-                              style={"height": "38px"},
-                              className="p-2"),
-                    width=4
-                ),
-            ]),
-
-            dbc.Row([
-                dbc.Col([
-                ]),
-            ]),
-            html.Div(id=config_page_ids.secrets_text),
+            dbc.Row(config_page_authorize.get_layout(), style=get_readonly_style()),
+            dbc.Row(id=config_page_ids.update_account_info),
 
             dcc.Store(id=config_page_ids.account_added),
+            dcc.Store(id=config_page_ids.account_updated),
             dcc.Store(id=config_page_ids.account_removed)
         ]),
     ]),
@@ -118,11 +73,12 @@ layout = dbc.Container([
 @app.callback(
     Output(config_page_ids.account_added, 'data'),
     Output(config_page_ids.account_text, 'children'),
-    Input(config_page_ids.account_name_input, 'value'),
     Input(config_page_ids.add_button, 'n_clicks'),
+    State(config_page_ids.account_name_input, 'value'),
+    prevent_initial_call=True,
 )
 @measure_duration
-def add_remove(account_name, add_clicks):
+def add_remove(add_clicks, account_name):
     text = ''
     added = False
     class_name = 'text-warning'
@@ -146,11 +102,12 @@ def add_remove(account_name, add_clicks):
 @app.callback(
     Output(config_page_ids.account_removed, 'data'),
     Output(config_page_ids.account_text, 'children'),
-    Input(config_page_ids.account_name_input, 'value'),
     Input(config_page_ids.remove_button, 'n_clicks'),
+    State(config_page_ids.account_name_input, 'value'),
+    prevent_initial_call=True,
 )
 @measure_duration
-def add_remove(account_name, remove_clicks):
+def add_remove(remove_clicks, account_name):
     text = ''
     removed = False
     class_name = 'text-warning'
@@ -179,53 +136,21 @@ def get_accounts(added, removed):
     return html.P(', '.join(current_account_names))
 
 
+# @app.callback(
+#     Input(config_page_ids.account_added, 'data'),
+# )
+# @measure_duration
+# def update_daily(added):
+#     if added:
+#         store_util.update_data(battle_update=True, season_update=False)
+
+
 @app.callback(
+    Output(config_page_ids.update_account_info, 'children'),
     Input(config_page_ids.account_added, 'data'),
+    Input(config_page_ids.account_removed, 'data'),
+    Input(config_page_ids.account_updated, 'data'),
 )
 @measure_duration
-def update_daily(added):
-    if added:
-        store_util.update_data(battle_update=True, season_update=False)
-
-
-@app.callback(
-    Output(config_page_ids.secrets_text, 'children'),
-    Input(config_page_ids.update_button, 'n_clicks'),
-    State(config_page_ids.username_input, 'value'),
-    State(config_page_ids.version_input, 'value'),
-    State(config_page_ids.token_input, 'value'),
-)
-@measure_duration
-def update_remove(n_clicks, username, version, token):
-    if config_page_ids.update_button == ctx.triggered_id:
-        if not config.read_only:
-            if username and version and token:
-                data = [[username, version, token]]
-                df = pd.DataFrame(data, columns=['username', 'version', 'token'])
-                store.secrets = df
-                store_util.save_single_store('secrets')
-                return html.Div("Stored", className='text-success')
-
-            return html.Div("Invalid / incomplete info", className='text-warning')
-        else:
-            text = 'This is not allowed in read-only mode'
-            return html.Div(text, className='text-danger')
-
-
-@app.callback(
-    Output(config_page_ids.alert, 'children'),
-    Output(config_page_ids.alert, 'color'),
-    Input(config_page_ids.update_button, 'n_clicks'),
-)
-@measure_duration
-def update_alert(n_clicks):
-    battles = spl.get_battle_history_df(store_util.get_first_account_name())
-    if battles is not None:
-        children = [html.I(className="m-1 fas fa-check-circle"), "SPL API OK."]
-        color = "success"
-    else:
-        children = [html.I(className="m-1 fas fa-exclamation-triangle"),
-                    "SPL API unreachable provide token information"]
-        color = "warning"
-
-    return children, color
+def update_check_accounts(added, removed, updated):
+    return config_page_spl_api_ckeck.get_layout()

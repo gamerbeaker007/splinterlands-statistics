@@ -59,16 +59,23 @@ def generate_hive_blog(n_clicks, users):
             sps_df = store_util.get_last_season_values(store.season_sps, users)
 
             error = False
+            missing_data_for_users = []
             for account in users:
                 player_spd_df = sps_df.loc[sps_df.player == account]
                 if player_spd_df.empty or not (player_spd_df.season_id == previous_season_id).all():
-                    message = [
-                        html.P(html.Div('Latest season information is missing, use update season first',
-                                        className='text-warning'))
-                    ]
+                    missing_data_for_users.append(account)
                     error = True
 
-            if not error:
+            if error:
+                message = [
+                    html.P([
+                        'Latest season information is missing for accounts: ' + ', '.join(missing_data_for_users),
+                        html.Br(),
+                        'Check account connection in config page and update seasons first',
+                    ],
+                        className='text-warning')
+                ]
+            else:
                 progress_util.set_season_title('Generate hive blog')
                 progress_util.update_season_msg('Start collecting last season data')
                 season_info_store = {
