@@ -6,13 +6,13 @@ from dash_bootstrap_templates import ThemeSwitchAIO
 from dash_extensions.enrich import Trigger
 from dash_iconify import DashIconify
 
-from src.pages.main_dash import app
 from src.configuration import progress, config
 from src.pages import main_page
 from src.pages.card_pages import card_page, card_page_filter
 from src.pages.config_pages import config_page
 from src.pages.land_pages import land_page
 from src.pages.losing_pages import losing_page
+from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.pages.nemesis_pages import nemesis_page
 from src.pages.portfolio_pages import portfolio_page
@@ -94,7 +94,8 @@ layout = html.Div([
 )
 @measure_duration
 def update_theme(toggle):
-    return config.light_theme if toggle else config.dark_theme
+    config.current_theme = config.light_theme if toggle else config.dark_theme
+    return config.current_theme
 
 
 @app.callback(

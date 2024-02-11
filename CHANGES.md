@@ -2,9 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.14.0
+
+- Update filters to new icons add match type filter.
+- FIX/ADD token information. battle and balance history move behind authenticated calls.
+- Update generate blog not possible when in read-only mode.
+
 ## 0.13.0
 
-- FIX: portfolio staked DEC and SPS where counted double remove from Others category
+- FIX: portfolio staked DEC and staked SPS where counted double remove from Others category
 - FIX: since (season) filter was not determined correctly at startup
 - Update: nemesis page update, reversed order of the home team units so lineup matches.
 

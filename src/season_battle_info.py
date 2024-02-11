@@ -19,7 +19,7 @@ def get_season_battles(account_name, store_df, mode, current_season_data):
         for season_id in season_array:
             progress_util.update_season_msg("Gathering (" + str(account_name) + ", "
                                             + str(mode.value) +
-                         ") battle info for season :" + str(season_id))
+                                            ") battle info for season :" + str(season_id))
             result = spl.get_leaderboard_with_player_season(account_name, season_id, mode)
             if 'rank' in result:
                 store_df = pd.concat([store_df,
@@ -34,6 +34,6 @@ def get_season_battles(account_name, store_df, mode, current_season_data):
 
     progress_util.update_season_msg("Gathering '" + str(account_name) + ", "
                                     + str(mode.value) +
-                 "' battle info done..")
+                                    "' battle info done..")
 
     return store_df

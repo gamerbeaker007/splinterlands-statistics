@@ -144,7 +144,8 @@ def add_losing_battle_team(account, team, battle):
 
 def get_battles_to_process(account):
     battle_history = spl.get_battle_history_df(account)
-    if not battle_history.empty and \
+    if battle_history is not None and \
+            not battle_history.empty and \
             not store.last_processed.empty and \
             not store.last_processed.loc[(store.last_processed.account == account)].empty:
         # filter out already processed
@@ -155,48 +156,53 @@ def get_battles_to_process(account):
 
 
 def process_battle(account):
-    battle_history = get_battles_to_process(account)
+    if store_util.get_token_params(account):
+        battle_history = get_battles_to_process(account)
+        if battle_history is not None:
+            log_battle_note(len(battle_history.index))
+            if not battle_history.empty:
+                for index, battle in battle_history.iterrows():
+                    match_type = battle['match_type']
 
-    log_battle_note(len(battle_history.index))
+                    battle_details = json.loads(battle.details)
+                    if not is_surrender(battle_details):
+                        winner_name = battle_details['winner']
 
-    if not battle_history.empty:
-        for index, battle in battle_history.iterrows():
-            match_type = battle['match_type']
+                        if battle_details['team1']['player'] == account:
+                            my_team = battle_details['team1']
+                            opponent_team = battle_details['team2']
+                        else:
+                            my_team = battle_details['team2']
+                            opponent_team = battle_details['team1']
 
-            battle_details = json.loads(battle.details)
-            if not is_surrender(battle_details):
-                winner_name = battle_details['winner']
+                        if 'is_brawl' in battle_details and battle_details['is_brawl']:
+                            match_type = MatchType.BRAWL.value
 
-                if battle_details['team1']['player'] == account:
-                    my_team = battle_details['team1']
-                    opponent_team = battle_details['team2']
-                else:
-                    my_team = battle_details['team2']
-                    opponent_team = battle_details['team1']
+                        add_battle_store_big_my(account,
+                                                my_team,
+                                                battle, match_type)
 
-                if 'is_brawl' in battle_details and battle_details['is_brawl']:
-                    match_type = MatchType.BRAWL.value
+                        # If a ranked match also log the rating
+                        if match_type and match_type == MatchType.RANKED.value:
+                            add_rating_log(account, battle)
 
-                add_battle_store_big_my(account,
-                                        my_team,
-                                        battle, match_type)
+                        # If the battle is lost store losing battle
+                        if winner_name != account:
+                            add_losing_battle_team(account,
+                                                   opponent_team,
+                                                   battle)
+                    else:
+                        logging.debug("Surrender match skip")
 
-                # If a ranked match also log the rating
-                if match_type and match_type == MatchType.RANKED.value:
-                    add_rating_log(account, battle)
-
-                # If the battle is lost store losing battle
-                if winner_name != account:
-                    add_losing_battle_team(account,
-                                           opponent_team,
-                                           battle)
+                last_processed_date = \
+                    battle_history.sort_values(by='created_date', ascending=False)['created_date'].iloc[0]
+                update_last_processed_df(account, last_processed_date)
             else:
-                logging.debug("Surrender match skip")
-
-        last_processed_date = battle_history.sort_values(by='created_date', ascending=False)['created_date'].iloc[0]
-        update_last_processed_df(account, last_processed_date)
+                logging.debug('No battles to process.')
+        else:
+            logging.debug('None battles to process.')
     else:
-        logging.debug('No battles to process.')
+        logging.info('Skip battle process... not token found for: ' + account)
 
 
 def update_last_processed_df(account, last_processed_date):

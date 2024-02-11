@@ -10,7 +10,7 @@ from src.configuration import store
 from src.pages.card_pages import card
 from src.pages.filter_pages import filter_user, filter_card_type, filter_rarity, filter_element, \
     filter_editions, filter_ids, filter_sort_by, filter_group_levels, filter_battle_format, \
-    filter_ruleset, filter_season, filter_mana_cap, filter_battle_count
+    filter_ruleset, filter_season, filter_mana_cap, filter_battle_count, filter_match_type
 from src.pages.main_dash import app
 from src.utils.trace_logging import measure_duration
 
@@ -24,24 +24,25 @@ layout = dbc.Container([
         dbc.Col(filter_user.layout, md=4),
     ]),
     dbc.Row([
+        dbc.Col(filter_battle_format.layout),
         dbc.Col(filter_card_type.layout),
+        dbc.Col(filter_match_type.layout),
         dbc.Col(filter_rarity.layout),
         dbc.Col(filter_element.layout),
         dbc.Col(filter_editions.layout),
     ], className='mb-3'),
     dbc.Row([
-        dbc.Col(filter_battle_count.layout),
-        dbc.Col(filter_mana_cap.layout)
+        dbc.Col(filter_season.layout),
+        dbc.Col(filter_mana_cap.layout),
     ]),
     dbc.Row([
-        dbc.Col(filter_season.layout),
+        dbc.Col(filter_battle_count.layout),
         dbc.Col(filter_ruleset.layout),
-        dbc.Col(filter_battle_format.layout),
     ]),
 
     dbc.Row([
-        dbc.Col(filter_sort_by.layout),
         dbc.Col(filter_group_levels.layout),
+        dbc.Col(filter_sort_by.layout),
     ]),
 
     dbc.Row(id='top-cards'),
@@ -150,6 +151,7 @@ def filter_battle_df(filter_settings):
     df = analyse.filter_mana_cap(df, filter_settings)
     df = analyse.filter_rule_sets(df, filter_settings)
     df = analyse.filter_format(df, filter_settings)
+    df = analyse.filter_match_type(df, filter_settings)
 
     # Processing
     group_levels = True

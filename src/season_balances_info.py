@@ -3,7 +3,7 @@ import pandas as pd
 from dateutil import parser
 
 from src.api import spl
-from src.configuration import store, config
+from src.configuration import store
 from src.utils import store_util, progress_util
 
 
@@ -48,7 +48,11 @@ def update_balances_store(account_name, current_season_data):
         credits_df = pd.DataFrame(spl.get_balance_history_for_token(account_name, token="CREDITS"))
         vouchers_df = pd.DataFrame(spl.get_balance_history_for_token(account_name, token="VOUCHER"))
 
-        first_season = determine_first_season_id_played(dec_df)
+        # Concatenate the dataframes
+        combined_df = pd.concat([dec_df, unclaimed_sps_df, sps_df, merits_df, credits_df, vouchers_df],
+                                ignore_index=True)
+
+        first_season = determine_first_season_id_played(combined_df)
         season_array = np.arange(first_season, current_season_data['id'])
 
     if len(season_array) > 0:
@@ -183,9 +187,8 @@ def process_season_balances(balance_df, store_copy, account_name, season_array, 
 
                     else:
                         store_copy.loc[(store_copy.season_id == season_id)
-                                   & (store_copy.player == account_name), search_type] = balance_df.loc[
-                        balance_mask].amount.sum()
-
+                                       & (store_copy.player == account_name), search_type] = balance_df.loc[
+                            balance_mask].amount.sum()
 
                     # For unclaimed SPS process it twice one for the rewards and one for shared reward/fees
                     if unclaimed_sps:
@@ -212,8 +215,8 @@ def add_season_id(account_name, season_id, store_copy):
     return store_copy
 
 
-def determine_first_season_id_played(balance_history_dec_df):
-    first_earned_date_str = balance_history_dec_df.created_date.sort_values().values[0]
+def determine_first_season_id_played(df):
+    first_earned_date_str = df.created_date.sort_values().dropna().values[0]
     first_earned_date = parser.parse(first_earned_date_str)
 
     season_end_times = store.season_end_dates

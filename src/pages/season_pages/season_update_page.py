@@ -2,9 +2,9 @@ import dash_bootstrap_components as dbc
 from dash import Output, Input, ctx, dcc
 from dash.exceptions import PreventUpdate
 
-from src.pages.main_dash import app
 from src.api import spl
 from src.configuration import config
+from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.pages.season_pages import season_ids
 from src.pages.shared_modules import styles
@@ -39,9 +39,8 @@ layout = [
             className='mb-3',
         )
     ),
-    dbc.Row(
-        dbc.Label(id=season_ids.season_update_label, className='text-warning')
-    ),
+    dbc.Row(dbc.Label(id=season_ids.season_update_label, className='text-warning')),
+    dbc.Row(dbc.Label(id=season_ids.season_update_token_provided_label, className='text-warning')),
 ]
 
 
@@ -86,13 +85,30 @@ def update_season_label(user, tigger):
         if spl.is_season_reward_claimed(user, current_season_data):
             if config.server_mode:
                 msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
-                      'result are in waiting to be process max waiting time: ' + \
-                      str(SERVER_MODE_INTERVAL_IN_MINUTES) + " minutes"
+                      'results are in. Waiting to be process max waiting time: ' + \
+                      str(SERVER_MODE_INTERVAL_IN_MINUTES) + ' minutes'
             else:
                 msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
-                      'result are in press update seasons to process'
+                      'results are in. Press update seasons to process.'
         else:
             msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
                   'results are NOT processed. Season rewards not claimed yet.'
 
         return msg, {'display': 'block'}
+
+
+@app.callback(
+    Output(season_ids.season_update_token_provided_label, 'children'),
+    Output(season_ids.season_update_token_provided_label, 'style'),
+    Input(season_ids.dropdown_user_selection_season, 'value'),
+    Input(season_ids.trigger_season_update, 'data'),
+)
+@measure_duration
+def update_season_token_label(user, tigger):
+    if not user:
+        raise PreventUpdate
+
+    if store_util.get_token_params(user):
+        return '', {'display': 'none'}
+
+    return 'No token provided. For this user season statistics will not be updated.', {'display': 'block'}

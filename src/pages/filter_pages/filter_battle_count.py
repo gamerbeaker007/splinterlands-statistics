@@ -11,10 +11,12 @@ layout = dbc.InputGroup(
         dbc.Input(id=filter_ids.filter_battle_count,
                   min=0,
                   value=0,
+                  className='border border-dark',
+                  style={'--bs-border-opacity': '0.2'},
                   type='number',
                   pattern='[0-9]')
     ],
-    className='mb-3',
+    className='mb-3 dbc',
 )
 
 

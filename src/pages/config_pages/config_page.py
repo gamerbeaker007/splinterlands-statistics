@@ -1,17 +1,17 @@
 import logging
 
 import dash_bootstrap_components as dbc
-from dash import html, Output, Input, ctx, dcc
+from dash import html, Output, Input, ctx, dcc, State
 
-from src.pages.main_dash import app
 from src.api import spl
 from src.configuration import config
-from src.pages.config_pages import config_page_ids
+from src.pages.config_pages import config_page_ids, config_page_authorize, config_page_spl_api_ckeck
+from src.pages.main_dash import app
 from src.utils import store_util
 from src.utils.trace_logging import measure_duration
 
 
-def get_div_style():
+def get_readonly_style():
     if config.read_only:
         return {'display': 'none'}
     else:
@@ -20,45 +20,51 @@ def get_div_style():
 
 def get_readonly_text():
     if config.read_only:
-        return html.H4("Read only mode not possible to modify accounts", className='text-warning')
+        return html.H4("Read only mode... Not possible to modify accounts.", className='text-warning')
     return ""
 
 
 layout = dbc.Container([
     dbc.Row([
         html.H1('Add and remove accounts'),
-        html.P('Current account monitored: '),
+        html.P('Current accounts that are being monitored: '),
         html.Div(id=config_page_ids.current_accounts),
         dbc.Row([
             dbc.Col([
-                html.Div(id=config_page_ids.button_div, style=get_div_style(),
-                         children=[
-                             dbc.Input(id=config_page_ids.account_name_input,
-                                       type='text',
-                                       placeholder='account-name',
-                                       className='m-1',
-                                       style={'marginRight': '10px'}),
-                             dbc.Button(
-                                 'Add',
-                                 id=config_page_ids.add_button,
-                                 color='primary',
-                                 className='m-1',
-                                 n_clicks=0
-                             ),
-                             dbc.Button(
-                                 'Remove',
-                                 id=config_page_ids.remove_button,
-                                 color='danger',
-                                 className='m-1',
-                                 n_clicks=0
-                             ),
-                         ]),
+                html.Div(
+                    style=get_readonly_style(),
+                    className='dbc',
+                    children=[
+                        dbc.Input(id=config_page_ids.account_name_input,
+                                  type='text',
+                                  placeholder='account-name',
+                                  className='m-1 border border-dark',
+                                  style={"width": "20%"},
+                                  ),
+                        dbc.Button(
+                            'Add',
+                            id=config_page_ids.add_button,
+                            color='primary',
+                            className='m-1',
+                            n_clicks=0
+                        ),
+                        dbc.Button(
+                            'Remove',
+                            id=config_page_ids.remove_button,
+                            color='danger',
+                            className='m-1',
+                            n_clicks=0
+                        ),
+                    ]),
             ]),
             html.Div(children=get_readonly_text()),
             html.Div(id=config_page_ids.account_text),
-            dcc.Store(id=config_page_ids.account_added),
-            dcc.Store(id=config_page_ids.account_removed)
+            dbc.Row(config_page_authorize.get_layout(), style=get_readonly_style()),
+            dbc.Row(id=config_page_ids.update_account_info),
 
+            dcc.Store(id=config_page_ids.account_added),
+            dcc.Store(id=config_page_ids.account_updated),
+            dcc.Store(id=config_page_ids.account_removed)
         ]),
     ]),
 ])
@@ -67,11 +73,12 @@ layout = dbc.Container([
 @app.callback(
     Output(config_page_ids.account_added, 'data'),
     Output(config_page_ids.account_text, 'children'),
-    Input(config_page_ids.account_name_input, 'value'),
     Input(config_page_ids.add_button, 'n_clicks'),
+    State(config_page_ids.account_name_input, 'value'),
+    prevent_initial_call=True,
 )
 @measure_duration
-def add_remove(account_name, add_clicks):
+def add_remove(add_clicks, account_name):
     text = ''
     added = False
     class_name = 'text-warning'
@@ -95,11 +102,12 @@ def add_remove(account_name, add_clicks):
 @app.callback(
     Output(config_page_ids.account_removed, 'data'),
     Output(config_page_ids.account_text, 'children'),
-    Input(config_page_ids.account_name_input, 'value'),
     Input(config_page_ids.remove_button, 'n_clicks'),
+    State(config_page_ids.account_name_input, 'value'),
+    prevent_initial_call=True,
 )
 @measure_duration
-def add_remove(account_name, remove_clicks):
+def add_remove(remove_clicks, account_name):
     text = ''
     removed = False
     class_name = 'text-warning'
@@ -128,10 +136,21 @@ def get_accounts(added, removed):
     return html.P(', '.join(current_account_names))
 
 
+# @app.callback(
+#     Input(config_page_ids.account_added, 'data'),
+# )
+# @measure_duration
+# def update_daily(added):
+#     if added:
+#         store_util.update_data(battle_update=True, season_update=False)
+
+
 @app.callback(
+    Output(config_page_ids.update_account_info, 'children'),
     Input(config_page_ids.account_added, 'data'),
+    Input(config_page_ids.account_removed, 'data'),
+    Input(config_page_ids.account_updated, 'data'),
 )
 @measure_duration
-def update_daily(added):
-    if added:
-        store_util.update_data(battle_update=True, season_update=False)
+def update_check_accounts(added, removed, updated):
+    return config_page_spl_api_ckeck.get_layout()

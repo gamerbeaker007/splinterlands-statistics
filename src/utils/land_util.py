@@ -81,14 +81,29 @@ def process_land_transactions(transactions):
 
         process = True
         if data['op'] == 'harvest_all':
-            result = pd.DataFrame(json.loads(info['result'])['result']['data']['results'])
+            temp = json.loads(info['result'])['result']
+            if temp['success']:
+                result = pd.DataFrame(temp['data']['results'])
+            else:
+                logging.info('Ignore false transaction...: ' + str(data['op']))
+                process = False
         elif data['op'] in ['harvest_resources', 'mine_sps', 'mine_research']:
-            result = pd.DataFrame(json.loads(info['result'])['result']['data'], index=[0])
+            temp = json.loads(info['result'])['result']
+            if temp['success']:
+                result = pd.DataFrame(temp['data'], index=[0])
+            else:
+                logging.info('Ignore false transaction...: ' + str(data['op']))
+                process = False
         elif data['op'] == 'tax_collection':
-            result = pd.DataFrame(json.loads(info['result'])['result']['data'])
-            for token in result.tokens.values[0]:
-                result[token['token'] + '_received_tax'] = token['received']
-            result.drop('tokens', axis=1, inplace=True)
+            temp = json.loads(info['result'])['result']
+            if temp['success']:
+                result = pd.DataFrame(temp['data'])
+                for token in result.tokens.values[0]:
+                    result[token['token'] + '_received_tax'] = token['received']
+                result.drop('tokens', axis=1, inplace=True)
+            else:
+                logging.info('Ignore false transaction...: ' + str(data['op']))
+                process = False
         else:
             logging.info('Ignore other land operation: ' + str(data['op']))
             process = False

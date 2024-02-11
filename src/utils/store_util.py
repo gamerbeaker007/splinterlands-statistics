@@ -121,6 +121,7 @@ def remove_data(account_name):
         store.__dict__[store_name] = remove_account_from_store(store_name, 'account_name', account_name)
         store.__dict__[store_name] = remove_account_from_store(store_name, 'account', account_name)
         store.__dict__[store_name] = remove_account_from_store(store_name, 'player', account_name)
+        store.__dict__[store_name] = remove_account_from_store(store_name, 'username', account_name)
 
     save_stores()
 
@@ -204,19 +205,22 @@ def update_season_log():
 
     for account in get_account_names():
         progress_util.update_season_msg('Start season update for: ' + str(account))
-        if not is_last_season_processed(account, current_season_data):
-            if spl.is_season_reward_claimed(account, current_season_data):
-                season_balances_info.update_balances_store(account, current_season_data)
-                store.season_modern_battle_info = season_battle_info.get_season_battles(account,
-                                                                                        store.season_modern_battle_info.copy(),
-                                                                                        Format.modern,
-                                                                                        current_season_data)
-                store.season_wild_battle_info = season_battle_info.get_season_battles(account,
-                                                                                      store.season_wild_battle_info.copy(),
-                                                                                      Format.wild,
-                                                                                      current_season_data)
+        if get_token_params(account):
+            if not is_last_season_processed(account, current_season_data):
+                if spl.is_season_reward_claimed(account, current_season_data):
+                    season_balances_info.update_balances_store(account, current_season_data)
+                    store.season_modern_battle_info = season_battle_info.get_season_battles(account,
+                                                                                            store.season_modern_battle_info.copy(),
+                                                                                            Format.modern,
+                                                                                            current_season_data)
+                    store.season_wild_battle_info = season_battle_info.get_season_battles(account,
+                                                                                          store.season_wild_battle_info.copy(),
+                                                                                          Format.wild,
+                                                                                          current_season_data)
+            else:
+                progress_util.update_season_msg("No seasons to process for: " + str(account))
         else:
-            progress_util.update_season_msg("No seasons to process for: " + str(account))
+            progress_util.update_season_msg("Skip... No token found for : " + str(account))
 
     save_stores()
     progress_util.set_season_title("Season update done")
@@ -237,3 +241,11 @@ def update_data(battle_update=True, season_update=False):
         logging.error("Exception during update data")
         logging.exception(e)
 
+
+def get_token_params(username):
+    if not store.secrets.empty:
+        row = store.secrets.loc[(store.secrets.username == username)]
+        if not row.empty:
+            row = row.iloc[0]
+            return "&v=" + str(row.version) + "&token=" + str(row.token) + "&username=" + str(row.username)
+    return None
