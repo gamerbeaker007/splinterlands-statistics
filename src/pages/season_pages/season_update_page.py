@@ -85,11 +85,11 @@ def update_season_label(user, tigger):
         if spl.is_season_reward_claimed(user, current_season_data):
             if config.server_mode:
                 msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
-                      'results are in waiting to be process max waiting time: ' + \
+                      'results are in. Waiting to be process max waiting time: ' + \
                       str(SERVER_MODE_INTERVAL_IN_MINUTES) + ' minutes'
             else:
                 msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
-                      'results are in press update seasons to process'
+                      'results are in. Press update seasons to process.'
         else:
             msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
                   'results are NOT processed. Season rewards not claimed yet.'
@@ -111,4 +111,4 @@ def update_season_token_label(user, tigger):
     if store_util.get_token_params(user):
         return '', {'display': 'none'}
 
-    return 'No token provided this user will not update season information', {'display': 'block'}
+    return 'No token provided. For this user season statistics will not be updated.', {'display': 'block'}

@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file.
 ## 0.14.0
 
 - Update filters to new icons add match type filter.
-- FIX/ADD token information. battle and balance history move behind authenticated calls
+- FIX/ADD token information. battle and balance history move behind authenticated calls.
+- Update generate blog not possible when in read-only mode.
 
 ## 0.13.0
 

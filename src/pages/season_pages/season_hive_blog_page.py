@@ -4,12 +4,26 @@ from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import Trigger
 
 from src import season_balances_info, market_info
-from src.configuration import store, progress
+from src.configuration import store, progress, config
 from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.pages.season_pages import season_ids, season_status
 from src.utils import store_util, progress_util, tournaments_info, hive_blog
 from src.utils.trace_logging import measure_duration
+
+
+def get_readonly_style():
+    if config.read_only:
+        return {'display': 'none'}
+    else:
+        return {'display': 'block'}
+
+
+def get_readonly_text():
+    if config.read_only:
+        return html.P('Read only mode... Not possible to generate blog.', className='text-warning')
+    return ''
+
 
 layout = dbc.Accordion(
     dbc.AccordionItem([
@@ -26,7 +40,13 @@ layout = dbc.Accordion(
             ),
         ),
         dbc.Row([
-            dbc.Col(dbc.Button('Generate', id=season_ids.generate_blog, className='mb-3'), width='auto'),
+            dbc.Col(
+                dbc.Button(
+                    'Generate',
+                    id=season_ids.generate_blog,
+                    className='mb-3'),
+                style=get_readonly_style(),
+                width='auto'),
             dbc.Col(html.Div(id=season_ids.clipboard_div,
                              style={'display': 'none'},
                              children=dcc.Clipboard(id=season_ids.copy_to_clipboard, style={'fontSize': 25})
@@ -35,7 +55,7 @@ layout = dbc.Accordion(
 
         ]),
         dbc.Row([
-            html.Div(id=season_ids.error_hive_blog),
+            html.Div(id=season_ids.error_hive_blog, children=get_readonly_text()),
             html.Div(id=season_ids.text_output_temp)
         ]),
     ], title='Generate last season blog',
@@ -54,6 +74,8 @@ layout = dbc.Accordion(
 def generate_hive_blog(n_clicks, users):
     message = [html.P(html.Div('', className='text-warning'))]
     if season_ids.generate_blog == ctx.triggered_id:
+        if config.read_only:
+            return [html.P(html.Div('This is not allowed in read-only mode', className='text-danger'))]
         if users:
             previous_season_id = store.season_end_dates.id.max() - 1
             sps_df = store_util.get_last_season_values(store.season_sps, users)

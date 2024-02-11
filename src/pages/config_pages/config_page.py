@@ -20,7 +20,7 @@ def get_readonly_style():
 
 def get_readonly_text():
     if config.read_only:
-        return html.H4("Read only mode not possible to modify accounts", className='text-warning')
+        return html.H4("Read only mode... Not possible to modify accounts.", className='text-warning')
     return ""
 
 
