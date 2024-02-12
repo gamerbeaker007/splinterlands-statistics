@@ -1,4 +1,3 @@
-import json
 import logging
 
 import pandas as pd
@@ -164,7 +163,7 @@ def process_battle(account):
                 for index, battle in battle_history.iterrows():
                     match_type = battle['match_type']
 
-                    battle_details = json.loads(battle.details)
+                    battle_details = battle.details
                     if not is_surrender(battle_details):
                         winner_name = battle_details['winner']
 

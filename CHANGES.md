@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.14.1
+
+- FIX: battle processing corrected for battle history v2
+
 ## 0.14.0
 
 - Update filters to new icons add match type filter.
