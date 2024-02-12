@@ -7,16 +7,26 @@ import pytz
 import requests
 from dateutil.parser import isoparse
 from hiveengine.api import Api
-from hiveengine.rpc import RPCErrorDoRetry
 
-from src.api import spl
+from src.api import spl, hive_node
 from src.utils import progress_util
 
-PRIMARY_URL = 'https://api2.hive-engine.com/rpc/'
-SECONDARY_URL = 'https://api.hive-engine.com/'
 HIVE_BLOG_URL = 'https://api.hive.blog'
 
-hive_down_message = "Default hive node 'https://api.hive-engine.com/' down, retry on backup node: " + str(SECONDARY_URL)
+# hive-engine nodes
+nodes = [
+    'https://api.hive-engine.com/rpc/',
+    'https://api2.hive-engine.com/rpc/',
+    'https://engine.rishipanthee.com/',
+    'https://herpc.dtools.dev/',
+    'https://engine.deathwing.me/',
+    'https://ha.herpc.dtools.dev/',
+    'https://api.primersion.com/',
+    'https://herpc.kanibot.com/',
+    'https://he.sourov.dev/',
+    'https://herpc.actifit.io/',
+    'https://ctpmain.com/',
+    'https://he.ausbit.dev/']
 
 
 def get_liquidity_positions(account, token_pair):
@@ -42,45 +52,37 @@ def get_quantity(token_pair):
 def find_one_with_retry(contract_name, table_name, query):
     result = None
     success = False
-    # try 10 times on normal API
-    for i in range(0, 10):
-        # noinspection PyBroadException
-        try:
-            api = Api(url=PRIMARY_URL)
-            result = api.find_one(contract_name=contract_name, table_name=table_name, query=query)
-            success = True
-            break
-        except RPCErrorDoRetry:
-            sleep(1)
-        except Exception as e:
-            logging.warning('find_one_with_retry - exception on https://api.hive-engine.com/'
-                            ' contract: ' + str(contract_name) +
-                            ' table_name: ' + str(table_name) +
-                            ' query: ' + str(query) +
-                            ' retry on backup url: ' + SECONDARY_URL)
-            break
+    iterations = 3
+
+    #  Might consider special handling when a RPCErrorDoRetry is raised
+
+    # First try with preferred node.
+    try:
+        api = Api(url=hive_node.PREFERRED_NODE)
+        result = api.find_one(contract_name=contract_name, table_name=table_name, query=query)
+        success = True
+    except Exception as e:
+        logging.warning('find_one_with_retry (' + type(e).__name__ + ') preferred  node ' + hive_node.PREFERRED_NODE +
+                        ' continue try on other nodes')
+        for iter_ in range(iterations):
+            for node in nodes:
+                # noinspection PyBroadException
+                try:
+                    api = Api(url=node)
+                    result = api.find_one(contract_name=contract_name, table_name=table_name, query=query)
+                    success = True
+                    hive_node.PREFERRED_NODE = node
+                    break
+                except Exception as e:
+                    logging.warning('find_one_with_retry (' + type(e).__name__ + ') on node: ' + str(
+                        node) + '. Continue retry on next node')
+                    sleep(1)
+
+            if success:
+                break
 
     if not success:
-        # try 10 times on backup API
-        for i in range(0, 10):
-            try:
-                # Retry with other hive node
-                api = Api(url=SECONDARY_URL)
-                result = api.find_one(contract_name=contract_name, table_name=table_name, query=query)
-                success = True
-                break
-            except RPCErrorDoRetry:
-                logging.warning("find_one_with_retry(10x): backup url try again " + str(i))
-                sleep(1)
-            except Exception as e:
-                logging.warning('find_one_with_retry - fail with backup url rethrow exception')
-                raise Exception('find_one_with_retry - fail with backup url rethrow exception'
-                                ' contract: ' + str(contract_name) +
-                                ' table_name: ' + str(table_name) +
-                                ' query: ' + str(query) +
-                                ' stop update .....')
-    if not success:
-        raise Exception('find_one_with_retry failed 20 times.'
+        raise Exception('find_one_with_retry failed 5 times over all nodes'
                         ' contract:' + str(contract_name) +
                         ' table_name:' + str(table_name) +
                         ' query:' + str(query) +
@@ -141,7 +143,7 @@ def get_land_operations(account, from_date, last_id, results=None, days_to_proce
             days_to_process = (timestamp - from_date).days + 1
 
         days_to_go = (timestamp - from_date).days
-        pct = (days_to_go/days_to_process*100-100)*-1
+        pct = (days_to_go / days_to_process * 100 - 100) * -1
         progress_util.update_daily_msg('...retrieve land date for \'' + str(account.name) +
                                        '\' - days to go: ' + str(days_to_go) + ' - ' + str(round(pct)) + '%',
                                        log=False)

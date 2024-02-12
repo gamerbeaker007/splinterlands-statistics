@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.14.2
+
+- FIX/IMPROVE: test new method of hive calls when nodes are down.
+
 ## 0.14.1
 
 - FIX: battle processing corrected for battle history v2
