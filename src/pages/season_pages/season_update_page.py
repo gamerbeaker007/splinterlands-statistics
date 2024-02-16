@@ -108,7 +108,7 @@ def update_season_token_label(user, tigger):
     if not user:
         raise PreventUpdate
 
-    if store_util.get_token_params(user):
+    if store_util.get_token_as_params_string(user):
         return '', {'display': 'none'}
 
     return 'No token provided. For this user season statistics will not be updated.', {'display': 'block'}

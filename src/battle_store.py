@@ -155,7 +155,7 @@ def get_battles_to_process(account):
 
 
 def process_battle(account):
-    if store_util.get_token_params(account):
+    if store_util.get_token_as_params_string(account):
         battle_history = get_battles_to_process(account)
         if battle_history is not None:
             log_battle_note(len(battle_history.index))

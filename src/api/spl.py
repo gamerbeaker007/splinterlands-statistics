@@ -1,6 +1,7 @@
 import json
 import logging
 from binascii import hexlify
+from datetime import datetime
 from time import time
 
 import pandas as pd
@@ -39,7 +40,8 @@ def get_player_collection_df(username):
 
 
 def get_battle_history_df(account_name):
-    address = base_url + 'battle/history2?player=' + str(account_name) + store_util.get_token_params(account_name)
+    address = base_url + 'battle/history2?player=' + str(account_name) + store_util.get_token_as_params_string(
+        account_name)
 
     result = http.get(address)
     if result.status_code == 200:
@@ -115,6 +117,52 @@ def get_balance_history_for_token(username, token='DEC', from_date=None, unclaim
     return complete_result
 
 
+def get_balance_history_for_token_v2(username, token='DEC', start_date=None, unclaimed_sps=False):
+    # from this tool you start from season x till now because it is a history api its backwards
+    # So here the end_date is to how far you need to look back from now till end_date
+    end_date = start_date
+
+    limit = 1000
+    print_suffix = ''
+
+    if unclaimed_sps:
+        print_suffix = ' UNCLAIMED'
+
+    msg_prefix = str(token) + str(print_suffix) + ' (' + str(username) + ') '
+    complete_result = []
+    from_date = None  # from is none the spl api will make it to current date
+    last_update_date = None  # Not needed for the first call
+    while True:
+        progress_util.update_season_msg(msg_prefix +
+                                        'get balance history (' + str(limit) + ')... ' + str("DATE SOMETHING HERE"))
+
+        data = get_balance_history_for_token_impl_v2(username,
+                                                     token=token,
+                                                     from_date=from_date,
+                                                     last_update_date=last_update_date,
+                                                     limit=limit,
+                                                     unclaimed_sps=unclaimed_sps)
+
+        if data:
+            complete_result += data
+            if datetime.strptime(data[-1]["created_date"], "%Y-%m-%dT%H:%M:%S.%fZ") < end_date:
+                progress_util.update_season_msg(msg_prefix +
+                                                ': last pull contains all season information data from ' +
+                                                str(start_date) + ' till NOW')
+                break
+
+            # Update the parameters for the next request
+            from_date = data[-1]["created_date"]
+            last_update_date = data[-1]["last_update_date"]
+        else:
+            progress_util.update_season_msg(
+                msg_prefix + ': last pull contains no data assume all data is collected ' +
+                str(start_date) + ' till NOW')
+            break
+
+    return complete_result
+
+
 def get_balance_history_for_token_impl(username, token='DEC', offset=0, limit=1000, unclaimed_sps=False):
     token_types = ['SPS', 'DEC', 'VOUCHER', 'CREDITS', 'MERITS']
     if token not in token_types:
@@ -126,13 +174,53 @@ def get_balance_history_for_token_impl(username, token='DEC', offset=0, limit=10
         balance_history_link = 'players/balance_history?token_type='
 
     position_params = '&offset=' + str(offset) + '&limit=' + str(limit)
-    address = base_url + balance_history_link + token + position_params + store_util.get_token_params(username)
+    address = base_url + balance_history_link + token + position_params + store_util.get_token_as_params_string(
+        username)
 
     response = http.get(address)
     if response.status_code == 200 and response.text != '':
         return response.json()
     else:
         return []
+
+
+def get_balance_history_for_token_impl_v2(username,
+                                          token='DEC',
+                                          from_date=None,
+                                          last_update_date=None,
+                                          limit=1000,
+                                          unclaimed_sps=False):
+    # Instead, we have added additional “from”  and “last_update_date” filters that will be the starting point for a query.
+    # By default, from will be the current time if not passed in.
+    # You'll want to essentially use the last "last_update_date" and "created_date" from the final record in the limited results to get the next section.
+    # It will look something like players/balance_history?username=investygator&token_type=DEC&from=2024-01-19T15%3A47%3A19.179Z&last_update_date=2024-01-19T15%3A47%3A19.179Z&limit=50.
+    token_types = ['SPS', 'DEC', 'VOUCHER', 'CREDITS', 'MERITS']
+    if token not in token_types:
+        raise ValueError('Invalid token type. Expected one of: %s' % token_types)
+
+    if unclaimed_sps:
+        balance_history_link = 'players/unclaimed_balance_history'
+    else:
+        balance_history_link = 'players/balance_history'
+
+    token_param = store_util.get_token(username)
+    params = {
+        "username": token_param.username,
+        'version': token_param.version,
+        'token': token_param.token,
+        "token_type": token,
+        "limit": limit
+    }
+    if from_date:
+        params["from"] = from_date
+    if last_update_date:
+        params["last_update_date"] = last_update_date
+
+    response = http.get(base_url + balance_history_link, params=params)
+    if response.status_code == 200 and response.text != '':
+        return response.json()
+    else:
+        return None
 
 
 def player_exist(account_name):
@@ -304,7 +392,7 @@ def get_token(username: str, private_key: str):
 
 def verify_token(account_name):
     # Verify token is now done via battle history 2 that needs an specific user token to retrieve data
-    token_params = store_util.get_token_params(account_name)
+    token_params = store_util.get_token_as_params_string(account_name)
     if token_params:
         address = base_url + 'battle/history2?' + token_params
         result = http.get(address)

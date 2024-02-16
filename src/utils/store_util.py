@@ -205,7 +205,7 @@ def update_season_log():
 
     for account in get_account_names():
         progress_util.update_season_msg('Start season update for: ' + str(account))
-        if get_token_params(account):
+        if get_token_as_params_string(account):
             if not is_last_season_processed(account, current_season_data):
                 if spl.is_season_reward_claimed(account, current_season_data):
                     season_balances_info.update_balances_store(account, current_season_data)
@@ -242,10 +242,19 @@ def update_data(battle_update=True, season_update=False):
         logging.exception(e)
 
 
-def get_token_params(username):
+def get_token_as_params_string(username):
     if not store.secrets.empty:
         row = store.secrets.loc[(store.secrets.username == username)]
         if not row.empty:
             row = row.iloc[0]
             return "&v=" + str(row.version) + "&token=" + str(row.token) + "&username=" + str(row.username)
+    return None
+
+
+def get_token(username):
+    if not store.secrets.empty:
+        row = store.secrets.loc[(store.secrets.username == username)]
+        if not row.empty:
+            row = row.iloc[0]
+            return row
     return None
