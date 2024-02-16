@@ -118,8 +118,8 @@ def get_balance_history_for_token(username, token='DEC', from_date=None, unclaim
 
 
 def get_balance_history_for_token_v2(username, token='DEC', start_date=None, unclaimed_sps=False):
-    # from this tool you start from season x till now because it is a history api its backwards
-    # So here the end_date is to how far you need to look back from now till end_date
+    # This tool starts from season x till now. Because it is a history api its backwards
+    # So here the end_date is to how far you need to look back. From now till end_date
     end_date = start_date
 
     limit = 1000
@@ -132,6 +132,17 @@ def get_balance_history_for_token_v2(username, token='DEC', start_date=None, unc
     complete_result = []
     from_date = None  # from is none the spl api will make it to current date
     last_update_date = None  # Not needed for the first call
+
+    # Background information from Investygator
+    # The reason there's 2 dates is that the "from" (or, created_date in thedata) is essentially the block date,
+    # and the last_update_date is when it was actually written to the DB.
+    #
+    # Since multiple balance updates can happen in the same transaction, sometimes they will have the same "from" date,
+    # which can lead to items getting cut off with a limit.
+    #
+    # The last_update_date should always be distinct, and ensures that you don't get skipped results.
+    # However, created_date is the only one indexed, so it's needed for performance reasons.
+
     while True:
         progress_util.update_season_msg(msg_prefix +
                                         'get balance history (' + str(limit) + ')... ' + str("DATE SOMETHING HERE"))
@@ -190,10 +201,6 @@ def get_balance_history_for_token_impl_v2(username,
                                           last_update_date=None,
                                           limit=1000,
                                           unclaimed_sps=False):
-    # Instead, we have added additional “from”  and “last_update_date” filters that will be the starting point for a query.
-    # By default, from will be the current time if not passed in.
-    # You'll want to essentially use the last "last_update_date" and "created_date" from the final record in the limited results to get the next section.
-    # It will look something like players/balance_history?username=investygator&token_type=DEC&from=2024-01-19T15%3A47%3A19.179Z&last_update_date=2024-01-19T15%3A47%3A19.179Z&limit=50.
     token_types = ['SPS', 'DEC', 'VOUCHER', 'CREDITS', 'MERITS']
     if token not in token_types:
         raise ValueError('Invalid token type. Expected one of: %s' % token_types)
