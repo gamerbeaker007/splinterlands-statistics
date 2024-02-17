@@ -61,6 +61,10 @@ def get_settings():
     return http.get(address).json()
 
 
+def is_maintenance_mode():
+    return get_settings()['maintenance_mode']
+
+
 def get_season_end_time(season_id):
     address = base_url + 'season'
     params = {'id': season_id}
@@ -278,10 +282,6 @@ def get_battle(battle_id):
     return http.get(address, params=params).json()
 
 
-def is_maintenance_mode():
-    return get_settings()['maintenance_mode']
-
-
 def get_staked_dec_df(account_name):
     address = land_url + 'land/stake/decstaked'
     params = {'player': account_name}
@@ -298,8 +298,12 @@ def get_token(username: str, private_key: str):
     login_endpoint = base_url + 'players/v2/login'
     ts = int(time() * 1000)
     sig = compute_sig(username + str(ts), private_key)
-    login_endpoint += '?name=' + username + '&ts=' + str(ts) + '&sig=' + sig
-    result = http.get(login_endpoint)
+    params = {
+        'name': username,
+        'ts': ts,
+        'sig': sig
+    }
+    result = http.get(login_endpoint, params=params)
     token = ""
     version = ""
     if result and result.status_code == 200:

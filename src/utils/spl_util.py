@@ -1,9 +1,9 @@
 import logging
-from datetime import datetime
 
 from dateutil import parser
 
 from src.api import spl
+from src.configuration import config
 from src.utils import progress_util, store_util
 
 
@@ -54,13 +54,9 @@ def get_balance_history_for_token(username, token='DEC', from_date=None, unclaim
 
 
 def get_balance_history_for_token_v2(username, token='DEC', start_date=None, unclaimed_sps=False):
-    # This tool starts from season x till now. Because it is a history api its backwards
-    # So here the end_date is to how far you need to look back. From now till end_date
-    end_date = start_date
-
     limit = 1000
-    print_suffix = ''
 
+    print_suffix = ''
     if unclaimed_sps:
         print_suffix = ' UNCLAIMED'
 
@@ -81,9 +77,6 @@ def get_balance_history_for_token_v2(username, token='DEC', start_date=None, unc
     # The last_update_date should always be distinct, and ensures that you don't get skipped results.
     # However, created_date is the only one indexed, so it's needed for performance reasons.
     while True:
-        progress_util.update_season_msg(msg_prefix +
-                                        'get balance history (' + str(limit) + ')... ' + str("DATE SOMETHING HERE"))
-
         data = spl.get_balance_history_for_token_impl_v2(
             token=token,
             from_date=from_date,
@@ -93,20 +86,29 @@ def get_balance_history_for_token_v2(username, token='DEC', start_date=None, unc
             token_params=token_params
         )
 
+        progress_util.update_season_msg(
+            msg_prefix +
+            'get balance history found items: ' +
+            str(len(data))
+        )
+
         if data:
             complete_result += data
-            if datetime.strptime(data[-1]["created_date"], "%Y-%m-%dT%H:%M:%S.%fZ") < end_date:
-                progress_util.update_season_msg(msg_prefix +
-                                                ': last pull contains all season information data from ' +
-                                                str(start_date) + ' till NOW')
-                break
-
             # Update the parameters for the next request
             from_date = data[-1]["created_date"]
             last_update_date = data[-1]["last_update_date"]
+
+            if parser.parse(from_date) < parser.parse(start_date):
+                progress_util.update_season_msg(
+                    msg_prefix +
+                    ': last pull contains all season information data from ' +
+                    str(start_date) + ' till NOW')
+                break
+
         else:
             progress_util.update_season_msg(
-                msg_prefix + ': last pull contains no data assume all data is collected ' +
+                msg_prefix +
+                ': last pull contains no data assume all data is collected ' +
                 str(start_date) + ' till NOW')
             break
 
@@ -133,3 +135,11 @@ def is_season_reward_claimed(account, current_season_data):
 
     logging.info('Continue season results are claimed for account: ' + str(account))
     return True
+
+
+def get_rule_sets_list():
+    rule_sets = config.settings['battles']['rulesets']
+    list_of_ruleset = []
+    for rule_set in rule_sets:
+        list_of_ruleset.append(rule_set['name'])
+    return list(list_of_ruleset)

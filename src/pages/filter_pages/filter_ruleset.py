@@ -3,13 +3,13 @@ from dash import Output, Input, dcc, State
 
 from src.pages.filter_pages import filter_ids
 from src.pages.main_dash import app
-from src.utils import store_util
+from src.utils import spl_util
 from src.utils.trace_logging import measure_duration
 
 layout = dbc.InputGroup(
     [
         dbc.InputGroupText('Rule sets'),
-        dcc.Dropdown(options=store_util.get_rule_sets_list(),
+        dcc.Dropdown(options=spl_util.get_rule_sets_list(),
                      id=filter_ids.filter_rule_sets_dropdown,
                      multi=True,
                      className='dbc',

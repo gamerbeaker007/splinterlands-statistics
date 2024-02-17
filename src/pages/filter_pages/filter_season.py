@@ -1,5 +1,6 @@
 import dash_bootstrap_components as dbc
 from dash import Output, Input, dcc, State
+from dash.exceptions import PreventUpdate
 
 from src.pages.filter_pages import filter_ids
 from src.pages.main_dash import app
@@ -35,13 +36,18 @@ layout = dbc.InputGroup(
 )
 @measure_duration
 def filter_season_df(season_id, filter_settings):
-    if season_id:
-        from_date = season_util.get_season_end_date(season_id)
+    # This action can come before account is set in the filter setting
+    # Account must be in the filter settings else empty page is served other are only triggered on user actions
+    if 'account' in filter_settings:
+        if season_id:
+            from_date = season_util.get_season_end_date(season_id)
 
-        filter_settings['from_date'] = from_date
-        return filter_settings, str(from_date.strftime(date_fmt))
+            filter_settings['from_date'] = from_date
+            return filter_settings, str(from_date.strftime(date_fmt))
+        else:
+            return filter_settings, ''
     else:
-        return filter_settings, ''
+        raise PreventUpdate
 
 
 @app.callback(

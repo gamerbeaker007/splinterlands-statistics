@@ -161,14 +161,6 @@ def get_seasons_played_list():
         return list()
 
 
-def get_rule_sets_list():
-    rule_sets = config.settings['battles']['rulesets']
-    list_of_ruleset = []
-    for rule_set in rule_sets:
-        list_of_ruleset.append(rule_set['name'])
-    return list(list_of_ruleset)
-
-
 def get_last_season_values(df, users, season_id_column='season_id'):
     return df.loc[(df.player.isin(users)) & (df[season_id_column] == df[season_id_column].max())].copy()
 
