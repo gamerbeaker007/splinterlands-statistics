@@ -41,6 +41,7 @@ def get_battle_history_df(account_name, token_params):
     address = base_url + 'battle/history2'
     params = token_params
     params['player'] = account_name
+    params['limit'] = 50
     result = http.get(address, params=params)
     if result.status_code == 200:
         return pd.DataFrame(result.json()['battles'])
