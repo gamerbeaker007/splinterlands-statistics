@@ -7,7 +7,7 @@ from src import portfolio, collection_store, battle_store, season_balances_info,
 from src.api import spl
 from src.configuration import store, config
 from src.static.static_values_enum import Format
-from src.utils import progress_util
+from src.utils import progress_util, spl_util
 
 
 def update_season_end_dates():
@@ -205,9 +205,9 @@ def update_season_log():
 
     for account in get_account_names():
         progress_util.update_season_msg('Start season update for: ' + str(account))
-        if get_token_as_params_string(account):
+        if get_token_dict(account):
             if not is_last_season_processed(account, current_season_data):
-                if spl.is_season_reward_claimed(account, current_season_data):
+                if spl_util.is_season_reward_claimed(account, current_season_data):
                     season_balances_info.update_balances_store(account, current_season_data)
                     store.season_modern_battle_info = season_battle_info.get_season_battles(account,
                                                                                             store.season_modern_battle_info.copy(),
@@ -240,15 +240,6 @@ def update_data(battle_update=True, season_update=False):
     except Exception as e:
         logging.error("Exception during update data")
         logging.exception(e)
-
-
-def get_token_as_params_string(username):
-    if not store.secrets.empty:
-        row = store.secrets.loc[(store.secrets.username == username)]
-        if not row.empty:
-            row = row.iloc[0]
-            return "&v=" + str(row.version) + "&token=" + str(row.token) + "&username=" + str(row.username)
-    return None
 
 
 def get_token_dict(username):

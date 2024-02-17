@@ -16,7 +16,7 @@ def get_balance_history_for_token(username, token='DEC', from_date=None, unclaim
     if unclaimed_sps:
         print_suffix = ' UNCLAIMED'
 
-    token_params = store_util.get_token_as_params_string(username)
+    token_params = store_util.get_token_dict(username)
 
     complete_result = current_result = spl.get_balance_history_for_token_impl(
         token=token,

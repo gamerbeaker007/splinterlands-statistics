@@ -61,8 +61,9 @@ def get_settings():
 
 
 def get_season_end_time(season_id):
-    address = base_url + 'season?id=' + str(season_id)
-    result = http.get(address)
+    address = base_url + 'season'
+    params = {'id': season_id}
+    result = http.get(address, params=params)
     if result.status_code == 200:
         date = parser.parse(str(result.json()['ends']))
         result = pd.DataFrame({'id': season_id, 'end_date': str(date)}, index=[0])
@@ -85,14 +86,17 @@ def get_balance_history_for_token_impl(token='DEC',
         raise ValueError('Invalid token type. Expected one of: %s' % token_types)
 
     if unclaimed_sps:
-        balance_history_link = 'players/unclaimed_balance_history?token_type='
+        balance_history_link = 'players/unclaimed_balance_history'
     else:
-        balance_history_link = 'players/balance_history?token_type='
+        balance_history_link = 'players/balance_history'
 
-    position_params = '&offset=' + str(offset) + '&limit=' + str(limit)
-    address = base_url + balance_history_link + token + position_params + token_params
+    params = token_params
+    params['token_type'] = token
+    params['offset'] = offset
+    params['limit'] = limit
+    address = base_url + balance_history_link
 
-    response = http.get(address)
+    response = http.get(address, params=params)
     if response.status_code == 200 and response.text != '':
         return response.json()
     else:
@@ -141,12 +145,14 @@ def player_exist(account_name):
 
 
 def get_leaderboard_with_player_season(username, season, mode):
-    address = base_url + \
-              'players/leaderboard_with_player?season=' + str(season) + \
-              '&format=' + str(mode.value) + \
-              '&username=' + str(username)
+    address = base_url + 'players/leaderboard_with_player'
+    params = {
+        'season': season,
+        'format': str(mode.value),
+        'username': username
+    }
 
-    result = http.get(address)
+    result = http.get(address, params=params)
     if result.status_code == 200:
         return result.json()['player']
     else:
@@ -154,20 +160,26 @@ def get_leaderboard_with_player_season(username, season, mode):
 
 
 def get_deeds_collection(username):
-    address = land_url + 'land/deeds?status=collection&player=' + username
-    collection = http.get(address)
+    address = land_url + 'land/deeds'
+    params = {
+        'status': 'collection',
+        'player': username,
+    }
+    collection = http.get(address, params=params)
     return collection.json()['data']['deeds']
 
 
 def get_deeds_market():
-    address = land_url + 'land/deeds?status=market'
-    market = http.get(address)
+    address = land_url + 'land/deeds'
+    params = {'status': 'market'}
+    market = http.get(address, params=params)
     return market.json()['data']['deeds']
 
 
 def get_balances(username):
-    address = base_url + 'players/balances?username=' + username
-    return http.get(address).json()
+    address = base_url + 'players/balances'
+    params = {'username': username}
+    return http.get(address, params=params).json()
 
 
 def get_all_cards_for_sale_df():
@@ -177,14 +189,20 @@ def get_all_cards_for_sale_df():
 
 
 def get_tournament(tournament_id):
-    address = base_url + 'tournaments/find?id=' + str(tournament_id)
-    return http.get(address).json()
+    address = base_url + 'tournaments/find'
+    params = {'id': tournament_id}
+    return http.get(address, params=params).json()
 
 
 def get_player_tournaments_ids(username):
-    address = base_url + 'players/history?username=' + str(
-        username) + '&from_block=-1&limit=500&types=token_transfer'
-    result = http.get(address).json()
+    address = base_url + 'players/history'
+    params = {
+        'username': username,
+        'from_block': -1,
+        'limit': 500,
+        'types': 'token_transfer'
+    }
+    result = http.get(address, params=params).json()
     tournaments_transfers = list(filter(lambda item: 'enter_tournament' in item['data'], result))
     tournaments_ids = []
     for tournament in tournaments_transfers:
@@ -194,9 +212,9 @@ def get_player_tournaments_ids(username):
 
 def get_market_transaction(trx_id):
     # https://api.splinterlands.io/market/status?id=d8f8593d637ebdd0bca7994dd7e1a15d9f12efa7-0
-    address = base_url + 'market/status?id=' + str(trx_id)
-
-    result = http.get(address)
+    address = base_url + 'market/status'
+    params = {'id': trx_id}
+    result = http.get(address, params=params)
     if result.status_code == 200:
         return result.json()
     else:
@@ -205,9 +223,9 @@ def get_market_transaction(trx_id):
 
 def get_transaction(trx_id):
     # https://api.splinterlands.com/transactions/lookup?trx_id=247d6ac02bbfd5b8c38528535baa0d8298697a57'
-    address = base_url + 'transactions/lookup?trx_id=' + str(trx_id)
-
-    result = http.get(address)
+    address = base_url + 'transactions/lookup'
+    params = {'trx_id': trx_id}
+    result = http.get(address, params=params)
     if result.status_code == 200:
         return result.json()
     else:
@@ -216,9 +234,9 @@ def get_transaction(trx_id):
 
 def get_cards_by_ids(ids):
     # https://api.splinterlands.io/cards/find?ids=C3-457-3VIL75QJ2O,
-    address = base_url + 'cards/find?ids=' + str(ids)
-
-    result = http.get(address)
+    address = base_url + 'cards/find'
+    params = {'ids': ids}
+    result = http.get(address, params=params)
     if result.status_code == 200:
         return result.json()
     else:

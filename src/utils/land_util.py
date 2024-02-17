@@ -105,7 +105,7 @@ def process_land_transactions(transactions):
                 logging.info('Ignore false transaction...: ' + str(data['op']))
                 process = False
         else:
-            logging.info('Ignore other land operation: ' + str(data['op']))
+            logging.info('Ignore land operation: ' + str(data['op']))
             process = False
 
         if process:
