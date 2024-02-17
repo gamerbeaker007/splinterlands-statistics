@@ -251,10 +251,15 @@ def get_token_as_params_string(username):
     return None
 
 
-def get_token(username):
+def get_token_dict(username):
     if not store.secrets.empty:
         row = store.secrets.loc[(store.secrets.username == username)]
         if not row.empty:
             row = row.iloc[0]
-            return row
+            params = {
+                "username": row.username,
+                'version': row.version,
+                'token': row.token,
+            }
+            return params
     return None

@@ -1,7 +1,6 @@
 import json
 import logging
 from binascii import hexlify
-from datetime import datetime
 from time import time
 
 import pandas as pd
@@ -11,7 +10,6 @@ from dateutil import parser
 from requests.adapters import HTTPAdapter
 
 from src.api.logRetry import LogRetry
-from src.utils import progress_util, store_util
 
 base_url = 'https://api2.splinterlands.com/'
 land_url = 'https://vapi.splinterlands.com/'
@@ -39,11 +37,11 @@ def get_player_collection_df(username):
     return df[['player', 'uid', 'card_detail_id', 'xp', 'gold', 'edition', 'level']].set_index('uid')
 
 
-def get_battle_history_df(account_name):
-    address = base_url + 'battle/history2?player=' + str(account_name) + store_util.get_token_as_params_string(
-        account_name)
-
-    result = http.get(address)
+def get_battle_history_df(account_name, token_params):
+    address = base_url + 'battle/history2'
+    params = token_params
+    params['player'] = account_name
+    result = http.get(address, params=params)
     if result.status_code == 200:
         return pd.DataFrame(result.json()['battles'])
     else:
@@ -77,104 +75,11 @@ def get_season_end_time(season_id):
     return result
 
 
-def get_balance_history_for_token(username, token='DEC', from_date=None, unclaimed_sps=False):
-    limit = 1000
-    offset = 0
-    max_transactions = 1000000
-    print_suffix = ''
-
-    if unclaimed_sps:
-        print_suffix = ' UNCLAIMED'
-
-    complete_result = current_result = get_balance_history_for_token_impl(username,
-                                                                          token=token,
-                                                                          offset=offset,
-                                                                          limit=limit,
-                                                                          unclaimed_sps=unclaimed_sps)
-
-    while len(current_result) > 0 and offset <= max_transactions:
-        progress_util.update_season_msg(str(token) + str(print_suffix) + ' (' + str(username) + ')' +
-                                        ': More then \'' + str(offset + limit) +
-                                        '\' returned, continue for another balance pull...')
-        current_result = get_balance_history_for_token_impl(username,
-                                                            token=token,
-                                                            offset=offset + limit,
-                                                            limit=limit,
-                                                            unclaimed_sps=unclaimed_sps)
-        complete_result += current_result
-        offset += limit
-        created_date = parser.parse(complete_result[-1]['created_date'])
-        if from_date and from_date > created_date:
-            progress_util.update_season_msg(
-                token + ': last pull contains all season information data from '' + str(from_date) + '' till NOW')
-            break
-
-    if offset > max_transactions:
-        progress_util.update_season_msg(
-            'Stop pulling data MAX transactions (' + str(max_transactions) + ') reached. Possible not all data pulled')
-    progress_util.update_season_msg(token + '(' + str(username) + ')' + ': all data pulled')
-
-    return complete_result
-
-
-def get_balance_history_for_token_v2(username, token='DEC', start_date=None, unclaimed_sps=False):
-    # This tool starts from season x till now. Because it is a history api its backwards
-    # So here the end_date is to how far you need to look back. From now till end_date
-    end_date = start_date
-
-    limit = 1000
-    print_suffix = ''
-
-    if unclaimed_sps:
-        print_suffix = ' UNCLAIMED'
-
-    msg_prefix = str(token) + str(print_suffix) + ' (' + str(username) + ') '
-    complete_result = []
-    from_date = None  # from is none the spl api will make it to current date
-    last_update_date = None  # Not needed for the first call
-
-    # Background information from Investygator
-    # The reason there's 2 dates is that the "from" (or, created_date in thedata) is essentially the block date,
-    # and the last_update_date is when it was actually written to the DB.
-    #
-    # Since multiple balance updates can happen in the same transaction, sometimes they will have the same "from" date,
-    # which can lead to items getting cut off with a limit.
-    #
-    # The last_update_date should always be distinct, and ensures that you don't get skipped results.
-    # However, created_date is the only one indexed, so it's needed for performance reasons.
-
-    while True:
-        progress_util.update_season_msg(msg_prefix +
-                                        'get balance history (' + str(limit) + ')... ' + str("DATE SOMETHING HERE"))
-
-        data = get_balance_history_for_token_impl_v2(username,
-                                                     token=token,
-                                                     from_date=from_date,
-                                                     last_update_date=last_update_date,
-                                                     limit=limit,
-                                                     unclaimed_sps=unclaimed_sps)
-
-        if data:
-            complete_result += data
-            if datetime.strptime(data[-1]["created_date"], "%Y-%m-%dT%H:%M:%S.%fZ") < end_date:
-                progress_util.update_season_msg(msg_prefix +
-                                                ': last pull contains all season information data from ' +
-                                                str(start_date) + ' till NOW')
-                break
-
-            # Update the parameters for the next request
-            from_date = data[-1]["created_date"]
-            last_update_date = data[-1]["last_update_date"]
-        else:
-            progress_util.update_season_msg(
-                msg_prefix + ': last pull contains no data assume all data is collected ' +
-                str(start_date) + ' till NOW')
-            break
-
-    return complete_result
-
-
-def get_balance_history_for_token_impl(username, token='DEC', offset=0, limit=1000, unclaimed_sps=False):
+def get_balance_history_for_token_impl(token='DEC',
+                                       offset=0,
+                                       limit=1000,
+                                       unclaimed_sps=False,
+                                       token_params=None):
     token_types = ['SPS', 'DEC', 'VOUCHER', 'CREDITS', 'MERITS']
     if token not in token_types:
         raise ValueError('Invalid token type. Expected one of: %s' % token_types)
@@ -185,8 +90,7 @@ def get_balance_history_for_token_impl(username, token='DEC', offset=0, limit=10
         balance_history_link = 'players/balance_history?token_type='
 
     position_params = '&offset=' + str(offset) + '&limit=' + str(limit)
-    address = base_url + balance_history_link + token + position_params + store_util.get_token_as_params_string(
-        username)
+    address = base_url + balance_history_link + token + position_params + token_params
 
     response = http.get(address)
     if response.status_code == 200 and response.text != '':
@@ -195,12 +99,13 @@ def get_balance_history_for_token_impl(username, token='DEC', offset=0, limit=10
         return []
 
 
-def get_balance_history_for_token_impl_v2(username,
-                                          token='DEC',
-                                          from_date=None,
-                                          last_update_date=None,
-                                          limit=1000,
-                                          unclaimed_sps=False):
+def get_balance_history_for_token_impl_v2(
+        token='DEC',
+        from_date=None,
+        last_update_date=None,
+        limit=1000,
+        unclaimed_sps=False,
+        token_params=None):
     token_types = ['SPS', 'DEC', 'VOUCHER', 'CREDITS', 'MERITS']
     if token not in token_types:
         raise ValueError('Invalid token type. Expected one of: %s' % token_types)
@@ -210,14 +115,9 @@ def get_balance_history_for_token_impl_v2(username,
     else:
         balance_history_link = 'players/balance_history'
 
-    token_param = store_util.get_token(username)
-    params = {
-        "username": token_param.username,
-        'version': token_param.version,
-        'token': token_param.token,
-        "token_type": token,
-        "limit": limit
-    }
+    params = token_params
+    params['token_type'] = token
+    params['limit'] = limit
     if from_date:
         params["from"] = from_date
     if last_update_date:
@@ -231,8 +131,9 @@ def get_balance_history_for_token_impl_v2(username,
 
 
 def player_exist(account_name):
-    address = base_url + 'players/details?name=' + str(account_name)
-    result = http.get(address)
+    address = base_url + 'players/details'
+    params = {'name': account_name}
+    result = http.get(address, params=params)
     if result.status_code == 200 and 'error' not in result.json():
         return True
     else:
@@ -325,14 +226,25 @@ def get_cards_by_ids(ids):
 
 
 def get_player_history_rewards(username):
-    address = base_url + 'players/history?username=' + str(
-        username) + '&from_block=-1&limit=500&types=card_award,claim_reward'
-    return http.get(address).json()
+    address = base_url + 'players/history'
+    params = {
+        'username': username,
+        'from_block': -1,
+        'limit': 500,
+        'types': 'card_award,claim_reward'
+    }
+    return http.get(address, params=params).json()
 
 
 def get_player_history_season_rewards_df(username):
-    address = base_url + 'players/history?username=' + str(username) + '&from_block=-1&limit=1000&types=claim_reward'
-    result = http.get(address).json()
+    address = base_url + 'players/history'
+    params = {
+        'username': username,
+        'from_block': -1,
+        'limit': 1000,
+        'types': 'claim_reward'
+    }
+    result = http.get(address, params=params).json()
     df = pd.DataFrame()
     for row in result:
         df = pd.concat([df, pd.DataFrame(json.loads(row['data']), index=[0])], ignore_index=True)
@@ -342,35 +254,19 @@ def get_player_history_season_rewards_df(username):
 
 
 def get_battle(battle_id):
-    address = base_url + 'battle/result?id=' + str(battle_id)
-    return http.get(address).json()
+    address = base_url + 'battle/result'
+    params = {'id': battle_id}
+    return http.get(address, params=params).json()
 
 
 def is_maintenance_mode():
     return get_settings()['maintenance_mode']
 
 
-def is_season_reward_claimed(account, current_season_data):
-    df = get_player_history_season_rewards_df(account)
-    if df.empty:
-        # in this case there are not season rewards found at all assume inactive account or rental account
-        # proceed processing balances
-        logging.info('No season rewards found at all for account: ' + str(account))
-        logging.info('Assume inactive account or rental account continue processing season for : ' + str(account))
-        return True
-
-    if df.loc[df.season == current_season_data['id'] - 1].empty:
-        logging.info('Season results not claimed yet for account: ' + str(account))
-        logging.info('Stop season processing for: ' + str(account))
-        return False
-
-    logging.info('Continue season results are claimed for account: ' + str(account))
-    return True
-
-
 def get_staked_dec_df(account_name):
-    address = land_url + 'land/stake/decstaked?player=' + str(account_name)
-    return pd.DataFrame(http.get(address).json()['data'])
+    address = land_url + 'land/stake/decstaked'
+    params = {'player': account_name}
+    return pd.DataFrame(http.get(address, params=params).json()['data'])
 
 
 def compute_sig(string_to_sign: str, priv_key: str):
@@ -397,13 +293,12 @@ def get_token(username: str, private_key: str):
     return token, version
 
 
-def verify_token(account_name):
+def verify_token(token_params):
     # Verify token is now done via battle history 2 that needs an specific user token to retrieve data
-    token_params = store_util.get_token_as_params_string(account_name)
     if token_params:
-        address = base_url + 'battle/history2?' + token_params
-        result = http.get(address)
+        address = base_url + 'battle/history2'
+        params = token_params
+        result = http.get(address, params=params)
         if result.status_code == 200:
             return True
-
     return False
