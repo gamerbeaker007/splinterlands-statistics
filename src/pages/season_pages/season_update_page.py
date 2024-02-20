@@ -79,7 +79,7 @@ def update_season_label(user, tigger):
         raise PreventUpdate
 
     current_season_data = spl.get_current_season()
-    if store_util.is_last_season_processed(user, current_season_data):
+    if not store_util.get_token_dict(user) or store_util.is_last_season_processed(user, current_season_data):
         return '', {'display': 'none'}
     else:
         if spl_util.is_season_reward_claimed(user, current_season_data):

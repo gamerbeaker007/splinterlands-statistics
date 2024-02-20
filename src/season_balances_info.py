@@ -20,43 +20,41 @@ def update_balances_store(account_name, current_season_data):
         dec_df = pd.DataFrame(
             spl_util.get_balance_history_for_token(
                 account_name,
-                from_date=start_date,
+                start_date=start_date,
                 token="DEC",
             )
         )
         unclaimed_sps_df = pd.DataFrame(
-            spl_util.get_balance_history_for_token(
+            spl_util.get_unclaimed_sps_balance_history_for_token(
                 account_name,
-                from_date=start_date,
-                token="SPS",
-                unclaimed_sps=True,
+                start_date=start_date,
             )
         )
         sps_df = pd.DataFrame(
             spl_util.get_balance_history_for_token(
                 account_name,
-                from_date=start_date,
+                start_date=start_date,
                 token="SPS",
             )
         )
         merits_df = pd.DataFrame(
             spl_util.get_balance_history_for_token(
                 account_name,
-                from_date=start_date,
+                start_date=start_date,
                 token="MERITS",
             )
         )
         credits_df = pd.DataFrame(
             spl_util.get_balance_history_for_token(
                 account_name,
-                from_date=start_date,
+                start_date=start_date,
                 token="CREDITS",
             )
         )
         vouchers_df = pd.DataFrame(
             spl_util.get_balance_history_for_token(
                 account_name,
-                from_date=start_date,
+                start_date=start_date,
                 token="VOUCHER",
             )
         )
@@ -70,10 +68,8 @@ def update_balances_store(account_name, current_season_data):
         )
 
         unclaimed_sps_df = pd.DataFrame(
-            spl_util.get_balance_history_for_token(
+            spl_util.get_unclaimed_sps_balance_history_for_token(
                 account_name,
-                token="SPS",
-                unclaimed_sps=True,
             )
         )
         sps_df = pd.DataFrame(

@@ -81,22 +81,14 @@ def get_season_end_time(season_id):
     return result
 
 
-def get_balance_history_for_token_impl(token='DEC',
-                                       offset=0,
-                                       limit=1000,
-                                       unclaimed_sps=False,
-                                       token_params=None):
-    token_types = ['SPS', 'DEC', 'VOUCHER', 'CREDITS', 'MERITS']
-    if token not in token_types:
-        raise ValueError('Invalid token type. Expected one of: %s' % token_types)
-
-    if unclaimed_sps:
-        balance_history_link = 'players/unclaimed_balance_history'
-    else:
-        balance_history_link = 'players/balance_history'
+def get_unclaimed_sps_balance_history_for_token_impl(
+        offset=0,
+        limit=1000,
+        token_params=None):
+    balance_history_link = 'players/unclaimed_balance_history'
 
     params = token_params
-    params['token_type'] = token
+    params['token_type'] = 'SPS'
     params['offset'] = offset
     params['limit'] = limit
     address = base_url + balance_history_link
@@ -119,10 +111,7 @@ def get_balance_history_for_token_impl_v2(
     if token not in token_types:
         raise ValueError('Invalid token type. Expected one of: %s' % token_types)
 
-    if unclaimed_sps:
-        balance_history_link = 'players/unclaimed_balance_history'
-    else:
-        balance_history_link = 'players/balance_history'
+    balance_history_link = 'players/balance_history'
 
     params = token_params
     params['token_type'] = token
@@ -259,14 +248,14 @@ def get_player_history_rewards(username):
     return http.get(address, params=params).json()
 
 
-def get_player_history_season_rewards_df(username):
+def get_player_history_season_rewards_df(token_params):
     address = base_url + 'players/history'
-    params = {
-        'username': username,
-        'from_block': -1,
-        'limit': 1000,
-        'types': 'claim_reward'
-    }
+
+    params = token_params
+    params['from_block'] = -1
+    params['limit'] = 1000
+    params['types'] = 'claim_reward'
+
     result = http.get(address, params=params).json()
     df = pd.DataFrame()
     for row in result:

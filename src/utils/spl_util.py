@@ -7,62 +7,56 @@ from src.configuration import config
 from src.utils import progress_util, store_util
 
 
-def get_balance_history_for_token(username, token='DEC', from_date=None, unclaimed_sps=False):
+def get_unclaimed_sps_balance_history_for_token(username, start_date=None):
     limit = 1000
     offset = 0
     max_transactions = 1000000
-    print_suffix = ''
 
-    if unclaimed_sps:
-        print_suffix = ' UNCLAIMED'
-
+    msg_prefix = 'SPS UNCLAIMED (' + str(username) + ') '
     token_params = store_util.get_token_dict(username)
 
-    complete_result = current_result = spl.get_balance_history_for_token_impl(
-        token=token,
-        offset=offset,
-        limit=limit,
-        unclaimed_sps=unclaimed_sps,
-        token_params=token_params
-    )
+    total_items = 0
+    complete_result = []
+    while True:
 
-    while len(current_result) > 0 and offset <= max_transactions:
-        progress_util.update_season_msg(str(token) + str(print_suffix) + ' (' + str(username) + ')' +
-                                        ': More then \'' + str(offset + limit) +
-                                        '\' returned, continue for another balance pull...')
-        current_result = spl.get_balance_history_for_token_impl(
-            token=token,
-            offset=offset + limit,
+        data = spl.get_unclaimed_sps_balance_history_for_token_impl(
+            offset=offset,
             limit=limit,
-            unclaimed_sps=unclaimed_sps,
             token_params=token_params
         )
-        complete_result += current_result
-        offset += limit
-        created_date = parser.parse(complete_result[-1]['created_date'])
-        if from_date and from_date > created_date:
+
+        if data:
+            complete_result += data
+            offset += limit
+            total_items += len(data)
             progress_util.update_season_msg(
-                token + ': last pull contains all season information data from '' + str(from_date) + '' till NOW')
+                msg_prefix +
+                ' get unclaimed sps balance history total found items: ' +
+                str(total_items))
+
+            created_date = parser.parse(complete_result[-1]['created_date'])
+            if start_date and created_date < start_date:
+                progress_util.update_season_msg(
+                    msg_prefix +
+                    ' last pull contains all season information data from ' +
+                    str(start_date) + ' till NOW')
+                break
+        else:
+            progress_util.update_season_msg(
+                msg_prefix +
+                ': last pull contains no data assume all data is collected ' +
+                str(start_date) + ' till NOW')
             break
-
-    if offset > max_transactions:
-        progress_util.update_season_msg(
-            'Stop pulling data MAX transactions (' + str(max_transactions) + ') reached. Possible not all data pulled')
-    progress_util.update_season_msg(token + '(' + str(username) + ')' + ': all data pulled')
-
+    progress_util.update_season_msg(msg_prefix + ': all data pulled')
     return complete_result
 
 
-def get_balance_history_for_token_v2(username, token='DEC', start_date=None, unclaimed_sps=False):
+def get_balance_history_for_token(username, token='DEC', start_date=None):
     limit = 1000
-
-    print_suffix = ''
-    if unclaimed_sps:
-        print_suffix = ' UNCLAIMED'
 
     token_params = store_util.get_token_dict(username)
 
-    msg_prefix = str(token) + str(print_suffix) + ' (' + str(username) + ') '
+    msg_prefix = str(token) + ' (' + str(username) + ') '
     complete_result = []
     from_date = None  # from is none the spl api will make it to current date
     last_update_date = None  # Not needed for the first call
@@ -76,21 +70,18 @@ def get_balance_history_for_token_v2(username, token='DEC', start_date=None, unc
     #
     # The last_update_date should always be distinct, and ensures that you don't get skipped results.
     # However, created_date is the only one indexed, so it's needed for performance reasons.
+    total_items = 0
     while True:
         data = spl.get_balance_history_for_token_impl_v2(
             token=token,
             from_date=from_date,
             last_update_date=last_update_date,
             limit=limit,
-            unclaimed_sps=unclaimed_sps,
             token_params=token_params
         )
 
-        progress_util.update_season_msg(
-            msg_prefix +
-            'get balance history found items: ' +
-            str(len(data))
-        )
+        total_items += len(data)
+        progress_util.update_season_msg(msg_prefix + 'get balance history found items: ' + str(total_items))
 
         if data:
             complete_result += data
@@ -98,7 +89,7 @@ def get_balance_history_for_token_v2(username, token='DEC', start_date=None, unc
             from_date = data[-1]["created_date"]
             last_update_date = data[-1]["last_update_date"]
 
-            if parser.parse(from_date) < parser.parse(start_date):
+            if start_date and parser.parse(from_date) < start_date:
                 progress_util.update_season_msg(
                     msg_prefix +
                     ': last pull contains all season information data from ' +
@@ -120,7 +111,7 @@ def get_battle_history_df(account):
 
 
 def is_season_reward_claimed(account, current_season_data):
-    df = spl.get_player_history_season_rewards_df(account)
+    df = spl.get_player_history_season_rewards_df(store_util.get_token_dict(account))
     if df.empty:
         # in this case there are not season rewards found at all assume inactive account or rental account
         # proceed processing balances
