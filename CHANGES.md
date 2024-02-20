@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.15.1
+
+- FIX generate hive blog player/history need token.
+
 ## 0.15.0
 
 - Update balance history API calls. SPL updated parameters.

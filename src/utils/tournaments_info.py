@@ -5,11 +5,12 @@ from dateutil import parser
 
 from src.api import spl
 from src.static.static_values_enum import RatingLevel
+from src.utils import store_util
 
 
 def get_tournaments_info(username, start_date, end_date):
     collect = pd.DataFrame()
-    tournaments_ids = spl.get_player_tournaments_ids(username)
+    tournaments_ids = spl.get_player_tournaments_ids(store_util.get_token_dict(username))
     for tournament_id in tournaments_ids:
         tournament = spl.get_tournament(tournament_id)
 

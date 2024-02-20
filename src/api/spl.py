@@ -188,14 +188,13 @@ def get_tournament(tournament_id):
     return http.get(address, params=params).json()
 
 
-def get_player_tournaments_ids(username):
+def get_player_tournaments_ids(token_params):
     address = base_url + 'players/history'
-    params = {
-        'username': username,
-        'from_block': -1,
-        'limit': 500,
-        'types': 'token_transfer'
-    }
+    params = token_params
+    params['from_block'] = -1
+    params['limit'] = 500
+    params['types'] = 'token_transfer'
+
     result = http.get(address, params=params).json()
     tournaments_transfers = list(filter(lambda item: 'enter_tournament' in item['data'], result))
     tournaments_ids = []
@@ -237,14 +236,13 @@ def get_cards_by_ids(ids):
         return None
 
 
-def get_player_history_rewards(username):
+def get_player_history_rewards(token_params):
     address = base_url + 'players/history'
-    params = {
-        'username': username,
-        'from_block': -1,
-        'limit': 500,
-        'types': 'card_award,claim_reward'
-    }
+    params = token_params
+    params['from_block'] = -1
+    params['limit'] = 500
+    params['types'] = 'card_award,claim_reward'
+
     return http.get(address, params=params).json()
 
 
