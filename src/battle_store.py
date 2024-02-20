@@ -2,10 +2,9 @@ import logging
 
 import pandas as pd
 
-from src.api import spl
 from src.configuration import config, store
 from src.static.static_values_enum import MatchType, Format
-from src.utils import store_util, progress_util
+from src.utils import store_util, progress_util, spl_util
 
 
 def get_uid_array(team):
@@ -142,7 +141,7 @@ def add_losing_battle_team(account, team, battle):
 
 
 def get_battles_to_process(account):
-    battle_history = spl.get_battle_history_df(account)
+    battle_history = spl_util.get_battle_history_df(account)
     if battle_history is not None and \
             not battle_history.empty and \
             not store.last_processed.empty and \
@@ -155,7 +154,7 @@ def get_battles_to_process(account):
 
 
 def process_battle(account):
-    if store_util.get_token_params(account):
+    if store_util.get_token_dict(account):
         battle_history = get_battles_to_process(account)
         if battle_history is not None:
             log_battle_note(len(battle_history.index))

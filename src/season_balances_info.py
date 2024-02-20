@@ -2,9 +2,8 @@ import numpy as np
 import pandas as pd
 from dateutil import parser
 
-from src.api import spl
 from src.configuration import store
-from src.utils import store_util, progress_util
+from src.utils import store_util, progress_util, spl_util
 
 
 def update_balances_store(account_name, current_season_data):
@@ -18,35 +17,85 @@ def update_balances_store(account_name, current_season_data):
         season_array = np.arange(start_from_season, current_season_data['id'])
         start_date, end_date = get_start_end_time_season(start_from_season)
         start_date = parser.parse(start_date)
-        dec_df = pd.DataFrame(spl.get_balance_history_for_token(account_name,
-                                                                from_date=start_date,
-                                                                token="DEC"))
-        unclaimed_sps_df = pd.DataFrame(spl.get_balance_history_for_token(account_name,
-                                                                          from_date=start_date,
-                                                                          token="SPS",
-                                                                          unclaimed_sps=True))
-        sps_df = pd.DataFrame(spl.get_balance_history_for_token(account_name,
-                                                                from_date=start_date,
-                                                                token="SPS"))
-        merits_df = pd.DataFrame(spl.get_balance_history_for_token(account_name,
-                                                                   from_date=start_date,
-                                                                   token="MERITS"))
-        credits_df = pd.DataFrame(spl.get_balance_history_for_token(account_name,
-                                                                    from_date=start_date,
-                                                                    token="CREDITS"))
-        vouchers_df = pd.DataFrame(spl.get_balance_history_for_token(account_name,
-                                                                     from_date=start_date,
-                                                                     token="VOUCHER"))
+        dec_df = pd.DataFrame(
+            spl_util.get_balance_history_for_token(
+                account_name,
+                start_date=start_date,
+                token="DEC",
+            )
+        )
+        unclaimed_sps_df = pd.DataFrame(
+            spl_util.get_unclaimed_sps_balance_history_for_token(
+                account_name,
+                start_date=start_date,
+            )
+        )
+        sps_df = pd.DataFrame(
+            spl_util.get_balance_history_for_token(
+                account_name,
+                start_date=start_date,
+                token="SPS",
+            )
+        )
+        merits_df = pd.DataFrame(
+            spl_util.get_balance_history_for_token(
+                account_name,
+                start_date=start_date,
+                token="MERITS",
+            )
+        )
+        credits_df = pd.DataFrame(
+            spl_util.get_balance_history_for_token(
+                account_name,
+                start_date=start_date,
+                token="CREDITS",
+            )
+        )
+        vouchers_df = pd.DataFrame(
+            spl_util.get_balance_history_for_token(
+                account_name,
+                start_date=start_date,
+                token="VOUCHER",
+            )
+        )
 
     else:
-        dec_df = pd.DataFrame(spl.get_balance_history_for_token(account_name, token="DEC"))
-        unclaimed_sps_df = pd.DataFrame(spl.get_balance_history_for_token(account_name,
-                                                                          token="SPS",
-                                                                          unclaimed_sps=True))
-        sps_df = pd.DataFrame(spl.get_balance_history_for_token(account_name, token="SPS"))
-        merits_df = pd.DataFrame(spl.get_balance_history_for_token(account_name, token="MERITS"))
-        credits_df = pd.DataFrame(spl.get_balance_history_for_token(account_name, token="CREDITS"))
-        vouchers_df = pd.DataFrame(spl.get_balance_history_for_token(account_name, token="VOUCHER"))
+        dec_df = pd.DataFrame(
+            spl_util.get_balance_history_for_token(
+                account_name,
+                token="DEC",
+            )
+        )
+
+        unclaimed_sps_df = pd.DataFrame(
+            spl_util.get_unclaimed_sps_balance_history_for_token(
+                account_name,
+            )
+        )
+        sps_df = pd.DataFrame(
+            spl_util.get_balance_history_for_token(
+                account_name,
+                token="SPS",
+            )
+        )
+        merits_df = pd.DataFrame(
+            spl_util.get_balance_history_for_token(
+                account_name,
+                token="MERITS",
+            )
+        )
+        credits_df = pd.DataFrame(
+            spl_util.get_balance_history_for_token(
+                account_name,
+                token="CREDITS",
+            )
+        )
+        vouchers_df = pd.DataFrame(
+            spl_util.get_balance_history_for_token(
+                account_name,
+                token="VOUCHER",
+            )
+        )
 
         # Concatenate the dataframes
         combined_df = pd.concat([dec_df, unclaimed_sps_df, sps_df, merits_df, credits_df, vouchers_df],

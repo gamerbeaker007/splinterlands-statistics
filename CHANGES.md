@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.15.0
+
+- Update balance history API calls. SPL updated parameters.
+
 ## 0.14.2
 
 - FIX/IMPROVE: test new method of hive calls when nodes are down.

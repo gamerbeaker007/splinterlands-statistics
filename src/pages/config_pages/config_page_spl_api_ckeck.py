@@ -36,7 +36,7 @@ def get_layout():
 
 
 def check_spl_api(account):
-    if spl.verify_token(account):
+    if spl.verify_token(store_util.get_token_dict(account)):
         children = [html.I(className='m-1 fas fa-check-circle'), str(account) + ' - connected']
         color = 'success'
     else:

@@ -35,7 +35,7 @@ def get_layout():
             width=3
         ),
         dbc.Col(
-            dbc.Button('Update',
+            dbc.Button('Connect',
                        id=config_page_ids.add_posting_key_button,
                        className='m-1',
                        ),

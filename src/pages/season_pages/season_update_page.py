@@ -8,7 +8,7 @@ from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.pages.season_pages import season_ids
 from src.pages.shared_modules import styles
-from src.utils import store_util
+from src.utils import store_util, spl_util
 from src.utils.trace_logging import measure_duration
 from src.utils.update import SERVER_MODE_INTERVAL_IN_MINUTES
 
@@ -79,10 +79,10 @@ def update_season_label(user, tigger):
         raise PreventUpdate
 
     current_season_data = spl.get_current_season()
-    if store_util.is_last_season_processed(user, current_season_data):
+    if not store_util.get_token_dict(user) or store_util.is_last_season_processed(user, current_season_data):
         return '', {'display': 'none'}
     else:
-        if spl.is_season_reward_claimed(user, current_season_data):
+        if spl_util.is_season_reward_claimed(user, current_season_data):
             if config.server_mode:
                 msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
                       'results are in. Waiting to be process max waiting time: ' + \
@@ -108,7 +108,7 @@ def update_season_token_label(user, tigger):
     if not user:
         raise PreventUpdate
 
-    if store_util.get_token_params(user):
+    if store_util.get_token_dict(user):
         return '', {'display': 'none'}
 
     return 'No token provided. For this user season statistics will not be updated.', {'display': 'block'}
