@@ -1,14 +1,7 @@
 # Splinterlands Statistics
 
-.. image:: https://github.com/gamerbeaker007/splinterlands-statistics/workflows/main/badge.svg
-:target: https://github.com/gamerbeaker007/splinterlands-statistics/actions?query=workflow%3Amain
-:alt: build status
-
-.. image:: https://results.pre-commit.ci/badge/github/gamerbeaker007/splinterlands-statistics/main.svg
-:target: https://results.pre-commit.ci/latest/github/gamerbeaker007/splinterlands-statistics/main
-:alt: pre-commit.ci status
-
-![Flake8](https://img.shields.io/github/workflow/status/gamerbeaker007/splinterlands-statistics/Flake8/main?label=Flake8&logo=github&style=flat-square)
+![Flake8](https://img.shields.io/github/workflow/status/gamerbeaker007/splinterlands-statistics/Flake8/${{ github.ref
+}}?label=Flake8&logo=github&style=flat-square)
 
 # Instructions
 
