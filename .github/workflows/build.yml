@@ -22,14 +22,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8
           pip install flake8-html
-      #          pip install genbadge[all]
+          pip install genbadge[all]
+          pip install pytest pytest-cov
 
       - name: Run Flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
-           flake8 src --format=html --htmldir ./reports/flake8 --statistics --tee --output-file ./reports/flake8/flake8stats.txt
+          flake8 src --exit-zero --format=html --htmldir ./reports/flake8 --statistics --tee --output-file ./reports/flake8/flake8stats.txt
+          genbadge flake8 -i ./reports/flake8/flake8stats.txt -o ./reports/flake8-badge.svg
+
       - name: Test with pytest
         run: |
-          pip install pytest pytest-cov
-          python -m pytest --cov=./src --cov-report xml
-      
+          python -m pytest 
+          genbadge coverage -i ./reports/coverage/cov.xml -o ./reports/coverage-badge.svg
+      - name: Generate badge
+        run: genbadge --label="Tests" --status=${{ job.status }} > badge.svg
+
+      - name: Upload badge
+        uses: actions/upload-artifact@v2
+        with:
+          name: badge
+          path: badge.svg
