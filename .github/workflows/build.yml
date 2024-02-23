@@ -40,10 +40,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Flake8 badge
-          path: ./reports/flake8-badge.svg
+          path: reports/flake8-badge.svg
 
       - name: Upload coverage badge
         uses: actions/upload-artifact@v4
         with:
           name: Coverage badge
-          path: ./reports/coverage-badge.svg
+          path: reports/coverage-badge.svg
