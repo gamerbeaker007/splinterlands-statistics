@@ -1,6 +1,6 @@
 # Splinterlands Statistics
 
-![Flake8](https://img.shields.io/github/workflow/status/gamerbeaker007/splinterlands-statistics/Flake8/${{ github.ref }}?label=Flake8&logo=github&style=flat-square)
+[![Flake8 Status](./reports/flake8/flake8-badge.svg?dummy=8484744)](./reports/flake8/index.html)
 
 # Instructions
 
