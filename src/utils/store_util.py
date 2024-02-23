@@ -201,14 +201,16 @@ def update_season_log():
             if not is_last_season_processed(account, current_season_data):
                 if spl_util.is_season_reward_claimed(account, current_season_data):
                     season_balances_info.update_balances_store(account, current_season_data)
-                    store.season_modern_battle_info = season_battle_info.get_season_battles(account,
-                                                                                            store.season_modern_battle_info.copy(),
-                                                                                            Format.modern,
-                                                                                            current_season_data)
-                    store.season_wild_battle_info = season_battle_info.get_season_battles(account,
-                                                                                          store.season_wild_battle_info.copy(),
-                                                                                          Format.wild,
-                                                                                          current_season_data)
+                    store.season_modern_battle_info = season_battle_info.get_season_battles(
+                        account,
+                        store.season_modern_battle_info.copy(),
+                        Format.modern,
+                        current_season_data)
+                    store.season_wild_battle_info = season_battle_info.get_season_battles(
+                        account,
+                        store.season_wild_battle_info.copy(),
+                        Format.wild,
+                        current_season_data)
             else:
                 progress_util.update_season_msg("No seasons to process for: " + str(account))
         else:

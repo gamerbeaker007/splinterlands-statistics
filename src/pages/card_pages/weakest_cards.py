@@ -2,10 +2,10 @@ from io import StringIO
 
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, Output, Input, State
+from dash import html, Output, Input
 
-from src.pages.main_dash import app
 from src.pages.card_pages import card_page_ids, card
+from src.pages.main_dash import app
 from src.static.static_values_enum import CardType
 from src.utils.trace_logging import measure_duration
 
@@ -16,10 +16,9 @@ layout = dbc.Row([dbc.Row(html.H1("Weakest against")),
 @app.callback(
     Output(card_page_ids.weakest_against_cards, 'children'),
     Input(card_page_ids.filtered_cards_losing_df, 'data'),
-    State(card_page_ids.filter_cards_settings, 'data')
 )
 @measure_duration
-def update_weakest_cards(filtered_df, stored_filter_settings):
+def update_weakest_cards(filtered_df):
     if not filtered_df:
         return "No card selected"
 
@@ -28,7 +27,6 @@ def update_weakest_cards(filtered_df, stored_filter_settings):
     result_layout = []
 
     if not filtered_df.empty:
-        account = stored_filter_settings['account']
         summoners_df = filtered_df.loc[filtered_df.card_type == CardType.summoner.value]
         if not summoners_df.empty:
             result_layout.append(dbc.Row(html.H3("Most lost against  summoner (2)")))

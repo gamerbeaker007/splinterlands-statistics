@@ -10,7 +10,6 @@ from src.utils import progress_util, store_util
 def get_unclaimed_sps_balance_history_for_token(username, start_date=None):
     limit = 1000
     offset = 0
-    max_transactions = 1000000
 
     msg_prefix = 'SPS UNCLAIMED (' + str(username) + ') '
     token_params = store_util.get_token_dict(username)

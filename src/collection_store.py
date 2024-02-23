@@ -15,7 +15,13 @@ def update_collection():
         current_collection_df = pd.concat([current_collection_df, df])
 
     if not store.collection.empty:
-        store.collection = current_collection_df.reset_index().merge(store.collection.reset_index()['uid'], on='uid', how='left').set_index('uid').sort_index()
+        store.collection = (
+            current_collection_df
+            .reset_index()
+            .merge(store.collection.reset_index()['uid'], on='uid', how='left')
+            .set_index('uid')
+            .sort_index()
+        )
         store.collection.fillna(0, inplace=True)
     else:
         store.collection = current_collection_df

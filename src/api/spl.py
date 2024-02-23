@@ -105,7 +105,6 @@ def get_balance_history_for_token_impl_v2(
         from_date=None,
         last_update_date=None,
         limit=1000,
-        unclaimed_sps=False,
         token_params=None):
     token_types = ['SPS', 'DEC', 'VOUCHER', 'CREDITS', 'MERITS']
     if token not in token_types:
@@ -275,8 +274,8 @@ def get_staked_dec_df(account_name):
     return pd.DataFrame(http.get(address, params=params).json()['data'])
 
 
-def compute_sig(string_to_sign: str, priv_key: str):
-    bytestring_signature = sign_message(string_to_sign, priv_key)
+def compute_sig(string_to_sign: str, private_key: str):
+    bytestring_signature = sign_message(string_to_sign, private_key)
     sig = hexlify(bytestring_signature).decode('ascii')
     return sig
 
@@ -304,7 +303,7 @@ def get_token(username: str, private_key: str):
 
 
 def verify_token(token_params):
-    # Verify token is now done via battle history 2 that needs an specific user token to retrieve data
+    # Verify token is now done via battle history 2 that needs a specific user token to retrieve data
     if token_params:
         address = base_url + 'battle/history2'
         params = token_params

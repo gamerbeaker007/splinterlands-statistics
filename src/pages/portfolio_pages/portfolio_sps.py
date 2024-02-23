@@ -31,9 +31,8 @@ def update_portfolio_sps_graph(filtered_df, theme):
         return chart_util.blank_fig(theme)
     else:
         portfolio_df.sort_values(by='date', inplace=True)
-        sps_df = portfolio_df.loc[:,
-                 portfolio_df.columns.str.startswith('date') |
-                 portfolio_df.columns.str.startswith('sps')]
+        columns = portfolio_df.columns.str.startswith('date') | portfolio_df.columns.str.startswith('sps')
+        sps_df = portfolio_df.loc[:, columns]
 
         # drop empty rows
         sps_df = sps_df.set_index('date').dropna(how='all')

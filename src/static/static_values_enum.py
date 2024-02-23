@@ -4,12 +4,13 @@ league_ratings_all = [0, 400, 700, 1000, 1300, 1600, 1900, 2200, 2500, 2800, 310
 league_ratings = [0, 100, 1000, 1900, 2800, 3700]
 league_colors = ['lightgray', 'brown', 'gray', 'yellow', 'purple', 'orange']
 
-cards_icon_url = "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/open_packs/packsv2/img_pack_chaos-legion_opt.png"
-dec_icon_url = "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/buy_coins/Icon_DEC.svg"
-land_icon_url = "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/popups/land_presale/img_plot.svg"
-sps_icon_url = "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/shop/cl/img_sps-shard_128.png"
-coins_icon_url = "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/shop/img_credits.png"
-other_icon_url = "https://d36mxiodymuqjm.cloudfront.net/website/nav/icon_nav_items_active@2x.png"
+WEB_URL = "https://d36mxiodymuqjm.cloudfront.net/website/"
+cards_icon_url = WEB_URL + "ui_elements/open_packs/packsv2/img_pack_chaos-legion_opt.png"
+dec_icon_url = WEB_URL + "website/ui_elements/buy_coins/Icon_DEC.svg"
+land_icon_url = WEB_URL + "website/ui_elements/popups/land_presale/img_plot.svg"
+sps_icon_url = WEB_URL + "website/ui_elements/shop/cl/img_sps-shard_128.png"
+coins_icon_url = WEB_URL + "website/ui_elements/shop/img_credits.png"
+other_icon_url = WEB_URL + "website/nav/icon_nav_items_active@2x.png"
 
 
 class ExtendedEnum(Enum):

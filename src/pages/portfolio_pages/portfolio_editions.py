@@ -32,12 +32,12 @@ def update_portfolio_editions_graph(filtered_df, theme):
         return chart_util.blank_fig(theme)
     else:
         portfolio_df.sort_values(by='date', inplace=True)
-        editions_df = portfolio_df.loc[:,
-                      portfolio_df.columns.str.startswith('date') |
-                      (portfolio_df.columns.str.startswith(tuple(Edition.list_names())) &
-                       (portfolio_df.columns.str.endswith("market_value") | portfolio_df.columns.str.endswith(
-                           "_bcx"))
-                       )]
+
+        # filter market value and bcx columns for every edition
+        date_column = portfolio_df.columns.str.startswith('date')
+        columns = portfolio_df.columns.str.endswith("market_value") | portfolio_df.columns.str.endswith("_bcx")
+        edition_columns = portfolio_df.columns.str.startswith(tuple(Edition.list_names()))
+        editions_df = portfolio_df.loc[:, date_column | (edition_columns & columns)]
 
         # drop empty rows
         editions_df = editions_df.set_index('date').dropna(how='all')

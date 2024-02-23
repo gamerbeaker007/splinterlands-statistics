@@ -15,4 +15,3 @@ layout = dbc.Container([
 
     dcc.Store(id=season_ids.trigger_season_update),
 ])
-

@@ -47,4 +47,3 @@ def update_portfolios():
 
     store.portfolio.fillna(0, inplace=True)
     store_util.save_stores()
-

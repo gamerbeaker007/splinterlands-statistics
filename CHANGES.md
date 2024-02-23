@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.16.0
+
+- Add flake linting in the workflow.
+
 ## 0.15.1
 
 - FIX generate hive blog player/history need token.

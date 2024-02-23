@@ -38,4 +38,3 @@ def update_land_data():
             if not df.empty:
                 store.land = pd.concat([store.land, df], ignore_index=True)
     store_util.save_stores()
-

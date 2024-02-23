@@ -15,7 +15,8 @@ def measure_duration(func):
 
         if config.trace:
             # Log the duration
-            logging.info(f"Function '{func.__name__}' took {duration:.4f} seconds to execute. tigger: '{ctx.triggered_id}'")
+            logging.info(f"Function '{func.__name__}' took {duration:.4f}"
+                         f" seconds to execute. tigger: '{ctx.triggered_id}'")
 
         return result
 
