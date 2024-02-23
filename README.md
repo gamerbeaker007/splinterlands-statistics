@@ -1,6 +1,7 @@
 # Splinterlands Statistics
 
-[![Flake8 Status](./reports/flake8/flake8-badge.svg?dummy=8484744)](./reports/flake8/index.html)
+![Flake8](https://github.com/gamerbeaker007/splinterlands-statistics/workflows/CI/flake8-badge.svg)
+![Tests Coverage](https://github.com/gamerbeaker007/splinterlands-statistics/workflows/CI/coverage-badge.svg)
 
 # Instructions
 

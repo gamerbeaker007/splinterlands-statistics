@@ -6,7 +6,7 @@ on:
       - '*'
 
 jobs:
-  flake8:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -35,11 +35,9 @@ jobs:
         run: |
           python -m pytest 
           genbadge coverage -i ./reports/coverage/cov.xml -o ./reports/coverage-badge.svg
-      - name: Generate badge
-        run: genbadge --label="Tests" --status=${{ job.status }} > badge.svg
 
       - name: Upload badge
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: badge
-          path: badge.svg
+          name: Badges
+          path: ./reports/*.svg
