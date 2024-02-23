@@ -36,8 +36,14 @@ jobs:
           python -m pytest 
           genbadge coverage -i ./reports/coverage/cov.xml -o ./reports/coverage-badge.svg
 
-      - name: Upload badge
+      - name: Upload flake8 badge
         uses: actions/upload-artifact@v4
         with:
-          name: Badges
-          path: ./reports/*.svg
+          name: Flake8 badge
+          path: ./reports/flake8-badge.svg
+
+      - name: Upload coverage badge
+        uses: actions/upload-artifact@v4
+        with:
+          name: Coverage badge
+          path: ./reports/coverage-badge.svg
