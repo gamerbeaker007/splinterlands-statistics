@@ -1,4 +1,4 @@
-name: Flake8
+name: Build with coverage
 
 on:
   push:
@@ -22,9 +22,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8
           pip install flake8-html
-          pip install genbadge[all]
+      #          pip install genbadge[all]
 
       - name: Run Flake8
         run: |
-          flake8 src --exit-zero --format=html --htmldir ./reports/flake8 --statistics --tee --output-file ./reports/flake8/flake8stats.txt
-          genbadge flake8 -o ./reports/flake8-badge
+          # stop the build if there are Python syntax errors or undefined names
+           flake8 src --format=html --htmldir ./reports/flake8 --statistics --tee --output-file ./reports/flake8/flake8stats.txt
+      - name: Test with pytest
+        run: |
+          pip install pytest pytest-cov
+          python -m pytest --cov=./src --cov-report xml
+      
