@@ -36,20 +36,7 @@ jobs:
         run: |
           python -m pytest 
           genbadge coverage -i ./reports/coverage/cov.xml -o ./reports/coverage-badge.svg
-          genbadge test -i ./reports/junit/junit.xml -o ./reports/junit-badge.svg
-
-      - name: Upload flake8 badge
-        uses: actions/upload-artifact@v4
-        with:
-          name: flake8-badge
-          path: reports/flake8-badge.svg
-
-      - name: Upload coverage badge
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-badge
-          path: reports/coverage-badge.svg
-
+          genbadge tests -i ./reports/junit/junit.xml -o ./reports/junit-badge.svg
 
       - name: Determine publish directory
         id: publish-dir
