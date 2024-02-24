@@ -1,6 +1,0 @@
-dropdown_user_selection_land = 'dropdown-user-selection-land'
-harvest_land_df = 'filtered-harvest-land-df'
-tax_land_df = 'filtered-tax-land-df'
-all_graph = 'land_all_graph'
-cumsum_graph = 'land_cumsum_graph'
-tax_row = 'tax-row'
