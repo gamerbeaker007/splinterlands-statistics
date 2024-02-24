@@ -1,12 +1,10 @@
 # Splinterlands Statistics
 
 Main:
-![Flake8](https://gamerbeaker007.github.io/splinterlands-statistics/main/flake8-badge.svg)
-![Tests Coverage](https://gamerbeaker007.github.io/splinterlands-statistics/main/coverage-badge.svg)
-
-Latest branch push:
-![Flake8](https://gamerbeaker007.github.io/splinterlands-statistics/branch/flake8-badge.svg)
-![Tests Coverage](https://gamerbeaker007.github.io/splinterlands-statistics/branch/coverage-badge.svg)
+[![Flake8](https://gamerbeaker007.github.io/splinterlands-statistics/main/flake8-badge.svg)](https://gamerbeaker007.github.io/splinterlands-statistics/main/flake8/)
+[![Tests Coverage](https://gamerbeaker007.github.io/splinterlands-statistics/main/coverage-badge.svg)](https://gamerbeaker007.github.io/splinterlands-statistics/main/coverage/) | branch:
+[![Flake8](https://gamerbeaker007.github.io/splinterlands-statistics/branch/flake8-badge.svg)](https://gamerbeaker007.github.io/splinterlands-statistics/branch/flake8/)
+[![Tests Coverage](https://gamerbeaker007.github.io/splinterlands-statistics/branch/coverage-badge.svg)](https://gamerbeaker007.github.io/splinterlands-statistics/branch/coverage/)
 
 # Instructions
 
