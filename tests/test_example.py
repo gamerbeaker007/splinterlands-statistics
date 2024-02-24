@@ -7,4 +7,4 @@ def test_add_numbers():
 
 
 def test_second():
-    assert len(spl.get_settings()) == 10
+    assert len(spl.get_settings()) == 108
