@@ -51,11 +51,16 @@ jobs:
 
       - name: Determine publish directory
         id: publish-dir
-        run: echo "::set-output name=dir::$(if [ $GITHUB_REF = 'refs/heads/main' ]; then echo 'main'; else echo 'branch'; fi)"
+        run: |
+          if [ $GITHUB_REF = 'refs/heads/main' ]; then
+            echo "PUBLISH_DIR=main" >> $GITHUB_ENV
+          else
+            echo "PUBLISH_DIR=branch" >> $GITHUB_ENV
+          fi
 
       - name: Deploy to GitHub Pages main
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./reports
-          destination_dir: ${{ steps.publish-dir.outputs.dir }}
+          destination_dir: ${{ env.MAIN_DIR || env.BRANCH_DIR }}
