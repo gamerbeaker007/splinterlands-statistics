@@ -24,7 +24,7 @@ jobs:
           pip install flake8
           pip install flake8-html
           pip install genbadge[all]
-          pip install pytest pytest-cov
+          pip install pytest pytest-cov pytest-html
 
       - name: Run Flake8
         run: |
@@ -36,6 +36,7 @@ jobs:
         run: |
           python -m pytest 
           genbadge coverage -i ./reports/coverage/cov.xml -o ./reports/coverage-badge.svg
+          genbadge test -i ./reports/junit/junit.xml -o ./reports/junit-badge.svg
 
       - name: Upload flake8 badge
         uses: actions/upload-artifact@v4
