@@ -107,7 +107,7 @@ def add_remove(add_clicks, account_name):
     prevent_initial_call=True,
 )
 @measure_duration
-def add_remove(remove_clicks, account_name):
+def remove_click(remove_clicks, account_name):
     text = ''
     removed = False
     class_name = 'text-warning'

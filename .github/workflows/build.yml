@@ -1,0 +1,55 @@
+name: Build with coverage
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8
+          pip install flake8-html
+          pip install genbadge[all]
+          pip install pytest pytest-cov pytest-html
+
+      - name: Run Flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 src --exit-zero --format=html --htmldir ./reports/flake8 --statistics --tee --output-file ./reports/flake8/flake8stats.txt
+          genbadge flake8 -i ./reports/flake8/flake8stats.txt -o ./reports/flake8-badge.svg
+
+      - name: Test with pytest
+        run: |
+          python -m pytest 
+          genbadge coverage -i ./reports/coverage/cov.xml -o ./reports/coverage-badge.svg
+          genbadge tests -i ./reports/junit/junit.xml -o ./reports/junit-badge.svg
+
+      - name: Determine publish directory
+        id: publish-dir
+        run: |
+          if [ $GITHUB_REF = 'refs/heads/main' ]; then
+            echo "PUBLISH_DIR=main" >> $GITHUB_ENV
+          else
+            echo "PUBLISH_DIR=branch" >> $GITHUB_ENV
+          fi
+
+      - name: Deploy to GitHub Pages main
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./reports
+          destination_dir: ${{ env.PUBLISH_DIR }}

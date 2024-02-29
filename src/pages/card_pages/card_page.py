@@ -19,7 +19,6 @@ layout = dbc.Container([
     dbc.Row(top_cards.layout),
     dbc.Row(weakest_cards.layout),
 
-
     dcc.Store(id=card_page_ids.filtered_cards_top_df),
     dcc.Store(id=card_page_ids.filtered_cards_losing_df),
     dcc.Store(id=card_page_ids.filter_cards_settings),
@@ -28,4 +27,3 @@ layout = dbc.Container([
     dcc.Store(id=card_page_ids.input_account_name),
     dcc.Store(id=card_page_ids.input_card_name),
 ])
-

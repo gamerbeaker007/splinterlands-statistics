@@ -111,8 +111,8 @@ def redirect_to_page(active_cell, data, stored_filter_settings):
     if active_cell:
         return dcc.Location(
             href='card?card_id=' + str(data[active_cell['row']]['card_detail_id'])
-                 + '#account=' + str(stored_filter_settings['account'])
-            , id='url-redirect')
+                 + '#account=' + str(stored_filter_settings['account']),
+            id='url-redirect')
 
 
 @app.callback(

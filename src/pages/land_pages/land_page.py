@@ -4,10 +4,10 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dcc
 
-from src.pages.main_dash import app
 from src.configuration import store
 from src.graphs import land_graph
 from src.pages.land_pages import land_ids
+from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.utils import store_util, chart_util
 from src.utils.trace_logging import measure_duration
@@ -39,11 +39,14 @@ layout = dbc.Container([
             html.P("Note in the graph below the received amount of resources are presented. "
                    "This does not take in account the used grain to harvest"),
             dcc.Graph(id=land_ids.all_graph)
-        ], className='mb-3'),
-    dbc.Row(children=[
-        html.P("In the next graph grain used to harvest is taken into account."),
-        dcc.Graph(id=land_ids.cumsum_graph)]
-        , className='mb-3'),
+        ],
+        className='mb-3'),
+    dbc.Row(
+        children=[
+            html.P("In the next graph grain used to harvest is taken into account."),
+            dcc.Graph(id=land_ids.cumsum_graph)
+        ],
+        className='mb-3'),
     dbc.Row(id=land_ids.tax_row, className='mb-3'),
 ])
 
@@ -103,7 +106,7 @@ def update_filter_tax_data(account):
     Input(nav_ids.theme_store, 'data'),
 )
 @measure_duration
-def update_land_total_graph(filtered_df, theme):
+def update_land_all_graph(filtered_df, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
     else:
