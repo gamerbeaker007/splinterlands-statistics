@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## 0.16.0
 
-- Add flake linting in the workflow.
+- Add flake8 linting in the workflow.
+- Add py test framework (no tests yet)
+- Create badges in the readme for flake/test and coverage
+- Update unclaimed SPS balance history. SPL updated offset parameter
 
 ## 0.15.1
 

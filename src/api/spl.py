@@ -82,14 +82,15 @@ def get_season_end_time(season_id):
 
 
 def get_unclaimed_sps_balance_history_for_token_impl(
-        offset=0,
+        offset=None,
         limit=1000,
         token_params=None):
     balance_history_link = 'players/unclaimed_balance_history'
 
     params = token_params
     params['token_type'] = 'SPS'
-    params['offset'] = offset
+    if offset:
+        params['offset'] = offset
     params['limit'] = limit
     address = base_url + balance_history_link
 

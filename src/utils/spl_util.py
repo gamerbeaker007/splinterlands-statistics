@@ -9,7 +9,7 @@ from src.utils import progress_util, store_util
 
 def get_unclaimed_sps_balance_history_for_token(username, start_date=None):
     limit = 1000
-    offset = 0
+    offset = None
 
     msg_prefix = 'SPS UNCLAIMED (' + str(username) + ') '
     token_params = store_util.get_token_dict(username)
@@ -25,8 +25,9 @@ def get_unclaimed_sps_balance_history_for_token(username, start_date=None):
         )
 
         if data:
+            print('sps_unclaimed: ' + str(data[-1]['created_date']))
             complete_result += data
-            offset += limit
+            offset = data[-1]["id"]
             total_items += len(data)
             progress_util.update_season_msg(
                 msg_prefix +

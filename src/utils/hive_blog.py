@@ -330,11 +330,11 @@ def get_card_table(cards_df, print_count=False):
         for card_name in unique_card_list:
             temp = pd.concat([temp, pd.DataFrame({
                 'card_name': card_name,
-                'quantity_regular': len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] is False)]),
-                'quantity_gold': len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] is True)]),
+                'quantity_regular': len(cards_df[(cards_df['card_name'] == card_name) & (~cards_df['gold'])]),
+                'quantity_gold': len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'])]),
                 'edition_name': str(cards_df[(cards_df['card_name'] == card_name)].edition_name.values[0]),
-                'bcx': str(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] is False)].bcx.sum()),
-                'bcx_gold': str(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] is True)].bcx.sum())
+                'bcx': str(cards_df[(cards_df['card_name'] == card_name) & (~cards_df['gold'])].bcx.sum()),
+                'bcx_gold': str(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'])].bcx.sum())
             }, index=[0])], ignore_index=True)
 
         if len(temp.index) > 5:
