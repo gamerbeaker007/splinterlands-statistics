@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## 0.17.0
 
 - FIX: change icon locations
+- FIX: modern format battle not processed correctly. battle history2 doesn't standard retrieve both formats therefor for now 2 calls
 
 ## 0.16.0
 
