@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.17.0
+
+- FIX: change icon locations
+
 ## 0.16.0
 
 - Add flake8 linting in the workflow.
