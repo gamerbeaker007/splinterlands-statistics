@@ -54,9 +54,9 @@
             </div>
         </aside>
         <h2>
-            <span class="text">236 statements &nbsp;</span>
+            <span class="text">259 statements &nbsp;</span>
             <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">0<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">236<span class="text"> missing</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">259<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_f0e24b7f04f99860___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.3">coverage.py v7.4.3</a>,
-            created at 2024-03-01 15:48 +0000
+            created at 2024-03-02 19:16 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -84,7 +84,7 @@
     <p class="pln"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t"><span class="key">import</span> <span class="nam">pandas</span> <span class="key">as</span> <span class="nam">pd</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="key">from</span> <span class="nam">src</span><span class="op">.</span><span class="nam">configuration</span> <span class="key">import</span> <span class="nam">store</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="key">from</span> <span class="nam">src</span><span class="op">.</span><span class="nam">configuration</span> <span class="key">import</span> <span class="nam">store</span><span class="op">,</span> <span class="nam">config</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="key">from</span> <span class="nam">src</span><span class="op">.</span><span class="nam">static</span><span class="op">.</span><span class="nam">static_values_enum</span> <span class="key">import</span> <span class="nam">Edition</span><span class="op">,</span> <span class="nam">Element</span><span class="op">,</span> <span class="nam">CardType</span><span class="op">,</span> <span class="nam">Rarity</span><span class="op">,</span> <span class="nam">ManaCap</span><span class="op">,</span> <span class="nam">MatchType</span><span class="op">,</span> <span class="nam">Format</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -440,6 +440,42 @@
     <p class="mis show_mis"><span class="n"><a id="t358" href="#t358">358</a></span><span class="t">        <span class="nam">result_df</span> <span class="op">=</span> <span class="nam">df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">df</span><span class="op">.</span><span class="nam">battle_id</span><span class="op">.</span><span class="nam">isin</span><span class="op">(</span><span class="nam">battle_ids</span><span class="op">)</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t359" href="#t359">359</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t360" href="#t360">360</a></span><span class="t">    <span class="key">return</span> <span class="nam">result_df</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t361" href="#t361">361</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t362" href="#t362">362</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t363" href="#t363">363</a></span><span class="t"><span class="key">def</span> <span class="nam">has_ability</span><span class="op">(</span><span class="nam">cards</span><span class="op">,</span> <span class="nam">name</span><span class="op">,</span> <span class="nam">level</span><span class="op">,</span> <span class="nam">abilities</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t364" href="#t364">364</a></span><span class="t">    <span class="nam">row</span> <span class="op">=</span> <span class="nam">cards</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="op">(</span><span class="nam">cards</span><span class="op">.</span><span class="nam">name</span> <span class="op">==</span> <span class="nam">name</span><span class="op">)</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t365" href="#t365">365</a></span><span class="t">    <span class="com"># Check if the row exists</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t366" href="#t366">366</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">row</span><span class="op">.</span><span class="nam">empty</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t367" href="#t367">367</a></span><span class="t">        <span class="com"># Extract the stats dictionary</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t368" href="#t368">368</a></span><span class="t">        <span class="nam">stats</span> <span class="op">=</span> <span class="nam">row</span><span class="op">[</span><span class="str">'stats'</span><span class="op">]</span><span class="op">.</span><span class="nam">iloc</span><span class="op">[</span><span class="num">0</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t369" href="#t369">369</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t370" href="#t370">370</a></span><span class="t">        <span class="key">if</span> <span class="nam">row</span><span class="op">.</span><span class="nam">iloc</span><span class="op">[</span><span class="num">0</span><span class="op">]</span><span class="op">.</span><span class="nam">type</span> <span class="op">==</span> <span class="nam">CardType</span><span class="op">.</span><span class="nam">summoner</span><span class="op">.</span><span class="nam">value</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t371" href="#t371">371</a></span><span class="t">            <span class="com"># Check if 'abilities' key exists in the stats dictionary</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t372" href="#t372">372</a></span><span class="t">            <span class="key">if</span> <span class="str">'abilities'</span> <span class="key">in</span> <span class="nam">stats</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t373" href="#t373">373</a></span><span class="t">                <span class="key">for</span> <span class="nam">ability</span> <span class="key">in</span> <span class="nam">abilities</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t374" href="#t374">374</a></span><span class="t">                    <span class="key">if</span> <span class="nam">ability</span> <span class="key">in</span> <span class="nam">stats</span><span class="op">[</span><span class="str">'abilities'</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t375" href="#t375">375</a></span><span class="t">                        <span class="key">return</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t376" href="#t376">376</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t377" href="#t377">377</a></span><span class="t">        <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t378" href="#t378">378</a></span><span class="t">            <span class="com"># Check if 'abilities' key exists in the stats dictionary</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t379" href="#t379">379</a></span><span class="t">            <span class="key">if</span> <span class="str">'abilities'</span> <span class="key">in</span> <span class="nam">stats</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t380" href="#t380">380</a></span><span class="t">                <span class="key">for</span> <span class="nam">i</span> <span class="key">in</span> <span class="nam">range</span><span class="op">(</span><span class="nam">level</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t381" href="#t381">381</a></span><span class="t">                    <span class="key">for</span> <span class="nam">ability</span> <span class="key">in</span> <span class="nam">abilities</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t382" href="#t382">382</a></span><span class="t">                        <span class="key">if</span> <span class="nam">ability</span> <span class="key">in</span> <span class="nam">stats</span><span class="op">[</span><span class="str">'abilities'</span><span class="op">]</span><span class="op">[</span><span class="nam">i</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t383" href="#t383">383</a></span><span class="t">                            <span class="key">return</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t384" href="#t384">384</a></span><span class="t">    <span class="key">return</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t385" href="#t385">385</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t386" href="#t386">386</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t387" href="#t387">387</a></span><span class="t"><span class="key">def</span> <span class="nam">filter_rows</span><span class="op">(</span><span class="nam">row</span><span class="op">,</span> <span class="nam">cards</span><span class="op">,</span> <span class="nam">abilities</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t388" href="#t388">388</a></span><span class="t">    <span class="key">return</span> <span class="nam">has_ability</span><span class="op">(</span><span class="nam">cards</span><span class="op">,</span> <span class="nam">row</span><span class="op">[</span><span class="str">'card_name'</span><span class="op">]</span><span class="op">,</span> <span class="nam">row</span><span class="op">[</span><span class="str">'level'</span><span class="op">]</span><span class="op">,</span> <span class="nam">abilities</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t389" href="#t389">389</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t390" href="#t390">390</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t391" href="#t391">391</a></span><span class="t"><span class="key">def</span> <span class="nam">filter_abilities</span><span class="op">(</span><span class="nam">df</span><span class="op">,</span> <span class="nam">filter_settings</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t392" href="#t392">392</a></span><span class="t">    <span class="nam">cards</span> <span class="op">=</span> <span class="nam">config</span><span class="op">.</span><span class="nam">card_details_df</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t393" href="#t393">393</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">df</span><span class="op">.</span><span class="nam">empty</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t394" href="#t394">394</a></span><span class="t">        <span class="key">if</span> <span class="str">'abilities'</span> <span class="key">in</span> <span class="nam">filter_settings</span> <span class="key">and</span> <span class="nam">filter_settings</span><span class="op">[</span><span class="str">'abilities'</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t395" href="#t395">395</a></span><span class="t">            <span class="nam">df</span> <span class="op">=</span> <span class="nam">df</span><span class="op">[</span><span class="nam">df</span><span class="op">.</span><span class="nam">apply</span><span class="op">(</span><span class="nam">filter_rows</span><span class="op">,</span> <span class="nam">axis</span><span class="op">=</span><span class="num">1</span><span class="op">,</span> <span class="nam">args</span><span class="op">=</span><span class="op">(</span><span class="nam">cards</span><span class="op">,</span> <span class="nam">filter_settings</span><span class="op">[</span><span class="str">'abilities'</span><span class="op">]</span><span class="op">,</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t396" href="#t396">396</a></span><span class="t">    <span class="key">return</span> <span class="nam">df</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -449,7 +485,7 @@
             <a id="nextFileLink" class="nav" href="d_f0e24b7f04f99860___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.3">coverage.py v7.4.3</a>,
-            created at 2024-03-01 15:48 +0000
+            created at 2024-03-02 19:16 +0000
         </p>
     </div>
 </footer>
