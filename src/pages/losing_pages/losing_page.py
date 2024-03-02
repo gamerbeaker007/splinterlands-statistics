@@ -12,7 +12,7 @@ from src.configuration import store
 from src.pages.card_pages import card
 from src.pages.filter_pages import filter_season, filter_ruleset, \
     filter_battle_format, filter_mana_cap, filter_element, filter_rarity, filter_editions, filter_card_type, \
-    filter_user, filter_ids, filter_battle_count, filter_group_levels, filter_match_type
+    filter_user, filter_ids, filter_battle_count, filter_group_levels, filter_match_type, filter_abilities
 from src.pages.losing_pages import losing_ids
 from src.pages.main_dash import app
 from src.utils.trace_logging import measure_duration
@@ -41,6 +41,7 @@ layout: Container = dbc.Container([
     dbc.Row([
         dbc.Col(filter_battle_count.layout),
         dbc.Col(filter_ruleset.layout),
+        dbc.Col(filter_abilities.layout),
     ]),
     dbc.Row([
         dbc.Col(filter_group_levels.layout),
@@ -103,6 +104,7 @@ def filter_battle_df(filter_settings):
                                                  level=pd.NamedAgg(column='level', aggfunc='max'))
 
     df = analyse.filter_battle_count(df, filter_settings)
+    df = analyse.filter_abilities(df, filter_settings)
 
     # count the losses with the filtered data
     df.sort_values('battles', ascending=False, inplace=True)

@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from src.configuration import store
+from src.configuration import store, config
 from src.static.static_values_enum import Edition, Element, CardType, Rarity, ManaCap, MatchType, Format
 
 
@@ -358,3 +358,39 @@ def get_losing_battles(df, battle_ids):
         result_df = df.loc[df.battle_id.isin(battle_ids)]
 
     return result_df
+
+
+def has_ability(cards, name, level, abilities):
+    row = cards.loc[(cards.name == name)]
+    # Check if the row exists
+    if not row.empty:
+        # Extract the stats dictionary
+        stats = row['stats'].iloc[0]
+
+        if row.iloc[0].type == CardType.summoner.value:
+            # Check if 'abilities' key exists in the stats dictionary
+            if 'abilities' in stats:
+                for ability in abilities:
+                    if ability in stats['abilities']:
+                        return True
+
+        else:
+            # Check if 'abilities' key exists in the stats dictionary
+            if 'abilities' in stats:
+                for i in range(level):
+                    for ability in abilities:
+                        if ability in stats['abilities'][i]:
+                            return True
+    return False
+
+
+def filter_rows(row, cards, abilities):
+    return has_ability(cards, row['card_name'], row['level'], abilities)
+
+
+def filter_abilities(df, filter_settings):
+    cards = config.card_details_df
+    if not df.empty:
+        if 'abilities' in filter_settings and filter_settings['abilities']:
+            df = df[df.apply(filter_rows, axis=1, args=(cards, filter_settings['abilities'],))]
+    return df

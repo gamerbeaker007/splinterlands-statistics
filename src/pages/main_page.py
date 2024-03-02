@@ -10,7 +10,7 @@ from src.configuration import store
 from src.pages.card_pages import card
 from src.pages.filter_pages import filter_user, filter_card_type, filter_rarity, filter_element, \
     filter_editions, filter_ids, filter_sort_by, filter_group_levels, filter_battle_format, \
-    filter_ruleset, filter_season, filter_mana_cap, filter_battle_count, filter_match_type
+    filter_ruleset, filter_season, filter_mana_cap, filter_battle_count, filter_match_type, filter_abilities
 from src.pages.main_dash import app
 from src.utils.trace_logging import measure_duration
 
@@ -38,6 +38,7 @@ layout = dbc.Container([
     dbc.Row([
         dbc.Col(filter_battle_count.layout),
         dbc.Col(filter_ruleset.layout),
+        dbc.Col(filter_abilities.layout),
     ]),
 
     dbc.Row([
@@ -167,6 +168,7 @@ def filter_battle_df(filter_settings):
     df = analyse.filter_card_type(df, filter_settings)
     df = analyse.filter_rarity(df, filter_settings)
     df = analyse.filter_battle_count(df, filter_settings)
+    df = analyse.filter_abilities(df, filter_settings)
     df = analyse.sort_by(df, filter_settings)
 
     return df.to_json(date_format='iso', orient='split')
