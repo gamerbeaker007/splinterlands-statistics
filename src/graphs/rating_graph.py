@@ -81,7 +81,7 @@ def plot_daily_stats_battle(daily_df, theme):
         if column == 'win_pct':
             secondary_y = True
         else:
-            secondary_y = True
+            secondary_y = False
         fig.add_trace(
             get_scatter_trace(modern_daily_df, column, show_legend=False),
             secondary_y=secondary_y,
@@ -94,7 +94,7 @@ def plot_daily_stats_battle(daily_df, theme):
         if column == 'win_pct':
             secondary_y = True
         else:
-            secondary_y = True
+            secondary_y = False
         fig.add_trace(
             get_scatter_trace(wild_daily_df, column, show_legend=True),
             secondary_y=secondary_y,
