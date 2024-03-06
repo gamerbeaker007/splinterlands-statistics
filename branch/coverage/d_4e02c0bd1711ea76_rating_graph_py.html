@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_4e02c0bd1711ea76_season_graph_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.3">coverage.py v7.4.3</a>,
-            created at 2024-03-06 17:59 +0000
+            created at 2024-03-06 18:02 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -147,9 +147,9 @@
     <p class="mis show_mis"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t">    <span class="nam">daily_df</span><span class="op">[</span><span class="str">'win_pct'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">daily_df</span><span class="op">.</span><span class="nam">apply</span><span class="op">(</span><span class="key">lambda</span> <span class="nam">row</span><span class="op">:</span> <span class="op">(</span><span class="nam">row</span><span class="op">.</span><span class="nam">win</span> <span class="op">/</span> <span class="nam">row</span><span class="op">.</span><span class="nam">battles</span> <span class="op">*</span> <span class="num">100</span><span class="op">)</span><span class="op">,</span> <span class="nam">axis</span><span class="op">=</span><span class="num">1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t">    <span class="nam">wild_daily_df</span> <span class="op">=</span> <span class="nam">daily_df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">daily_df</span><span class="op">[</span><span class="str">'format'</span><span class="op">]</span> <span class="op">==</span> <span class="nam">Format</span><span class="op">.</span><span class="nam">wild</span><span class="op">.</span><span class="nam">value</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t">    <span class="nam">wild_daily_df</span><span class="op">.</span><span class="nam">sort_values</span><span class="op">(</span><span class="str">'created_date'</span><span class="op">,</span> <span class="nam">inplace</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t">    <span class="nam">wild_daily_df</span> <span class="op">=</span> <span class="nam">wild_daily_df</span><span class="op">.</span><span class="nam">sort_values</span><span class="op">(</span><span class="str">'created_date'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t">    <span class="nam">modern_daily_df</span> <span class="op">=</span> <span class="nam">daily_df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">daily_df</span><span class="op">[</span><span class="str">'format'</span><span class="op">]</span> <span class="op">==</span> <span class="nam">Format</span><span class="op">.</span><span class="nam">modern</span><span class="op">.</span><span class="nam">value</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t">    <span class="nam">modern_daily_df</span><span class="op">.</span><span class="nam">sort_values</span><span class="op">(</span><span class="str">'created_date'</span><span class="op">,</span> <span class="nam">inplace</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t">    <span class="nam">modern_daily_df</span> <span class="op">=</span> <span class="nam">modern_daily_df</span><span class="op">.</span><span class="nam">sort_values</span><span class="op">(</span><span class="str">'created_date'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t72" href="#t72">72</a></span><span class="t">    <span class="nam">fig</span> <span class="op">=</span> <span class="nam">make_subplots</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t73" href="#t73">73</a></span><span class="t">        <span class="nam">specs</span><span class="op">=</span><span class="op">[</span><span class="op">[</span><span class="op">{</span><span class="str">"secondary_y"</span><span class="op">:</span> <span class="key">True</span><span class="op">}</span><span class="op">,</span> <span class="op">{</span><span class="str">"secondary_y"</span><span class="op">:</span> <span class="key">True</span><span class="op">}</span><span class="op">]</span><span class="op">]</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -232,7 +232,7 @@
             <a id="nextFileLink" class="nav" href="d_4e02c0bd1711ea76_season_graph_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.3">coverage.py v7.4.3</a>,
-            created at 2024-03-06 17:59 +0000
+            created at 2024-03-06 18:02 +0000
         </p>
     </div>
 </footer>
