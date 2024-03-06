@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - FIX: change icon locations
 - FIX: modern format battle not processed correctly. battle history2 doesn't standard retrieve both formats therefor for now 2 calls
 - FIX: secondary axis on rating graph
+- FIX: daily battle stats graph when 0 wins or loss
 - Add ability filter (main/losing page)
 
 ## 0.16.0

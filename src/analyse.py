@@ -337,7 +337,8 @@ def get_daily_battle_stats(daily_df):
             ['created_date', 'result', 'format'], as_index=False).agg({'result': 'count'})
         loss_df = daily_df.loc[daily_df.result == 'loss'].groupby(
             ['created_date', 'result', 'format'], as_index=False).agg({'result': 'count'})
-        result_df = pd.merge(left=win_df, right=loss_df, on=['created_date', 'format'])
+        result_df = pd.merge(left=win_df, right=loss_df, on=['created_date', 'format'], how='outer')
+        result_df.fillna(0, inplace=True)
         result_df.rename(columns={"result_x": "win", "result_y": "loss"}, inplace=True)
         result_df['battles'] = result_df.win + result_df.loss
     return result_df
