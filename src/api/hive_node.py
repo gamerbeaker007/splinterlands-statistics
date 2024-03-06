@@ -1,1 +1,1 @@
-PREFERRED_NODE = 'https://api2.hive-engine.com/rpc/'
+PREFERRED_NODE = 'https://engine.rishipanthee.com/'
