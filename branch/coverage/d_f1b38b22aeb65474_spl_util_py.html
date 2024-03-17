@@ -54,9 +54,9 @@
             </div>
         </aside>
         <h2>
-            <span class="text">82 statements &nbsp;</span>
+            <span class="text">79 statements &nbsp;</span>
             <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">0<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">82<span class="text"> missing</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">79<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -64,8 +64,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="d_f1b38b22aeb65474_store_util_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.4.3">coverage.py v7.4.3</a>,
-            created at 2024-03-06 18:02 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
+            created at 2024-03-17 10:08 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -225,13 +225,11 @@
     <p class="mis show_mis"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t">    <span class="nam">abilities_df</span> <span class="op">=</span> <span class="nam">json_normalize</span><span class="op">(</span><span class="nam">cards</span><span class="op">[</span><span class="str">'stats'</span><span class="op">]</span><span class="op">)</span><span class="op">.</span><span class="nam">abilities</span><span class="op">.</span><span class="nam">dropna</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t">    <span class="nam">flattened_abilities</span> <span class="op">=</span> <span class="op">[</span><span class="nam">ability</span> <span class="key">for</span> <span class="nam">sublist</span> <span class="key">in</span> <span class="nam">abilities_df</span> <span class="key">for</span> <span class="nam">ability</span> <span class="key">in</span> <span class="nam">sublist</span> <span class="key">if</span> <span class="nam">sublist</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t">    <span class="nam">unique_abilities</span> <span class="op">=</span> <span class="op">[</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t">    <span class="key">for</span> <span class="nam">ability_list</span> <span class="key">in</span> <span class="nam">flattened_abilities</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t">        <span class="key">if</span> <span class="nam">len</span><span class="op">(</span><span class="nam">ability_list</span><span class="op">)</span> <span class="op">></span> <span class="num">0</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t149" href="#t149">149</a></span><span class="t">            <span class="nam">unique_abilities</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="nam">ability_list</span><span class="op">[</span><span class="num">0</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t151" href="#t151">151</a></span><span class="t">    <span class="nam">series</span> <span class="op">=</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">Series</span><span class="op">(</span><span class="nam">unique_abilities</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t152" href="#t152">152</a></span><span class="t">    <span class="key">return</span> <span class="nam">series</span><span class="op">.</span><span class="nam">unique</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t">    <span class="nam">unique_abilities</span> <span class="op">=</span> <span class="op">{</span><span class="nam">ability</span> <span class="key">for</span> <span class="nam">sublist</span> <span class="key">in</span> <span class="nam">flattened_abilities</span> <span class="key">for</span> <span class="nam">ability</span> <span class="key">in</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t">                        <span class="op">(</span><span class="nam">sublist</span> <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">sublist</span><span class="op">,</span> <span class="nam">list</span><span class="op">)</span> <span class="key">else</span> <span class="op">[</span><span class="nam">sublist</span><span class="op">]</span><span class="op">)</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t149" href="#t149">149</a></span><span class="t">    <span class="nam">series</span> <span class="op">=</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">Series</span><span class="op">(</span><span class="nam">list</span><span class="op">(</span><span class="nam">unique_abilities</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t">    <span class="key">return</span> <span class="nam">series</span><span class="op">.</span><span class="nam">sort_values</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -240,8 +238,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="d_f1b38b22aeb65474_store_util_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.4.3">coverage.py v7.4.3</a>,
-            created at 2024-03-06 18:02 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
+            created at 2024-03-17 10:08 +0000
         </p>
     </div>
 </footer>
