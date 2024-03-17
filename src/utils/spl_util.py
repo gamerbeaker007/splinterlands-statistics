@@ -143,10 +143,8 @@ def get_ability_list():
     abilities_df = json_normalize(cards['stats']).abilities.dropna()
     flattened_abilities = [ability for sublist in abilities_df for ability in sublist if sublist]
 
-    unique_abilities = []
-    for ability_list in flattened_abilities:
-        if len(ability_list) > 0:
-            unique_abilities.append(ability_list[0])
+    unique_abilities = {ability for sublist in flattened_abilities for ability in
+                        (sublist if isinstance(sublist, list) else [sublist])}
 
-    series = pd.Series(unique_abilities)
-    return series.unique()
+    series = pd.Series(list(unique_abilities))
+    return series.sort_values()
