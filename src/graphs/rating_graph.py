@@ -65,7 +65,9 @@ def plot_daily_stats_battle(daily_df, theme):
     daily_df['win_pct'] = daily_df.apply(lambda row: (row.win / row.battles * 100), axis=1)
 
     wild_daily_df = daily_df.loc[daily_df['format'] == Format.wild.value]
+    wild_daily_df = wild_daily_df.sort_values('created_date')
     modern_daily_df = daily_df.loc[daily_df['format'] == Format.modern.value]
+    modern_daily_df = modern_daily_df.sort_values('created_date')
 
     fig = make_subplots(
         specs=[[{"secondary_y": True}, {"secondary_y": True}]],
@@ -81,7 +83,7 @@ def plot_daily_stats_battle(daily_df, theme):
         if column == 'win_pct':
             secondary_y = True
         else:
-            secondary_y = True
+            secondary_y = False
         fig.add_trace(
             get_scatter_trace(modern_daily_df, column, show_legend=False),
             secondary_y=secondary_y,
@@ -94,7 +96,7 @@ def plot_daily_stats_battle(daily_df, theme):
         if column == 'win_pct':
             secondary_y = True
         else:
-            secondary_y = True
+            secondary_y = False
         fig.add_trace(
             get_scatter_trace(wild_daily_df, column, show_legend=True),
             secondary_y=secondary_y,

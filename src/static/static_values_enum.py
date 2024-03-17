@@ -1,11 +1,30 @@
 from enum import Enum
 
-league_ratings_all = [0, 400, 700, 1000, 1300, 1600, 1900, 2200, 2500, 2800, 3100, 3400, 3700, 4200, 4700, 5100]
-league_ratings = [0, 100, 1000, 1900, 2800, 3700]
+# league_ratings_all = [
+#     0,     # Novice
+#     260,   # Bronze III
+#     400,   # Bronze II
+#     700,   # Bronze I
+#     1000,  # Silver III
+#     1300,  # Silver II
+#     1600,  # Silver I
+#     1900,  # Gold III
+#     2200,  # Gold II
+#     2500,  # Gold I
+#     2800,  # Diamond III
+#     3100,  # Diamond II
+#     3400,  # Diamond I
+#     3700,  # Champion III
+#     4000,  # Champion II
+#     4300,  # Champion I
+#     5000   # CAP for calculating rewards shares
+# ]
+
+league_ratings = [0, 260, 1000, 1900, 2800, 3700]
 league_colors = ['lightgray', 'brown', 'gray', 'yellow', 'purple', 'orange']
 
-WEB_URL = "https://d36mxiodymuqjm.cloudfront.net/website/"
-cards_icon_url = WEB_URL + "ui_elements/open_packs/packsv2/img_pack_chaos-legion_opt.png"
+WEB_URL = "https://d36mxiodymuqjm.cloudfront.net/"
+cards_icon_url = WEB_URL + "website/ui_elements/open_packs/packsv2/img_pack_chaos-legion_opt.png"
 dec_icon_url = WEB_URL + "website/ui_elements/buy_coins/Icon_DEC.svg"
 land_icon_url = WEB_URL + "website/ui_elements/popups/land_presale/img_plot.svg"
 sps_icon_url = WEB_URL + "website/ui_elements/shop/cl/img_sps-shard_128.png"

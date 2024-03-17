@@ -15,9 +15,9 @@ HIVE_BLOG_URL = 'https://api.hive.blog'
 
 # hive-engine nodes
 nodes = [
-    'https://api.hive-engine.com/rpc/',
     'https://api2.hive-engine.com/rpc/',
-    'https://engine.rishipanthee.com/',
+    'https://api.hive-engine.com/rpc/',
+    # 'https://engine.rishipanthee.com/', # is preferred
     'https://herpc.dtools.dev/',
     'https://engine.deathwing.me/',
     'https://ha.herpc.dtools.dev/',

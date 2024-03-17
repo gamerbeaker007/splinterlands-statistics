@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.17.0
+
+- FIX: change icon locations
+- FIX: modern format battle not processed correctly. battle history2 doesn't standard retrieve both formats therefor for now 2 calls
+- FIX: secondary axis on rating graph
+- FIX: daily battle stats graph when 0 wins or loss
+- Add ability filter (main/losing page)
+
 ## 0.16.0
 
 - Add flake8 linting in the workflow.

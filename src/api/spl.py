@@ -42,11 +42,21 @@ def get_battle_history_df(account_name, token_params):
     params = token_params
     params['player'] = account_name
     params['limit'] = 50
-    result = http.get(address, params=params)
-    if result.status_code == 200:
-        return pd.DataFrame(result.json()['battles'])
-    else:
+    wild_df = pd.DataFrame()
+    wild_result = http.get(address, params=params)
+    if wild_result.status_code == 200:
+        wild_df = pd.DataFrame(wild_result.json()['battles'])
+
+    params['format'] = 'modern'
+    modern_result = http.get(address, params=params)
+    modern_df = pd.DataFrame()
+    if modern_result.status_code == 200:
+        modern_df = pd.DataFrame(modern_result.json()['battles'])
+
+    if wild_df.empty and modern_df.empty:
         return None
+    else:
+        return pd.concat([wild_df, modern_df])
 
 
 def get_current_season():
