@@ -54,8 +54,6 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
         wild_win = int(last_season_wild_battles.wins)
         wild_win_pct = round((wild_win / wild_battles * 100), 2)
         wild_longest_streak = int(last_season_wild_battles.longest_streak)
-        wild_ratio = round(wild_win / (wild_battles - wild_win), 2)
-        wild_loss = wild_battles - wild_win
     else:
         wild_league = 0
         wild_league_name = "NA"
@@ -66,8 +64,6 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
         wild_win = "NA"
         wild_win_pct = "NA"
         wild_longest_streak = "NA"
-        wild_ratio = "NA"
-        wild_loss = "NA"
 
     if not last_season_modern_battles.empty and not last_season_modern_battles.rating.isna().values[0]:
         last_season_modern_battles = last_season_modern_battles.iloc[0]
@@ -80,8 +76,6 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
         modern_win = int(last_season_modern_battles.wins)
         modern_win_pct = round((modern_win / modern_battles * 100), 2)
         modern_longest_streak = int(last_season_modern_battles.longest_streak)
-        modern_ratio = round(modern_win / (modern_battles - modern_win), 2)
-        modern_loss = modern_battles - modern_win
     else:
         modern_league = 0
         modern_league_name = "NA"
@@ -92,8 +86,6 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
         modern_win = "NA"
         modern_win_pct = "NA"
         modern_longest_streak = "NA"
-        modern_ratio = "NA"
-        modern_loss = "NA"
 
     wild_league_logo = ("https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/"
                         "wild_150/league_") + str(wild_league) + ".png"
@@ -112,8 +104,6 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
     result += str(modern_rating) + " - " + str(modern_league_name) + " | \n"
     result += "| Rating High | " + str(wild_max_rating) + " | "
     result += str(modern_max_rating) + " | \n"
-    result += "| Ratio (Win/Loss) | " + str(wild_ratio) + " (" + str(wild_win) + "/" + str(wild_loss) + ") |"
-    result += str(modern_ratio) + " (" + str(modern_win) + "/" + str(modern_loss) + ") |\n"
     result += "| Win PCT (Wins/battles * 100) | " + str(wild_win_pct) + " (" + str(wild_win) + "/" + str(
         wild_battles) + ") |"
     result += str(modern_win_pct) + " (" + str(modern_win) + "/" + str(modern_battles) + ") |\n"
