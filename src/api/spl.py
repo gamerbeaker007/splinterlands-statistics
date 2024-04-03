@@ -117,7 +117,7 @@ def get_balance_history_for_token_impl_v2(
         last_update_date=None,
         limit=1000,
         token_params=None):
-    token_types = ['SPS', 'DEC', 'VOUCHER', 'CREDITS', 'MERITS']
+    token_types = ['SPS', 'DEC', 'VOUCHER', 'CREDITS', 'MERITS', 'GLINT']
     if token not in token_types:
         raise ValueError('Invalid token type. Expected one of: %s' % token_types)
 

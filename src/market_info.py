@@ -46,6 +46,7 @@ def get_last_season_player_history_rewards(account_name, start_date, end_date, s
                                         ignore_index=True)
 
         # For all reward card subtract addition information
+        # TODO empty check beakerr
         reward_data['card_detail_id'] = reward_data.apply(
             lambda r: r.card['card_detail_id'] if r['type'] == 'reward_card' else "", axis=1)
         reward_data['xp'] = reward_data.apply(lambda r: r.card['xp'] if r['type'] == 'reward_card' else "", axis=1)

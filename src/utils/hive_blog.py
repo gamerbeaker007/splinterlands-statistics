@@ -10,6 +10,8 @@ sps_icon = "![sps.png](https://images.hive.blog/20x0/https://files.peakd.com/fil
            "AKNLw1pd6ryatb2Rg9VHbWEWWUMupgMEtxYsJyxckcGH1Hb7YoxC1cFdNv37tW3.png)"
 voucher_icon = "![voucher.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/" \
                "Eo8RPwT4kQnGyvkNp9Vx1kLpFYYVhKSy88Fsy7YrAStKwrHCRX6GNvhywGxPbQpW2bu.png)"
+glint_icon = "![glint.png](https://images.hive.blog/20x0/" \
+             "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/shop/ranked/icon_resource_glint_small.png"
 merits_icon = "![merits.png](https://images.hive.blog/20x0/" \
               "https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png)"
 gold_potion_icon = ("![alchemy.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/"
@@ -164,6 +166,14 @@ def get_last_season_costs_table(account, season_info_store, skip_zeros):
         if 'delegation_brawl' in sps_df:
             costs_rows += cost_earning_row("SPS brawl delegation", sps_icon, sps_df.delegation_brawl, skip_zeros)
 
+    glint_df = season_info_store['glint']
+    glint_df = glint_df.loc[(glint_df.player == account)].fillna(0)
+    if not glint_df.empty:
+        glint_df = glint_df.iloc[0]
+        if 'purchase_reward_draw' in glint_df:
+            costs_rows += cost_earning_row("GLINT rewards draws", glint_icon, glint_df.purchase_reward_draw,
+                                           skip_zeros)
+
     result = "None"
     if costs_rows != "":
         result = "| Costs |  # |\n"
@@ -255,6 +265,13 @@ def get_last_season_earnings_table(account, season_info_store, last_season_rewar
         voucher_df = voucher_df.iloc[0]
         if 'claim_staking_rewards' in voucher_df:
             earning_rows += cost_earning_row("VOUCHER earned", voucher_icon, voucher_df.claim_staking_rewards,
+                                             skip_zeros)
+    glint_df = season_info_store['glint']
+    glint_df = glint_df.loc[(glint_df.player == account)].fillna(0)
+    if not glint_df.empty:
+        glint_df = glint_df.iloc[0]
+        if 'ranked_rewards' in glint_df:
+            earning_rows += cost_earning_row("GLINT earned", glint_icon, glint_df.ranked_rewards,
                                              skip_zeros)
 
     if not last_season_rewards.empty:

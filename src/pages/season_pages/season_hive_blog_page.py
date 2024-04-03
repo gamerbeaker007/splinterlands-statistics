@@ -106,6 +106,7 @@ def generate_hive_blog(n_clicks, users):
                     'merits': store_util.get_last_season_values(store.season_merits, users),
                     'credits': store_util.get_last_season_values(store.season_credits, users),
                     'vouchers': store_util.get_last_season_values(store.season_vouchers, users),
+                    'glint': store_util.get_last_season_values(store.season_glint, users),
                     'unclaimed_sps': store_util.get_last_season_values(store.season_unclaimed_sps, users),
                     'modern_battle': store_util.get_last_season_values(store.season_modern_battle_info, users,
                                                                        'season'),
