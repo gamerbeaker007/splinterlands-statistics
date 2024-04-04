@@ -101,13 +101,12 @@ def get_last_season_reward_draws(account_name, from_date, till_date):
         result = json.loads(result['trx_info']['result'])
         reward_type = result['type']
         reward_sub_type = result['sub_type']
-        bcx = result['quantity']
         reward_result = json.loads(result['data'])['result']
         if reward_result['success']:
             temp_df = pd.DataFrame(reward_result['rewards'])
             temp_df['type'] = reward_type
             temp_df['sub_type'] = reward_sub_type
-            temp_df['bcx'] = bcx
+            temp_df = temp_df.rename(columns={'quantity': 'bcx'})
             # Expand 'card' column into multiple columns
             card_df = pd.json_normalize(temp_df['card'])
             # Concatenate temp_df and card_df along columns axis

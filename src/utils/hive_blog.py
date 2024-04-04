@@ -344,18 +344,22 @@ def get_card_table(cards_df, print_count=False):
             prefix = str(base_card_url) + str(card.edition_name) + "/" + str(card.card_name).replace(" ", "%20")
             count_str = ""
             gold_suffix = ""
+            bcx_str = ""
             if card.quantity_regular > 0:
-                bcx = str(card.bcx)
-                if print_count:
-                    count_str = " <br> " + str(card.quantity_regular) + "x"
+                if card.quantity_gold == 0:
+                    bcx_str = str("<br> bcx: " + str(card.bcx))
+                else:
+                    bcx_str = str("<br> regular bcx: " + str(card.bcx))
+
             if card.quantity_gold > 0:
                 gold_suffix = "_gold"
-                bcx = str(card.bcx_gold)
-                if print_count:
-                    count_str = " <br> " + str(card.quantity_gold) + "x"
+                bcx_str += str('<br> gold bcx:' + str(card.bcx_gold))
+
+            if print_count:
+                count_str = " <br> " + str(card.quantity_regular + card.quantity_gold) + "x"
 
             card_image_url = prefix + "_lv1" + gold_suffix + ".png"
-            result += "" + str(card_image_url) + count_str + " <br> bcx: " + str(bcx)
+            result += "" + str(card_image_url) + count_str + bcx_str
             result += " |"
     else:
         result = "None"
