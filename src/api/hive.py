@@ -128,7 +128,7 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
     return results
 
 
-def get_rewards_draws(account, from_date, till_date, last_id=-1, results=None, days_to_process=None):
+def get_rewards_draws(account, from_date, till_date, last_id=-1, results=None):
     if results is None:
         results = []
 
@@ -138,9 +138,6 @@ def get_rewards_draws(account, from_date, till_date, last_id=-1, results=None, d
     done = False
     for h in history:
         timestamp = isoparse(h['timestamp'])
-
-        if not days_to_process:
-            days_to_process = (timestamp - from_date).days + 1
 
         days_to_go = (timestamp - from_date).days
         progress_util.update_season_msg('...retrieve rewards_draws date for \'' + str(account.name) +
@@ -160,7 +157,7 @@ def get_rewards_draws(account, from_date, till_date, last_id=-1, results=None, d
             break
 
     if not done:
-        get_rewards_draws(account, from_date, last_id - 1, results=results, days_to_process=days_to_process)
+        get_rewards_draws(account, from_date, till_date, last_id - 1, results=results)
     return results
 
 

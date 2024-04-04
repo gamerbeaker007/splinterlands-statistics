@@ -12,7 +12,7 @@ sps_icon = "![sps.png](https://images.hive.blog/20x0/https://files.peakd.com/fil
 voucher_icon = "![voucher.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/" \
                "Eo8RPwT4kQnGyvkNp9Vx1kLpFYYVhKSy88Fsy7YrAStKwrHCRX6GNvhywGxPbQpW2bu.png)"
 glint_icon = "![glint.png](https://images.hive.blog/20x0/" \
-             "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/shop/ranked/icon_resource_glint_small.png"
+             "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/shop/ranked/icon_resource_glint_small.png)"
 merits_icon = "![merits.png](https://images.hive.blog/20x0/" \
               "https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png)"
 
