@@ -31,6 +31,12 @@ sps_icon_url = WEB_URL + "website/ui_elements/shop/cl/img_sps-shard_128.png"
 coins_icon_url = WEB_URL + "website/ui_elements/shop/img_credits.png"
 other_icon_url = WEB_URL + "website/nav/icon_nav_items_active@2x.png"
 
+reward_draw_initiate_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_reward_initiate-draw_150.png'
+reward_draw_adept_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_reward_adept-draw_150.png'
+reward_draw_veteran_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_reward_veteran-draw_150.png'
+reward_draw_elite_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_reward_elite-draw_150.png'
+reward_draw_master_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_reward_master-draw_150.png'
+
 
 class ExtendedEnum(Enum):
 

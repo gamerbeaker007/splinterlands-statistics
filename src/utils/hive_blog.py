@@ -1,6 +1,7 @@
 import pandas as pd
 
-from src.static.static_values_enum import Edition, Leagues
+from src.static import static_values_enum
+from src.static.static_values_enum import Leagues
 
 credit_icon = "![credit.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/" \
               "AK3iY7Tb28oEV8oALeHvUbBpKjWxvADTHcaqtPSL4C2YzcJ4oZLp36MAiX3qGNw.png)"
@@ -190,7 +191,7 @@ def cost_earning_row(title, icon, value, skip_zeros):
         return "| " + str(title) + " | " + icon + " " + str(round(value, 3)) + " |\n"
 
 
-def get_last_season_earnings_table(account, season_info_store, last_season_rewards, skip_zeros):
+def get_last_season_earnings_table(account, season_info_store, skip_zeros):
     earning_rows = ""
     dec_df = season_info_store['dec']
     dec_df = dec_df.loc[(dec_df.player == account)].fillna(0)
@@ -272,19 +273,6 @@ def get_last_season_earnings_table(account, season_info_store, last_season_rewar
         glint_df = glint_df.iloc[0]
         if 'ranked_rewards' in glint_df:
             earning_rows += cost_earning_row("GLINT earned", glint_icon, glint_df.ranked_rewards,
-                                             skip_zeros)
-
-    if not last_season_rewards.empty:
-        potions = last_season_rewards[(last_season_rewards['type'] == 'potion')].groupby(['potion_type']).sum()
-        packs = last_season_rewards[(last_season_rewards['type'] == 'pack')].groupby(['edition']).sum()
-        if 'legendary' in potions.index:
-            earning_rows += cost_earning_row("Legendary potions", legendary_potion_icon,
-                                             int(potions.loc['legendary'].quantity), skip_zeros)
-        if 'gold' in potions.index:
-            earning_rows += cost_earning_row("Gold potions", gold_potion_icon, int(potions.loc['gold'].quantity),
-                                             skip_zeros)
-        if not packs.empty:
-            earning_rows += cost_earning_row("CL Packs", packs_icon, packs.loc[Edition.chaos.value].quantity,
                                              skip_zeros)
 
     result = "None"
@@ -482,7 +470,7 @@ def get_tournament_results(tournaments_info, account_name=None):
     return ""
 
 
-def get_last_season_earning_costs(account, season_info_store, last_season_rewards, skip_zeros, account_name=None):
+def get_last_season_earning_costs(account, season_info_store, skip_zeros, account_name=None):
     account_suffix = ""
     if account_name:
         account_suffix = " (" + str(account_name) + ")"
@@ -491,11 +479,35 @@ def get_last_season_earning_costs(account, season_info_store, last_season_reward
 <br><br>
 """ + earnings_divider + """
 ## <div class="phishy"><center>Earnings and costs""" + str(account_suffix) + """</center></div>
-""" + str(get_last_season_earnings_table(account, season_info_store, last_season_rewards, skip_zeros)) + """
+""" + str(get_last_season_earnings_table(account, season_info_store, skip_zeros)) + """
 
 ## <div class="phishy"><center>Costs</center></div>
 """ + str(get_last_season_costs_table(account, season_info_store, skip_zeros)) + """
      """
+
+
+def get_sub_type_sum(df, name):
+    if df.empty:
+        return 0
+    else:
+        return df.loc[df.sub_type == name].sub_type.count()
+
+
+def get_reward_draws_table(df):
+    result = '|' + static_values_enum.reward_draw_initiate_icon_url
+    result += '|' + static_values_enum.reward_draw_adept_icon_url
+    result += '|' + static_values_enum.reward_draw_veteran_icon_url
+    result += '|' + static_values_enum.reward_draw_elite_icon_url
+    result += '|' + static_values_enum.reward_draw_master_icon_url
+    result += '|\n'
+    result += '|-|-|-|-|-|\n'
+    result += '| <center>Initiate: ' + str(get_sub_type_sum(df, 'initiate_draw')) + 'x</center>'
+    result += '| <center>Adept: ' + str(get_sub_type_sum(df, 'adept_draw')) + 'x</center>'
+    result += '| <center>Veteran: ' + str(get_sub_type_sum(df, 'veteran_draw')) + 'x</center>'
+    result += '| <center> Elite: ' + str(get_sub_type_sum(df, 'elite_draw')) + 'x</center>'
+    result += '| <center>Master: ' + str(get_sub_type_sum(df, 'master_draw')) + 'x</center>'
+    result += '|\n'
+    return result
 
 
 def get_last_season_rewards(last_season_rewards, account_name=None):
@@ -503,17 +515,12 @@ def get_last_season_rewards(last_season_rewards, account_name=None):
     if account_name:
         account_suffix = " (" + str(account_name) + ")"
 
-    if not last_season_rewards.empty:
-        reward_cards = last_season_rewards[(last_season_rewards['type'] == 'reward_card')]
-    else:
-        reward_cards = last_season_rewards
-
     return """
-## <div class="phishy"><center>Cards Earned""" + str(account_suffix) + """</center></div>
-""" + str(get_card_table(reward_cards)) + """
+## <div class="phishy"><center>Draws purchased """ + str(account_suffix) + """</center></div>
+""" + str(get_reward_draws_table(last_season_rewards)) + """
 
-## <div class="phishy"><center>Potions/Packs earned""" + str(account_suffix) + """</center></div>
-""" + str(get_rewards_potion_packs_table(last_season_rewards)) + """
+## <div class="phishy"><center>Cards earned""" + str(account_suffix) + """</center></div>
+""" + str(get_card_table(last_season_rewards)) + """
     """
 
 
@@ -583,7 +590,6 @@ def write_blog_post(account_names,
                                        account_name=account_name)
         post += get_last_season_earning_costs(account_name,
                                               season_info_store,
-                                              last_season_rewards_dict[account_name],
                                               skip_zeros,
                                               account_name=print_account_name)
         post += get_last_season_market_transactions(purchases_cards_dict[account_name],
