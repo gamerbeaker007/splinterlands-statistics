@@ -153,7 +153,8 @@ def plot_season_stats_rating(season_df, theme):
 def get_season_ids_range(df_array):
     all_season_ids = set()
     for df in df_array:
-        all_season_ids.update(df.season_id.unique())
+        if 'season_id' in df:
+            all_season_ids.update(df.season_id.unique())
     min_season_id = min(all_season_ids)
     max_season_id = max(all_season_ids)
     return set(range(min_season_id, max_season_id + 1))
@@ -190,6 +191,9 @@ def plot_season_stats_earnings(season_df_sps,
         'quest_rewards',
         'season_rewards',
         'brawl_prize']
+    columns_glint = [
+        'ranked_rewards',
+    ]
 
     if not season_df_dec.empty:
         season_df_dec = season_df_dec.copy().sort_values(by=['season_id']).fillna(0)
@@ -220,6 +224,13 @@ def plot_season_stats_earnings(season_df_sps,
         season_df_merits['season_id'] = []
         season_df_merits['total'] = []
 
+    if not season_df_glint.empty:
+        season_df_glint = season_df_glint.copy().sort_values(by=['season_id']).fillna(0)
+        season_df_glint['total'] = season_df_glint.filter(columns_glint).sum(axis=1, numeric_only=True)
+    else:
+        season_df_glint['season_id'] = []
+        season_df_glint['total'] = []
+
     trace1 = go.Scatter(x=season_df_dec.season_id,
                         y=season_df_dec.total,
                         mode='lines+markers',
@@ -244,7 +255,7 @@ def plot_season_stats_earnings(season_df_sps,
     season_df_glint = season_df_glint.copy().sort_values(by=['season_id']).fillna(0)
 
     trace4 = go.Scatter(x=season_df_glint.season_id,
-                        y=season_df_glint.ranked_rewards,
+                        y=season_df_glint.total,
                         mode='lines+markers',
                         name='GLINT (ranked rewards only) ',
                         line=dict(color='steelblue', width=2))
@@ -264,7 +275,7 @@ def plot_season_stats_earnings(season_df_sps,
         titles.append('SPS')
         traces.append(trace3)
         tick_values_arr.append(season_df_sps_combined.season_id)
-    if season_df_glint.ranked_rewards.sum() != 0:
+    if season_df_glint.total.sum() != 0:
         titles.append('GLINT')
         traces.append(trace4)
         tick_values_arr.append(season_df_glint.season_id)
