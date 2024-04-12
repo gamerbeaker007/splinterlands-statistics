@@ -2,9 +2,9 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dcc
 
-from src.pages.main_dash import app
 from src.configuration import store
 from src.graphs import season_graph
+from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.pages.season_pages import season_ids
 from src.utils import chart_util
@@ -22,7 +22,7 @@ layout = [
         html.P('Tip: Double click on the legend to view one or all'),
     ]),
     dbc.Row([
-        dbc.Col(dcc.Dropdown(options=['SPS', 'SPS BATTLE', 'DEC', 'MERITS', 'VOUCHERS', 'CREDITS'],
+        dbc.Col(dcc.Dropdown(options=['SPS', 'SPS BATTLE', 'DEC', 'MERITS', 'VOUCHERS', 'GLINT', 'CREDITS'],
                              value='SPS',
                              id=season_ids.dropdown_token_selection,
                              className='dbc'),
@@ -54,7 +54,12 @@ def update_earnings_graph(account, season_trigger, theme):
             store.season_sps.loc[(store.season_sps.player == account)].empty:
         return chart_util.blank_fig(theme)
     else:
-        season_df_sps = season_df_dec = season_df_merits = season_df_unclaimed_sps = pd.DataFrame()
+        season_df_sps = pd.DataFrame()
+        season_df_dec = pd.DataFrame()
+        season_df_merits = pd.DataFrame()
+        season_df_unclaimed_sps = pd.DataFrame()
+        season_df_glint = pd.DataFrame()
+
         if not store.season_sps.empty:
             season_df_sps = store.season_sps.loc[(store.season_sps.player == account)].copy()
         if not store.season_dec.empty:
@@ -64,11 +69,15 @@ def update_earnings_graph(account, season_trigger, theme):
         if not store.season_unclaimed_sps.empty:
             season_df_unclaimed_sps = store.season_unclaimed_sps.loc[
                 (store.season_unclaimed_sps.player == account)].copy()
+        if not store.season_glint.empty:
+            season_df_glint = store.season_glint.loc[
+                (store.season_glint.player == account)].copy()
 
         return season_graph.plot_season_stats_earnings(season_df_sps,
                                                        season_df_dec,
                                                        season_df_merits,
                                                        season_df_unclaimed_sps,
+                                                       season_df_glint,
                                                        theme)
 
 
@@ -108,6 +117,10 @@ def update_earnings_all_graph(account, token, skip_zero, season_trigger, theme):
         if store.season_vouchers.empty or store.season_vouchers.loc[(store.season_vouchers.player == account)].empty:
             return chart_util.blank_fig(theme)
         season_df = store.season_vouchers.loc[(store.season_vouchers.player == account)].copy()
+    elif token == 'GLINT':
+        if store.season_glint.empty or store.season_glint.loc[(store.season_glint.player == account)].empty:
+            return chart_util.blank_fig(theme)
+        season_df = store.season_glint.loc[(store.season_glint.player == account)].copy()
     elif token == 'DEC':
         if store.season_dec.empty or store.season_dec.loc[(store.season_dec.player == account)].empty:
             return chart_util.blank_fig(theme)

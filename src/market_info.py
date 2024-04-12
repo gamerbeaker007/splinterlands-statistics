@@ -1,14 +1,13 @@
 import json
 import logging
 
-import numpy as np
 import pandas as pd
 from dateutil import parser
 
 from src.api import hive, spl
 from src.configuration import config
 from src.static.static_values_enum import Edition
-from src.utils import collection_util, progress_util, store_util
+from src.utils import collection_util, progress_util
 
 
 def filter_df_last_season(start_date, end_date, data_frame):
@@ -21,52 +20,6 @@ def filter_df_last_season(start_date, end_date, data_frame):
         mask = (data_frame[date_field] > start_date) & (data_frame[date_field] <= end_date)
         return data_frame.loc[mask].copy()
     return data_frame
-
-
-def get_last_season_player_history_rewards(account_name, start_date, end_date, season_id):
-    player_history_df = pd.DataFrame(spl.get_player_history_rewards(store_util.get_token_dict(account_name)))
-    reward_data = pd.DataFrame()
-
-    if not player_history_df.empty:
-        # Find season reward
-        for index, row in player_history_df.iterrows():
-            data = json.loads(row.data)
-            if row.success and data['type'] == 'league_season' and data['season'] == season_id:
-                reward_data = pd.concat([reward_data, pd.DataFrame(json.loads(row.result)['rewards'])],
-                                        ignore_index=True)
-                break
-
-        last_season_player_history_rewards = filter_df_last_season(start_date, end_date, player_history_df)
-
-        # Find all quest rewards
-        for index, row in last_season_player_history_rewards.iterrows():
-            data = json.loads(row.data)
-            if row.success and data['type'] == 'quest':
-                reward_data = pd.concat([reward_data, pd.DataFrame(json.loads(row.result)['rewards'])],
-                                        ignore_index=True)
-
-        # For all reward card subtract addition information
-        reward_data['card_detail_id'] = reward_data.apply(
-            lambda r: r.card['card_detail_id'] if r['type'] == 'reward_card' else "", axis=1)
-        reward_data['xp'] = reward_data.apply(lambda r: r.card['xp'] if r['type'] == 'reward_card' else "", axis=1)
-        reward_data['gold'] = reward_data.apply(lambda r: r.card['gold'] if r['type'] == 'reward_card' else "",
-                                                axis=1)
-
-        # Create column if it does not exist (only exists when packs where received)
-        if 'edition' not in reward_data:
-            reward_data['edition'] = np.nan
-
-        reward_data['edition'] = reward_data.apply(
-            lambda r: r.card['edition'] if r['type'] == 'reward_card' else r['edition'], axis=1)
-        reward_data['edition_name'] = reward_data.apply(
-            lambda r: (Edition(r.edition)).name if r['type'] == 'reward_card' else "", axis=1)
-        reward_data['card_name'] = reward_data.apply(
-            lambda r: config.card_details_df.loc[r.card_detail_id]['name'] if r['type'] == 'reward_card' else "",
-            axis=1)
-        reward_data['bcx'] = reward_data.apply(
-            lambda r: collection_util.get_bcx(r.card) if r['type'] == 'reward_card' else "", axis=1)
-
-    return reward_data
 
 
 def get_sold_cards(account_name, cards_df):

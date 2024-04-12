@@ -58,6 +58,13 @@ def update_balances_store(account_name, current_season_data):
                 token="VOUCHER",
             )
         )
+        glint_df = pd.DataFrame(
+            spl_util.get_balance_history_for_token(
+                account_name,
+                start_date=start_date,
+                token="GLINT",
+            )
+        )
 
     else:
         dec_df = pd.DataFrame(
@@ -96,9 +103,15 @@ def update_balances_store(account_name, current_season_data):
                 token="VOUCHER",
             )
         )
+        glint_df = pd.DataFrame(
+            spl_util.get_balance_history_for_token(
+                account_name,
+                token="GLINT",
+            )
+        )
 
         # Concatenate the dataframes
-        combined_df = pd.concat([dec_df, unclaimed_sps_df, sps_df, merits_df, credits_df, vouchers_df],
+        combined_df = pd.concat([dec_df, unclaimed_sps_df, sps_df, merits_df, credits_df, vouchers_df, glint_df],
                                 ignore_index=True)
 
         first_season = determine_first_season_id_played(combined_df)
@@ -118,6 +131,9 @@ def update_balances_store(account_name, current_season_data):
         progress_util.update_season_msg("Start processing VOUCHERS")
         store.season_vouchers = process_season_balances(vouchers_df, store.season_vouchers.copy(), account_name,
                                                         season_array)
+        progress_util.update_season_msg("Start processing GLINT")
+        store.season_glint = process_season_balances(glint_df, store.season_glint.copy(), account_name,
+                                                     season_array)
         progress_util.update_season_msg("Start processing CREDITS")
         store.season_credits = process_season_balances(credits_df, store.season_credits.copy(), account_name,
                                                        season_array)

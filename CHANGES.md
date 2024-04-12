@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.18.0
+
+- Add Glint as season rewards
+
 ## 0.17.1
 
 - FIX exception with exactly 50% win ratio

@@ -23,13 +23,27 @@ from enum import Enum
 league_ratings = [0, 260, 1000, 1900, 2800, 3700]
 league_colors = ['lightgray', 'brown', 'gray', 'yellow', 'purple', 'orange']
 
-WEB_URL = "https://d36mxiodymuqjm.cloudfront.net/"
-cards_icon_url = WEB_URL + "website/ui_elements/open_packs/packsv2/img_pack_chaos-legion_opt.png"
-dec_icon_url = WEB_URL + "website/ui_elements/buy_coins/Icon_DEC.svg"
-land_icon_url = WEB_URL + "website/ui_elements/popups/land_presale/img_plot.svg"
-sps_icon_url = WEB_URL + "website/ui_elements/shop/cl/img_sps-shard_128.png"
-coins_icon_url = WEB_URL + "website/ui_elements/shop/img_credits.png"
-other_icon_url = WEB_URL + "website/nav/icon_nav_items_active@2x.png"
+WEB_URL = 'https://d36mxiodymuqjm.cloudfront.net/'
+cards_icon_url = WEB_URL + 'website/ui_elements/open_packs/packsv2/img_pack_chaos-legion_opt.png'
+dec_icon_url = WEB_URL + 'website/ui_elements/buy_coins/Icon_DEC.svg'
+land_icon_url = WEB_URL + 'website/ui_elements/popups/land_presale/img_plot.svg'
+sps_icon_url = WEB_URL + 'website/ui_elements/shop/cl/img_sps-shard_128.png'
+coins_icon_url = WEB_URL + 'website/ui_elements/shop/img_credits.png'
+other_icon_url = WEB_URL + 'website/nav/icon_nav_items_active@2x.png'
+glint_icon_url = WEB_URL + 'website/icons/icon_resource_glint.png'
+voucher_icon_url = ('https://files.peakd.com/file/peakd-hive/beaker007/'
+                    'Eo8RPwT4kQnGyvkNp9Vx1kLpFYYVhKSy88Fsy7YrAStKwrHCRX6GNvhywGxPbQpW2bu.png')
+voucher_icon_url_svg = WEB_URL + 'website/ui_elements/shop/cl/voucher-css.svg'
+merit_icon_url = WEB_URL + 'website/icons/img_merit_256.png'
+
+reward_draw_initiate_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_reward_initiate-draw_150.png'
+reward_draw_adept_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_reward_adept-draw_150.png'
+reward_draw_veteran_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_reward_veteran-draw_150.png'
+reward_draw_elite_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_reward_elite-draw_150.png'
+reward_draw_master_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_reward_master-draw_150.png'
+
+wild_league_icon_url = WEB_URL + 'website/icons/leagues/wild_150/league_0.png'
+modern_league_icon_url = WEB_URL + 'website/icons/leagues/modern_150/league_0.png'
 
 
 class ExtendedEnum(Enum):

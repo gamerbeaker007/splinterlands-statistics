@@ -11,7 +11,7 @@ def plot_season_stats_battle(season_df, theme):
     season_df = season_df.dropna(subset=['rating'])
     season_df['win_pct'] = season_df.apply(lambda row: (row.wins / row.battles * 100), axis=1)
 
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    fig = make_subplots(specs=[[{'secondary_y': True}]])
     trace3 = go.Scatter(x=season_df.season,
                         y=season_df.win_pct,
                         mode='lines+markers',
@@ -36,10 +36,10 @@ def plot_season_stats_battle(season_df, theme):
         # plot_bgcolor=PLOT_BGCOLOR,
         # font=TEXT_FONT,
         legend=dict(
-            orientation="h",
-            yanchor="bottom",
+            orientation='h',
+            yanchor='bottom',
             y=1.02,
-            xanchor="right",
+            xanchor='right',
             x=1
         ),
         margin=dict(l=10, r=10),
@@ -50,7 +50,7 @@ def plot_season_stats_battle(season_df, theme):
             # zerolinecolor=GRID_COLOR,
             showgrid=False,
             range=[0, season_df.battles.max() + 20],
-            title="battles",
+            title='battles',
         ),
         yaxis2=dict(
             # zerolinecolor=GRID_COLOR,
@@ -71,7 +71,7 @@ def plot_season_stats_rating(season_df, theme):
     season_ratings = [0, 400, 700, 1000, 1300, 1600, 1900, 2200, 2500, 2800, 3100, 3400, 3700, 4200, 4700, 5100]
     season_df['end_league_rating'] = season_df.apply(lambda row: season_ratings[row.league], axis=1)
 
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    fig = make_subplots(specs=[[{'secondary_y': True}]])
     trace1 = go.Scatter(x=season_df.season,
                         y=season_df.rating,
                         mode='lines+markers',
@@ -105,10 +105,10 @@ def plot_season_stats_rating(season_df, theme):
         template=theme,
         margin=dict(l=10, r=10),
         legend=dict(
-            orientation="h",
-            yanchor="bottom",
+            orientation='h',
+            yanchor='bottom',
             y=1.02,
-            xanchor="right",
+            xanchor='right',
             x=1
         ),
         xaxis=dict(
@@ -117,7 +117,7 @@ def plot_season_stats_rating(season_df, theme):
 
         yaxis2=dict(
             showgrid=True,
-            title="rating",
+            title='rating',
             gridwidth=1,
             nticks=25,
             range=[0, season_df.rating.max() * 1.05]
@@ -125,7 +125,7 @@ def plot_season_stats_rating(season_df, theme):
         yaxis=dict(
             zeroline=False,
             showgrid=False,
-            title="league",
+            title='league',
             range=[0, season_df.rating.max() * 1.05],
             tickvals=[0, 400, 700, 1000, 1300, 1600, 1900, 2200, 2500, 2800, 3100, 3400, 3700, 4200, 4700, 9999],
             ticktext=[Leagues(0).name,
@@ -150,12 +150,22 @@ def plot_season_stats_rating(season_df, theme):
     return fig
 
 
+def get_season_ids_range(df_array):
+    all_season_ids = set()
+    for df in df_array:
+        if 'season_id' in df:
+            all_season_ids.update(df.season_id.unique())
+    min_season_id = min(all_season_ids)
+    max_season_id = max(all_season_ids)
+    return set(range(min_season_id, max_season_id + 1))
+
+
 def plot_season_stats_earnings(season_df_sps,
                                season_df_dec,
                                season_df_merits,
                                season_df_unclaimed_sps,
-                               theme,
-                               skip_zeros=True):
+                               season_df_glint,
+                               theme):
     # Data consistency
     columns_dec = [
         'reward',
@@ -181,6 +191,9 @@ def plot_season_stats_earnings(season_df_sps,
         'quest_rewards',
         'season_rewards',
         'brawl_prize']
+    columns_glint = [
+        'ranked_rewards',
+    ]
 
     if not season_df_dec.empty:
         season_df_dec = season_df_dec.copy().sort_values(by=['season_id']).fillna(0)
@@ -211,104 +224,99 @@ def plot_season_stats_earnings(season_df_sps,
         season_df_merits['season_id'] = []
         season_df_merits['total'] = []
 
-    trace7 = go.Scatter(x=season_df_dec.season_id,
+    if not season_df_glint.empty:
+        season_df_glint = season_df_glint.copy().sort_values(by=['season_id']).fillna(0)
+        season_df_glint['total'] = season_df_glint.filter(columns_glint).sum(axis=1, numeric_only=True)
+    else:
+        season_df_glint['season_id'] = []
+        season_df_glint['total'] = []
+
+    trace1 = go.Scatter(x=season_df_dec.season_id,
                         y=season_df_dec.total,
                         mode='lines+markers',
                         name='DEC total (earnings - payments)',
                         line=dict(color='royalblue'))
 
-    trace8 = go.Scatter(x=season_df_merits.season_id,
+    trace2 = go.Scatter(x=season_df_merits.season_id,
                         y=season_df_merits.total,
                         mode='lines+markers',
                         name='MERITS  total (earnings)',
                         line=dict(color='red', width=2))
-    trace9 = go.Scatter(x=season_df_sps_combined.season_id,
+
+    trace3 = go.Scatter(x=season_df_sps_combined.season_id,
                         y=season_df_sps_combined.total,
                         mode='lines+markers',
                         name='SPS total (earnings - payments)',
                         line=dict(color='lightgreen', width=2))
 
-    titles = ["", "", ""]
-    if not skip_zeros:
-        titles = ["DEC", "MERITS", "SPS"]
-        row_heights = [800, 800, 800]
-        rows = 3
-        fig = make_subplots(rows=rows, cols=1, row_heights=row_heights)
-        fig.add_trace(trace7, row=1, col=1)
-        fig.add_trace(trace8, row=2, col=1)
-        fig.add_trace(trace9, row=3, col=1)
-    else:
-        total_rows = 0
-        row_heights = []
-        if season_df_dec.total.sum() != 0:
-            total_rows += 1
-            row_heights.append(800)
-        if season_df_merits.total.sum() != 0:
-            total_rows += 1
-            row_heights.append(800)
-        if season_df_sps_combined.total.sum() != 0:
-            total_rows += 1
-            row_heights.append(800)
+    # fill glint dataframe with other season_id.
+    season_range = get_season_ids_range([season_df_dec, season_df_merits, season_df_sps_combined, season_df_glint])
+    season_df_glint = season_df_glint.set_index('season_id').reindex(season_range, fill_value=0).reset_index()
+    season_df_glint = season_df_glint.copy().sort_values(by=['season_id']).fillna(0)
 
-        fig = make_subplots(rows=total_rows, cols=1, row_heights=row_heights)
-        rows = 0
-        if season_df_dec.total.sum() > 0:
-            titles[rows] = "DEC"
-            rows += 1
-            fig.add_trace(trace7, row=rows, col=1)
-        if season_df_merits.total.sum() > 0:
-            titles[rows] = "MERITS"
-            rows += 1
-            fig.add_trace(trace8, row=rows, col=1)
-        if season_df_sps_combined.total.sum() > 0:
-            titles[rows] = "SPS"
-            rows += 1
-            fig.add_trace(trace9, row=rows, col=1)
+    trace4 = go.Scatter(x=season_df_glint.season_id,
+                        y=season_df_glint.total,
+                        mode='lines+markers',
+                        name='GLINT (ranked rewards only) ',
+                        line=dict(color='steelblue', width=2))
+
+    titles = []
+    traces = []
+    tick_values_arr = []
+    if season_df_dec.total.sum() != 0:
+        titles.append('DEC')
+        traces.append(trace1)
+        tick_values_arr.append(season_df_dec.season_id)
+    if season_df_merits.total.sum() != 0:
+        titles.append('MERITS')
+        traces.append(trace2)
+        tick_values_arr.append(season_df_merits.season_id)
+    if season_df_sps_combined.total.sum() != 0:
+        titles.append('SPS')
+        traces.append(trace3)
+        tick_values_arr.append(season_df_sps_combined.season_id)
+    if season_df_glint.total.sum() != 0:
+        titles.append('GLINT')
+        traces.append(trace4)
+        tick_values_arr.append(season_df_glint.season_id)
+
+    fig = make_subplots(rows=len(titles), cols=1, row_heights=[800] * len(titles))
+
+    for i, trace in enumerate(traces):
+        fig.add_trace(trace, row=i + 1, col=1)
+
+    for i, tick_values in enumerate(tick_values_arr):
+        xaxis_name = f"xaxis{i + 1}" if i > 0 else "xaxis"
+        yaxis_name = f"yaxis{i + 1}" if i > 0 else "yaxis"
+        fig.update_layout(
+            {
+                xaxis_name: dict(
+                    showgrid=True,
+                    gridwidth=1,
+                    tickvals=tick_values,
+                ),
+                yaxis_name: dict(
+                    title=titles[i],
+                    side='right',
+                )
+            }
+        )
 
     fig.update_layout(
         template=theme,
-        height=480 * rows,  # px
+        height=480 * len(traces),  # px
         margin=dict(l=10, r=10),
         legend=dict(
             x=0,
             y=1,
             font=dict(
-                family="Courier",
+                family='Courier',
                 size=12,
-                color="black"
+                color='black'
             ),
-            bgcolor="LightSteelBlue",
-            bordercolor="Black",
+            bgcolor='LightSteelBlue',
+            bordercolor='Black',
             borderwidth=2
-        ),
-        xaxis=dict(
-            showgrid=True,
-            gridwidth=1,
-            tickvals=season_df_dec.season_id,
-        ),
-        yaxis=dict(
-            title=titles[0],
-            side="right",
-        ),
-
-        xaxis2=dict(
-            showgrid=True,
-            gridwidth=1,
-            tickvals=season_df_sps_combined.season_id,
-        ),
-        yaxis2=dict(
-            title=titles[1],
-            side="right"
-        ),
-
-        xaxis3=dict(
-            showgrid=True,
-            gridwidth=1,
-            tickvals=season_df_merits.season_id,
-        ),
-        yaxis3=dict(
-            title=titles[2],
-            side="right"
         ),
     )
 

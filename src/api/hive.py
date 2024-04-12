@@ -128,6 +128,39 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
     return results
 
 
+def get_rewards_draws(account, from_date, till_date, last_id=-1, results=None):
+    if results is None:
+        results = []
+
+    limit = 100
+
+    history = account.get_account_history(last_id, limit, only_ops=['custom_json'])
+    done = False
+    for h in history:
+        timestamp = isoparse(h['timestamp'])
+
+        days_to_go = (timestamp - from_date).days
+        progress_util.update_season_msg('...retrieve rewards_draws date for \'' + str(account.name) +
+                                        '\' - days to go: ' + str(days_to_go))
+
+        last_id = h['index']
+        operation = h['id']
+        if from_date < timestamp:
+            if operation == 'sm_purchase':
+                if till_date > timestamp:
+                    results.append({'trx_info': spl.get_transaction(h['trx_id'])['trx_info'],
+                                    'timestamp': timestamp})
+                else:
+                    logging.info('Skip.. after till date...')
+        else:
+            done = True
+            break
+
+    if not done:
+        get_rewards_draws(account, from_date, till_date, last_id - 1, results=results)
+    return results
+
+
 def get_land_operations(account, from_date, last_id, results=None, days_to_process=None):
     if results is None:
         results = []
