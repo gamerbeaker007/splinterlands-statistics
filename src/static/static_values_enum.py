@@ -25,8 +25,8 @@ league_colors = ['lightgray', 'brown', 'gray', 'yellow', 'purple', 'orange']
 
 WEB_URL = 'https://d36mxiodymuqjm.cloudfront.net/'
 cards_icon_url = WEB_URL + 'website/ui_elements/open_packs/packsv2/img_pack_chaos-legion_opt.png'
-dec_icon_url = WEB_URL + 'website/ui_elements/buy_coins/Icon_DEC.svg'
-land_icon_url = WEB_URL + 'website/ui_elements/popups/land_presale/img_plot.svg'
+dec_icon_url = WEB_URL + 'website/icon_dec.png'
+land_icon_url_svg = WEB_URL + 'website/ui_elements/popups/land_presale/img_plot.svg'
 sps_icon_url = WEB_URL + 'website/ui_elements/shop/cl/img_sps-shard_128.png'
 coins_icon_url = WEB_URL + 'website/ui_elements/shop/img_credits.png'
 other_icon_url = WEB_URL + 'website/nav/icon_nav_items_active@2x.png'

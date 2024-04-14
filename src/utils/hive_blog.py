@@ -158,8 +158,8 @@ def get_last_season_costs_table(account, season_info_store, skip_zeros):
             costs_rows += cost_earning_row('SPS brawl delegation', sps_icon, sps_df.delegation_brawl, skip_zeros)
 
     glint_df = season_info_store['glint']
-    glint_df = glint_df.loc[(glint_df.player == account)].fillna(0)
     if not glint_df.empty:
+        glint_df = glint_df.loc[(glint_df.player == account)].fillna(0)
         glint_df = glint_df.iloc[0]
         if 'purchase_reward_draw' in glint_df:
             costs_rows += cost_earning_row('GLINT rewards draws', glint_icon, glint_df.purchase_reward_draw,
@@ -258,8 +258,8 @@ def get_last_season_earnings_table(account, season_info_store, skip_zeros):
             earning_rows += cost_earning_row('VOUCHER earned', voucher_icon, voucher_df.claim_staking_rewards,
                                              skip_zeros)
     glint_df = season_info_store['glint']
-    glint_df = glint_df.loc[(glint_df.player == account)].fillna(0)
     if not glint_df.empty:
+        glint_df = glint_df.loc[(glint_df.player == account)].fillna(0)
         glint_df = glint_df.iloc[0]
         if 'ranked_rewards' in glint_df:
             earning_rows += cost_earning_row('GLINT earned', glint_icon, glint_df.ranked_rewards,

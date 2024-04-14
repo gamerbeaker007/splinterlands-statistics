@@ -162,7 +162,10 @@ def get_seasons_played_list():
 
 
 def get_season_values(df, season_id, users, season_id_column='season_id'):
-    return df.loc[(df.player.isin(users)) & (df[season_id_column] == season_id)].copy()
+    if not df.empty:
+        return df.loc[(df.player.isin(users)) & (df[season_id_column] == season_id)].copy()
+    else:
+        return df
 
 
 def is_last_season_processed(account, current_season_data):

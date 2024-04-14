@@ -307,7 +307,7 @@ def display_click_data(filtered_portfolio_df, click_data):
                               "Staked: " + str(round(sps_staked_value, 2)) + " $",
                           ],
                           static_values_enum.sps_icon_url),
-        create_value_card("Land", str(round(land_value, 2)) + " $", static_values_enum.land_icon_url),
+        create_value_card("Land", str(round(land_value, 2)) + " $", static_values_enum.land_icon_url_svg),
         create_value_card("Others", str(round(other_value, 2)) + " $", static_values_enum.other_icon_url)
     ]
 
