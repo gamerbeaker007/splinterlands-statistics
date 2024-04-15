@@ -193,6 +193,7 @@ def plot_season_stats_earnings(season_df_sps,
         'brawl_prize']
     columns_glint = [
         'ranked_rewards',
+        'season_rewards',
     ]
 
     if not season_df_dec.empty:
@@ -257,7 +258,7 @@ def plot_season_stats_earnings(season_df_sps,
     trace4 = go.Scatter(x=season_df_glint.season_id,
                         y=season_df_glint.total,
                         mode='lines+markers',
-                        name='GLINT (ranked rewards only) ',
+                        name='GLINT (ranked + season rewards) ',
                         line=dict(color='steelblue', width=2))
 
     titles = []
@@ -330,9 +331,11 @@ def plot_season_stats_earnings_all(season_df,
     if skip_zero:
         season_df = season_df.loc[:, (season_df.sum(axis=0) != 0.0)]
 
+    markers = False if len(season_df) > 1 else True
     fig = px.line(season_df,
                   x='season_id',
                   y=season_df.columns,
+                  markers=markers,
                   title=title)
 
     fig.update_layout(

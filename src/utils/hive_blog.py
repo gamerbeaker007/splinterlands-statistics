@@ -262,7 +262,10 @@ def get_last_season_earnings_table(account, season_info_store, skip_zeros):
         glint_df = glint_df.loc[(glint_df.player == account)].fillna(0)
         glint_df = glint_df.iloc[0]
         if 'ranked_rewards' in glint_df:
-            earning_rows += cost_earning_row('GLINT earned', glint_icon, glint_df.ranked_rewards,
+            earning_rows += cost_earning_row('GLINT ranked', glint_icon, glint_df.ranked_rewards,
+                                             skip_zeros)
+        if 'season_rewards' in glint_df:
+            earning_rows += cost_earning_row('GLINT season', glint_icon, glint_df.season_rewards,
                                              skip_zeros)
 
     result = 'None'

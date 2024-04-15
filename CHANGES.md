@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.18.2
+
+- Add glint season rewards to overview and blog generation
+
 ## 0.18.1
 
 - FIX: generate when no glint is not captured yet
