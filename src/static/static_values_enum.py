@@ -42,6 +42,11 @@ reward_draw_veteran_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws
 reward_draw_elite_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_reward_elite-draw_150.png'
 reward_draw_master_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_reward_master-draw_150.png'
 
+reward_draw_common_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_draws-common_800.png'
+reward_draw_rare_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_draws-rare_800.png'
+reward_draw_epic_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_draws-epic_800.png'
+reward_draw_legendary_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/draws/img_draws-legendary_800.png'
+
 wild_league_icon_url = WEB_URL + 'website/icons/leagues/wild_150/league_0.png'
 modern_league_icon_url = WEB_URL + 'website/icons/leagues/modern_150/league_0.png'
 

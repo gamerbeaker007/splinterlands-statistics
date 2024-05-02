@@ -4,12 +4,15 @@ from src.static import static_values_enum
 from src.static.static_values_enum import Leagues, sps_icon_url, dec_icon_url, coins_icon_url, glint_icon_url, \
     voucher_icon_url, merit_icon_url, wild_league_icon_url, modern_league_icon_url
 
-credit_icon = 'https://images.hive.blog/20x0/' + coins_icon_url
-dec_icon = 'https://images.hive.blog/20x0/' + dec_icon_url
-sps_icon = 'https://images.hive.blog/20x0/' + sps_icon_url
-voucher_icon = 'https://images.hive.blog/20x0/' + voucher_icon_url
-glint_icon = 'https://images.hive.blog/20x0/' + glint_icon_url
-merits_icon = 'https://images.hive.blog/20x0/' + merit_icon_url
+image_hive_blog_20_url = 'https://images.hive.blog/20x0/'
+image_hive_blog_150_url = 'https://images.hive.blog/150x0/'
+
+credit_icon = image_hive_blog_20_url + coins_icon_url
+dec_icon = image_hive_blog_20_url + dec_icon_url
+sps_icon = image_hive_blog_20_url + sps_icon_url
+voucher_icon = image_hive_blog_20_url + voucher_icon_url
+glint_icon = image_hive_blog_20_url + glint_icon_url
+merits_icon = image_hive_blog_20_url + merit_icon_url
 
 intro_img = ('https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/'
              '23tvcWHTtW5SAv63Z2J86Zuyvn5Jk2BQQ5qBQrGBvv5hRm1DUaVKJN4Z8X9eFfSokovT1.png')
@@ -465,13 +468,24 @@ def get_sub_type_sum(df, name):
 
 
 def get_reward_draws_table(df):
-    result = '|' + static_values_enum.reward_draw_initiate_icon_url
-    result += '|' + static_values_enum.reward_draw_adept_icon_url
-    result += '|' + static_values_enum.reward_draw_veteran_icon_url
-    result += '|' + static_values_enum.reward_draw_elite_icon_url
-    result += '|' + static_values_enum.reward_draw_master_icon_url
-    result += '|\n'
+    result = '|' + image_hive_blog_150_url + static_values_enum.reward_draw_common_icon_url
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_rare_icon_url
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_epic_icon_url
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_legendary_icon_url
+    result += '|' + " " + "|\n"
     result += '|-|-|-|-|-|\n'
+    result += '| <center>Common: ' + str(get_sub_type_sum(df, 'common_draw')) + 'x</center>'
+    result += '| <center>Rare: ' + str(get_sub_type_sum(df, 'rare_draw')) + 'x</center>'
+    result += '| <center>Epic: ' + str(get_sub_type_sum(df, 'epic_draw')) + 'x</center>'
+    result += '| <center>Legendary: ' + str(get_sub_type_sum(df, 'legendary_draw')) + 'x</center>'
+    result += '|' " "
+    result += '|\n'
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_initiate_icon_url
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_adept_icon_url
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_veteran_icon_url
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_elite_icon_url
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_master_icon_url
+    result += '|\n'
     result += '| <center>Initiate: ' + str(get_sub_type_sum(df, 'initiate_draw')) + 'x</center>'
     result += '| <center>Adept: ' + str(get_sub_type_sum(df, 'adept_draw')) + 'x</center>'
     result += '| <center>Veteran: ' + str(get_sub_type_sum(df, 'veteran_draw')) + 'x</center>'
