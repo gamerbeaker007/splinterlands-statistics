@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## 0.19.0
 
 - Add rarity draws to hive blog overview.
+- Add last won and lost battles for specific card overview.
 
 ## 0.18.2
 

@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc
 
 from src.pages.card_pages import weakest_cards, top_cards, card_page_filter, card_page_ids, card_page_info, \
-    card_page_image, card_page_ruleset
+    card_page_image, card_page_ruleset, card_page_last_battles
 
 layout = dbc.Container([
     dbc.Row([
@@ -15,7 +15,10 @@ layout = dbc.Container([
         dbc.Col(card_page_info.layout),
         dbc.Col(card_page_image.layout),
         dbc.Col(card_page_ruleset.layout, style={'position': 'relative'}),
-    ], className='mb3'),
+    ], className='m-3'),
+
+    dbc.Row(card_page_last_battles.layout),
+
     dbc.Row(top_cards.layout),
     dbc.Row(weakest_cards.layout),
 

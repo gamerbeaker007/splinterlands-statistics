@@ -50,6 +50,14 @@ reward_draw_legendary_icon_url = WEB_URL + '/website/ui_elements/shop/ranked/dra
 wild_league_icon_url = WEB_URL + 'website/icons/leagues/wild_150/league_0.png'
 modern_league_icon_url = WEB_URL + 'website/icons/leagues/modern_150/league_0.png'
 
+guild_icon_url = WEB_URL + 'website/nav/icon_nav_guilds_active@2x.png'
+tournament_icon_url = WEB_URL + 'website/nav/icon_nav_events_active@2x.png'
+battle_icon_url = WEB_URL + 'website/nav/icon_nav_battle_active@2x.png'
+
+replay_icon_url = WEB_URL + 'website/ui_elements/icon_replay_active.svg'
+trophy_icon_url = WEB_URL + 'website/ui_elements/img_monster-trophy.png'
+mana_icon_url = WEB_URL + 'website/ui_elements/bg_mana.png'
+
 
 class ExtendedEnum(Enum):
 

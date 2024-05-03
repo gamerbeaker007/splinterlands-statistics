@@ -16,3 +16,5 @@ weakest_against_cards = 'weakest-against-cards'
 
 input_account_name = 'input_account_name'
 input_card_name = 'input_card_name'
+battles_won = 'card-page-battles_won'
+battles_loss = 'card-page-battles_loss'
