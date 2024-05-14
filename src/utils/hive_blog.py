@@ -482,6 +482,13 @@ def get_quantity_potion_sum(df, reward_type, potion_type):
         return df.loc[(df.type == reward_type) & (df.potion_type == potion_type)].quantity.sum()
 
 
+def get_quantity_jackpot_sum(df, reward_type, prize_type):
+    if df.empty or df.loc[df.type == reward_type].empty:
+        return 0
+    else:
+        return df.loc[(df.type == reward_type) & (df.prize_type == prize_type)].quantity.sum()
+
+
 def get_reward_draws_table(df):
     result = '|' + image_hive_blog_150_url + static_values_enum.reward_draw_common_icon_url
     result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_rare_icon_url
@@ -528,14 +535,16 @@ def get_rewards_draws_result_table(df):
     result += '| ' + image_hive_blog_150_url + static_values_enum.energy_icon_url
     result += '| ' + image_hive_blog_150_url + static_values_enum.potion_gold_icon_url
     result += '| ' + image_hive_blog_150_url + static_values_enum.potion_legendary_icon_url
+    result += '| ' + image_hive_blog_150_url + static_values_enum.beta_pack_icon
     result += '| ' + image_hive_blog_150_url + static_values_enum.land_plot_icon_url
     result += '|\n'
-    result += '|-|-|-|-|-|\n'
+    result += '|-|-|-|-|-|-|\n'
     result += '| <center>' + str(get_quantity_sum(df, 'merits')) + '</center>'
     result += '| <center>' + str(get_quantity_sum(df, 'energy')) + '</center>'
     result += '| <center>' + str(get_quantity_potion_sum(df, 'potion', 'gold')) + '</center>'
     result += '| <center>' + str(get_quantity_potion_sum(df, 'potion', 'legendary')) + '</center>'
-    result += '| <center>' + str(get_quantity_sum(df, 'land_plot')) + '</center>'
+    result += '| <center>' + str(get_quantity_jackpot_sum(df, 'jackpot', 'BETA')) + '</center>'
+    result += '| <center>' + str(get_quantity_jackpot_sum(df, 'jackpot', 'PLOT')) + '</center>'
     result += '|\n'
 
     return result

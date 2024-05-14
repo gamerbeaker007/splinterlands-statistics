@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.20.1
+
+- FIX: jackpot prize (including BETA and PLOT)
+
 ## 0.20.0
 
 - Add loot chest draws to hive blog overview.
