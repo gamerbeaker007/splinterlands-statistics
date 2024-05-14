@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.20.0
+
+- Add loot chest draws to hive blog overview.
+
 ## 0.19.0
 
 - Add rarity draws to hive blog overview.

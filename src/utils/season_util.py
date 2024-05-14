@@ -99,21 +99,25 @@ def get_last_season_reward_draws(account_name, from_date, till_date):
     df = pd.DataFrame()
     for result in results:
         result = json.loads(result['trx_info']['result'])
-        reward_type = result['type']
         reward_sub_type = result['sub_type']
         reward_result = json.loads(result['data'])['result']
         if reward_result['success']:
             temp_df = pd.DataFrame(reward_result['rewards'])
-            temp_df['type'] = reward_type
             temp_df['sub_type'] = reward_sub_type
-            temp_df = temp_df.rename(columns={'quantity': 'bcx'})
-            # Expand 'card' column into multiple columns
-            card_df = pd.json_normalize(temp_df['card'])
-            # Concatenate temp_df and card_df along columns axis
-            temp_df = pd.concat([temp_df.drop(columns=['card']), card_df], axis=1)
+            if 'card' in temp_df.columns.tolist():
+                # Expand 'card' column into multiple columns
+                card_df = pd.json_normalize(temp_df['card'])
+                # Concatenate temp_df and card_df along columns axis
+                temp_df = pd.concat([temp_df.drop(columns=['card']), card_df], axis=1)
             df = pd.concat([df, temp_df])
 
-    if not df.empty:
-        df['edition_name'] = df.apply(lambda r: (Edition(r.edition)).name, axis=1)
-        df['card_name'] = df.apply(lambda r: config.card_details_df.loc[r.card_detail_id]['name'], axis=1)
+    df.reset_index(drop=True)
+    df.index = range(len(df))
+    if not df.empty and 'card_detail_id' in df.columns:
+        not_na_index = df['card_detail_id'].notna()
+        if not_na_index.any():  # Check if there are non-NaN values in 'card_detail_id'
+            df.loc[not_na_index, 'edition_name'] = df.loc[not_na_index, 'edition'].apply(lambda x: Edition(x).name)
+            df.loc[not_na_index, 'bcx'] = df.loc[not_na_index, 'quantity']
+            df.loc[not_na_index, 'card_name'] = df.loc[not_na_index, 'card_detail_id'].apply(
+                lambda x: config.card_details_df.loc[x, 'name'])
     return df

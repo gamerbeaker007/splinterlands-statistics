@@ -316,6 +316,7 @@ def get_card_table(cards_df, print_count=False):
     base_card_url = 'https://images.hive.blog/150x0/https://d36mxiodymuqjm.cloudfront.net/cards_by_level/'
 
     if cards_df is not None and len(cards_df) > 0:
+        cards_df = cards_df.dropna(subset=['card_detail_id'])
         unique_card_list = cards_df.card_name.unique()
         temp = pd.DataFrame()
         for card_name in unique_card_list:
@@ -467,6 +468,20 @@ def get_sub_type_sum(df, name):
         return df.loc[df.sub_type == name].sub_type.count()
 
 
+def get_quantity_sum(df, reward_type):
+    if df.empty or df.loc[df.type == reward_type].empty:
+        return 0
+    else:
+        return df.loc[df.type == reward_type].quantity.sum()
+
+
+def get_quantity_potion_sum(df, reward_type, potion_type):
+    if df.empty or df.loc[df.type == reward_type].empty:
+        return 0
+    else:
+        return df.loc[(df.type == reward_type) & (df.potion_type == potion_type)].quantity.sum()
+
+
 def get_reward_draws_table(df):
     result = '|' + image_hive_blog_150_url + static_values_enum.reward_draw_common_icon_url
     result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_rare_icon_url
@@ -478,7 +493,7 @@ def get_reward_draws_table(df):
     result += '| <center>Rare: ' + str(get_sub_type_sum(df, 'rare_draw')) + 'x</center>'
     result += '| <center>Epic: ' + str(get_sub_type_sum(df, 'epic_draw')) + 'x</center>'
     result += '| <center>Legendary: ' + str(get_sub_type_sum(df, 'legendary_draw')) + 'x</center>'
-    result += '|' " "
+    result += '| '
     result += '|\n'
     result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_initiate_icon_url
     result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_adept_icon_url
@@ -492,6 +507,37 @@ def get_reward_draws_table(df):
     result += '| <center> Elite: ' + str(get_sub_type_sum(df, 'elite_draw')) + 'x</center>'
     result += '| <center>Master: ' + str(get_sub_type_sum(df, 'master_draw')) + 'x</center>'
     result += '|\n'
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_minor_icon_url
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_major_icon_url
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_ultimate_icon_url
+    result += '| '
+    result += '| '
+    result += '|\n'
+    result += '| <center>Minor chest: ' + str(get_sub_type_sum(df, 'minor_draw')) + 'x</center>'
+    result += '| <center>Medium chest: ' + str(get_sub_type_sum(df, 'major_draw')) + 'x</center>'
+    result += '| <center>Ultimate chest: ' + str(get_sub_type_sum(df, 'ultimate_draw')) + 'x</center>'
+    result += '| '
+    result += '| '
+    result += '|\n'
+
+    return result
+
+
+def get_rewards_draws_result_table(df):
+    result = '| ' + image_hive_blog_150_url + static_values_enum.merit_icon_url
+    result += '| ' + image_hive_blog_150_url + static_values_enum.energy_icon_url
+    result += '| ' + image_hive_blog_150_url + static_values_enum.potion_gold_icon_url
+    result += '| ' + image_hive_blog_150_url + static_values_enum.potion_legendary_icon_url
+    result += '| ' + image_hive_blog_150_url + static_values_enum.land_plot_icon_url
+    result += '|\n'
+    result += '|-|-|-|-|-|\n'
+    result += '| <center>' + str(get_quantity_sum(df, 'merits')) + '</center>'
+    result += '| <center>' + str(get_quantity_sum(df, 'energy')) + '</center>'
+    result += '| <center>' + str(get_quantity_potion_sum(df, 'potion', 'gold')) + '</center>'
+    result += '| <center>' + str(get_quantity_potion_sum(df, 'potion', 'legendary')) + '</center>'
+    result += '| <center>' + str(get_quantity_sum(df, 'land_plot')) + '</center>'
+    result += '|\n'
+
     return result
 
 
@@ -501,8 +547,11 @@ def get_last_season_rewards(last_season_rewards, account_name=None):
         account_suffix = ' (' + str(account_name) + ')'
 
     return """
-## <div class="phishy"><center>Draws purchased """ + str(account_suffix) + """</center></div>
+## <div class="phishy"><center>Reward draws purchased """ + str(account_suffix) + """</center></div>
 """ + str(get_reward_draws_table(last_season_rewards)) + """
+
+## <div class="phishy"><center>Special items earned""" + str(account_suffix) + """</center></div>
+""" + str(get_rewards_draws_result_table(last_season_rewards)) + """
 
 ## <div class="phishy"><center>Cards earned""" + str(account_suffix) + """</center></div>
 """ + str(get_card_table(last_season_rewards)) + """
