@@ -316,7 +316,11 @@ def get_card_table(cards_df, print_count=False):
     base_card_url = 'https://images.hive.blog/150x0/https://d36mxiodymuqjm.cloudfront.net/cards_by_level/'
 
     if cards_df is not None and len(cards_df) > 0:
-        cards_df = cards_df.dropna(subset=['card_detail_id'])
+        cards_df = cards_df.dropna(subset=['card_detail_id']).copy()
+        cards_df.loc[:, 'bcx_new'] = cards_df['bcx'].astype(float).astype(int)
+        cards_df = cards_df.drop(columns=['bcx'])
+        cards_df = cards_df.rename(columns={'bcx_new': 'bcx'})
+
         unique_card_list = cards_df.card_name.unique()
         temp = pd.DataFrame()
         for card_name in unique_card_list:
@@ -356,7 +360,7 @@ def get_card_table(cards_df, print_count=False):
 
             if card.quantity_gold > 0:
                 gold_suffix = '_gold'
-                bcx_str += str('<br> gold bcx:' + str(card.bcx_gold))
+                bcx_str += str('<br> gold bcx: ' + str(card.bcx_gold))
 
             if print_count:
                 count_str = ' <br> ' + str(card.quantity_regular + card.quantity_gold) + 'x'
