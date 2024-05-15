@@ -1,10 +1,6 @@
-import json
 import logging
-from datetime import datetime
 from time import sleep
 
-import pytz
-import requests
 from beem import Hive
 from beem.account import Account
 from dateutil.parser import isoparse
@@ -115,43 +111,11 @@ def get_market_with_retry(token):
         return None
 
 
-def get_hive_transactions(account_name, from_date, till_date, last_id, results):
-    limit = 1000
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    data = '{"jsonrpc":"2.0", ' \
-           '"method":"condenser_api.get_account_history", ' \
-           '"params":["' + str(account_name) + '" , ' \
-           + str(last_id) + ', ' \
-           + str(limit) + ', 262144], "id":1}'
-
-    response = requests.post(HIVE_BLOG_URL, headers=headers, data=data)
-    if response.status_code == 200:
-        transactions = json.loads(response.text)['result']
-        for transaction in transactions:
-            timestamp = transaction[1]['timestamp']
-            # Assume time of Hive is always UTC
-            # https://developers.hive.io/tutorials-recipes/understanding-dynamic-global-properties.html#time
-            timestamp = datetime.strptime(timestamp + "-+0000", '%Y-%m-%dT%H:%M:%S-%z')
-            if from_date < timestamp < till_date:
-                results.append(transaction[1])
-
-        # Check last transaction if there need to be another pull
-        timestamp = transactions[0][1]['timestamp']
-        timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S').astimezone(pytz.utc)
-        if from_date < timestamp:
-            last_id = transactions[0][0]
-
-            get_hive_transactions(account_name, from_date, till_date, last_id - 1, results)
-    return results
-
-
 def get_rewards_draws(account_name, from_date, till_date, last_id=-1, results=None):
     if results is None:
         results = []
 
-    limit = 100
-
-    history = get_account_history_with_retry(account_name, last_id, limit)
+    history = get_account_history_with_retry(account_name, last_id)
     done = False
     for h in history:
         timestamp = isoparse(h['timestamp'])
@@ -178,7 +142,39 @@ def get_rewards_draws(account_name, from_date, till_date, last_id=-1, results=No
     return results
 
 
-def get_account_history_with_retry(account_name, last_id, limit):
+def get_purchased_sold_cards(account_name, from_date, till_date, last_id=-1, results=None):
+    if results is None:
+        results = []
+
+    history = get_account_history_with_retry(account_name, last_id)
+    done = False
+    for h in history:
+        timestamp = isoparse(h['timestamp'])
+
+        days_to_go = (timestamp - from_date).days
+        progress_util.update_season_msg('...retrieve purchased sold cards for \'' + str(account_name) +
+                                        '\' - days to go: ' + str(days_to_go))
+
+        last_id = h['index']
+        operation = h['id']
+        if from_date < timestamp:
+            if operation == 'sm_market_purchase' or operation == 'sm_sell_cards':
+                if till_date > timestamp:
+                    results.append({'trx_info': spl.get_transaction(h['trx_id'])['trx_info'],
+                                    'timestamp': timestamp})
+                else:
+                    logging.info('Skip.. after till date...')
+        else:
+            done = True
+            break
+
+    if not done:
+        get_purchased_sold_cards(account_name, from_date, till_date, last_id - 1, results=results)
+    return results
+
+
+def get_account_history_with_retry(account_name, last_id):
+    limit = 100
     retries = 0
     while retries < max_retries:
         try:
@@ -200,9 +196,7 @@ def get_land_operations(account_name, from_date, last_id, results=None, days_to_
     if results is None:
         results = []
 
-    limit = 100
-
-    history = get_account_history_with_retry(account_name, last_id, limit)
+    history = get_account_history_with_retry(account_name, last_id)
     done = False
     for h in history:
         timestamp = isoparse(h['timestamp'])
