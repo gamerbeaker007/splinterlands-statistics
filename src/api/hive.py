@@ -5,6 +5,9 @@ from time import sleep
 
 import pytz
 import requests
+from beem import Hive
+from beem.account import Account
+from beem.nodelist import NodeList
 from dateutil.parser import isoparse
 from hiveengine.api import Api
 
@@ -193,3 +196,13 @@ def get_land_operations(account, from_date, last_id, results=None, days_to_proce
     if not done:
         get_land_operations(account, from_date, last_id - 1, results=results, days_to_process=days_to_process)
     return results
+
+
+def get_hive_account(account_name):
+    node_list = NodeList()
+    node_list_updated = node_list.get_nodes(hive=True)
+    # Initialize a Hive instance with a specific node
+    # For this example, let's choose the first node in the list
+    hive = Hive(nodes=node_list_updated)
+    # Now you can use the initialized Hive instance to get account history
+    return Account(account_name, hive_instance=hive)
