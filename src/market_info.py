@@ -2,7 +2,7 @@ import json
 import logging
 
 import pandas as pd
-from dateutil import parser
+from dateutil.parser import isoparse
 
 from src.api import hive, spl
 from src.configuration import config
@@ -37,21 +37,21 @@ def get_sold_cards(account_name, cards_df):
 
 
 def get_purchased_sold_cards(account_name, start_date, end_date):
-    start_date = parser.parse(start_date)
-    end_date = parser.parse(end_date)
-    transactions = []
-    transactions = hive.get_hive_transactions(account_name, start_date, end_date, -1, transactions)
+    from_date = isoparse(start_date).replace(tzinfo=None)
+    till_date = isoparse(end_date).replace(tzinfo=None)
+    transactions = hive.get_purchased_sold_cards(account_name, from_date, till_date)
 
     # filter purchase transactions
     sm_market_purchase = pd.DataFrame()
     potential_sell = pd.DataFrame()
     for transaction in transactions:
-        operation = transaction['op'][1]
-        if operation['id'] == 'sm_market_purchase':
-            df1 = pd.DataFrame({'spl_id': json.loads(operation['json'])['items']})
+        trx = transaction['trx_info']
+        operation = trx['type']
+        if operation == 'market_purchase':
+            df1 = pd.DataFrame({'spl_id': json.loads(trx['data'])['items']})
             sm_market_purchase = pd.concat([sm_market_purchase, df1])
-        elif operation['id'] == 'sm_sell_cards':
-            card_op = json.loads(operation['json'])
+        elif operation == 'sell_cards':
+            card_op = json.loads(trx['data'])
             if isinstance(card_op, dict):
                 df1 = pd.DataFrame({'card': card_op['cards']})
                 potential_sell = pd.concat([potential_sell, df1])

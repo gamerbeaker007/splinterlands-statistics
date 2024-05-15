@@ -2,7 +2,6 @@ import datetime
 import json
 
 import pandas as pd
-from beem.account import Account
 from dateutil import parser
 from dateutil.parser import isoparse
 
@@ -92,24 +91,25 @@ def generate_season_hive_blog(season_id, users):
 def get_last_season_reward_draws(account_name, from_date, till_date):
     from_date = isoparse(from_date).replace(tzinfo=None)
     till_date = isoparse(till_date).replace(tzinfo=None)
-    acc = Account(account_name)
 
-    results = hive.get_rewards_draws(acc, from_date, till_date)
+    results = hive.get_rewards_draws(account_name, from_date, till_date)
 
     df = pd.DataFrame()
     for result in results:
         result = json.loads(result['trx_info']['result'])
         reward_sub_type = result['sub_type']
-        reward_result = json.loads(result['data'])['result']
-        if reward_result['success']:
-            temp_df = pd.DataFrame(reward_result['rewards'])
-            temp_df['sub_type'] = reward_sub_type
-            if 'card' in temp_df.columns.tolist():
-                # Expand 'card' column into multiple columns
-                card_df = pd.json_normalize(temp_df['card'])
-                # Concatenate temp_df and card_df along columns axis
-                temp_df = pd.concat([temp_df.drop(columns=['card']), card_df], axis=1)
-            df = pd.concat([df, temp_df])
+        data = json.loads(result['data'])
+        if 'result' in data:
+            reward_result = data['result']
+            if reward_result['success']:
+                temp_df = pd.DataFrame(reward_result['rewards'])
+                temp_df['sub_type'] = reward_sub_type
+                if 'card' in temp_df.columns.tolist():
+                    # Expand 'card' column into multiple columns
+                    card_df = pd.json_normalize(temp_df['card'])
+                    # Concatenate temp_df and card_df along columns axis
+                    temp_df = pd.concat([temp_df.drop(columns=['card']), card_df], axis=1)
+                df = pd.concat([df, temp_df])
 
     df.reset_index(drop=True)
     df.index = range(len(df))

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.20.3
+
+- FIX: improve hive interaction use available nodelist
+
 ## 0.20.2
 
 - FIX: card bcx float -> int
