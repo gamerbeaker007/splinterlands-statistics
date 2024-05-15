@@ -3,7 +3,9 @@ import logging
 from datetime import datetime
 
 import pandas as pd
+from beem import Hive
 from beem.account import Account
+from beem.nodelist import NodeList
 
 from src.api import spl, hive, coingecko
 from src.utils import progress_util
@@ -125,7 +127,9 @@ def process_land_transactions(transactions):
 
 
 def get_land_operations(account_name, from_date):
-    acc = Account(account_name)
+    nodelist = NodeList().get_hive_nodes()
+    stm = Hive(node=nodelist)
+    acc = Account(account_name, hive_instance=stm)
     land_transactions = hive.get_land_operations(acc, from_date, -1)
     progress_util.update_daily_msg('...processing land data for \'' + str(account_name) + '\'')
 

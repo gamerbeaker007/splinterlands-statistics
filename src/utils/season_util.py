@@ -2,7 +2,9 @@ import datetime
 import json
 
 import pandas as pd
+from beem import Hive
 from beem.account import Account
+from beem.nodelist import NodeList
 from dateutil import parser
 from dateutil.parser import isoparse
 
@@ -92,7 +94,9 @@ def generate_season_hive_blog(season_id, users):
 def get_last_season_reward_draws(account_name, from_date, till_date):
     from_date = isoparse(from_date).replace(tzinfo=None)
     till_date = isoparse(till_date).replace(tzinfo=None)
-    acc = Account(account_name)
+    nodelist = NodeList().get_hive_nodes()
+    stm = Hive(node=nodelist)
+    acc = Account(account_name, hive_instance=stm)
 
     results = hive.get_rewards_draws(acc, from_date, till_date)
 
