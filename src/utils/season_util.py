@@ -92,9 +92,7 @@ def get_last_season_reward_draws(account_name, from_date, till_date):
     from_date = isoparse(from_date).replace(tzinfo=None)
     till_date = isoparse(till_date).replace(tzinfo=None)
 
-    acc = hive.get_hive_account(account_name)
-
-    results = hive.get_rewards_draws(acc, from_date, till_date)
+    results = hive.get_rewards_draws(account_name, from_date, till_date)
 
     df = pd.DataFrame()
     for result in results:
