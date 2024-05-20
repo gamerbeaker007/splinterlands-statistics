@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.21.0
+
+- Add: land resources value calculation to portfolio (currently only GRAIN)
+
 ## 0.20.3
 
 - FIX: improve hive interaction use available nodelist

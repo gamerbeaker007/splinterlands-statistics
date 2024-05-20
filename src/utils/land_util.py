@@ -5,7 +5,8 @@ from datetime import datetime
 import pandas as pd
 
 from src.api import spl, hive, coingecko
-from src.utils import progress_util
+from src.static.static_values_enum import LAND_SWAP_FEE
+from src.utils import progress_util, store_util
 
 
 def filter_items(deed, df, param):
@@ -128,3 +129,20 @@ def get_land_operations(account_name, from_date):
     progress_util.update_daily_msg('...processing land data for \'' + str(account_name) + '\'')
 
     return process_land_transactions(land_transactions)
+
+
+def get_resources_value(account):
+    token_param = store_util.get_token_dict(account)
+    dec_value = spl.get_prices()['dec']
+    pools = spl.spl_get_pools()
+    if not pools.empty:
+        total_value = 0
+        for resource in pools.token_symbol.tolist():
+            pool = pools.loc[pools.token_symbol == resource]
+            qty = spl.get_owned_resource_sum(account, resource, token_param)
+            value_dec = qty * pool.resource_price * LAND_SWAP_FEE
+            total_value += value_dec * dec_value
+        return pd.DataFrame({'date': datetime.today().strftime('%Y-%m-%d'),
+                             'account_name': account,
+                             'land_resources_value': total_value})
+    return pd.DataFrame()

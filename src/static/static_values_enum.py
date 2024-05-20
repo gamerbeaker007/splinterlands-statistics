@@ -1,5 +1,7 @@
 from enum import Enum
 
+LAND_SWAP_FEE = 0.9  # 10 swap_fee
+
 # league_ratings_all = [
 #     0,     # Novice
 #     260,   # Bronze III
