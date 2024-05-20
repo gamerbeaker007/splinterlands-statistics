@@ -6,7 +6,7 @@ import pandas as pd
 
 from src.api import spl, hive, coingecko
 from src.static.static_values_enum import LAND_SWAP_FEE
-from src.utils import progress_util, store_util
+from src.utils import progress_util
 
 
 def filter_items(deed, df, param):
@@ -132,17 +132,51 @@ def get_land_operations(account_name, from_date):
 
 
 def get_resources_value(account):
-    token_param = store_util.get_token_dict(account)
     dec_value = spl.get_prices()['dec']
     pools = spl.spl_get_pools()
+    total_value = 0
     if not pools.empty:
-        total_value = 0
         for resource in pools.token_symbol.tolist():
-            pool = pools.loc[pools.token_symbol == resource]
-            qty = spl.get_owned_resource_sum(account, resource, token_param)
-            value_dec = qty * pool.resource_price * LAND_SWAP_FEE
-            total_value += value_dec * dec_value
-        return pd.DataFrame({'date': datetime.today().strftime('%Y-%m-%d'),
-                             'account_name': account,
-                             'land_resources_value': total_value})
+            pool = pools.loc[pools.token_symbol == resource].iloc[0]
+            qty = spl.get_owned_resource_sum(account, resource)
+            if qty:
+                value_dec = qty * pool.resource_price * LAND_SWAP_FEE
+                total_value += value_dec * dec_value
+
+    return pd.DataFrame({'date': [datetime.today().strftime('%Y-%m-%d')],
+                         'account_name': [account],
+                         'land_resources_value': [total_value]})
+
+
+def get_liquidity_pools_info(account):
+    pools = spl.spl_get_pools()
+
+    date = datetime.today().strftime('%Y-%m-%d')
+
+    dec_value = spl.get_prices()['dec']
+
+    if not pools.empty:
+        for resource in pools.token_symbol.tolist():
+            pool = pools.loc[pools.token_symbol == resource].iloc[0]
+            liq = spl.get_liquidity(account, resource)
+            token = 'DEC-' + resource
+            if not liq.empty and not liq.loc[liq.token == token].empty:
+                liq = liq.loc[liq.token == token].iloc[0]
+                my_shares = liq.balance
+                total_shares = float(pool.total_shares)
+                my_pct = (my_shares / total_shares) * 100
+                resource_qty = float(pool.resource_quantity) / 100 * my_pct
+                dec_qty = float(pool.dec_quantity) / 100 * my_pct
+
+                return pd.DataFrame({
+                    'date': [date],
+                    'account_name': [account],
+                    'token': [token],
+                    'my_pct': [my_pct],
+                    'resource_quantity': [resource_qty],
+                    'dec_quantity': [dec_qty],
+                    'dec_price': [dec_value],
+                    'value': [dec_qty * dec_value * 2]
+                })
+
     return pd.DataFrame()

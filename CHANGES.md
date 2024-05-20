@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## 0.21.0
 
 - Add: land resources value calculation to portfolio (currently only GRAIN)
+- Add: Monitoring of the resources in the trade hub (in-game liquidity pools)
 
 ## 0.20.3
 

@@ -29,8 +29,7 @@ def update_portfolio(account, portfolio_df, list_prices_df, market_prices_df):
         df4 = land_util.get_staked_dec_value(account)
         total_df = total_df.merge(df4)
         df5 = land_util.get_resources_value(account)
-        if not df5.empty:
-            total_df = total_df.merge(df5)
+        total_df = total_df.merge(df5)
         portfolio_df = pd.concat([portfolio_df, total_df], ignore_index=True)
     return portfolio_df
 
