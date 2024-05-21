@@ -172,11 +172,17 @@ def get_liquidity_pools_info(account):
                     'date': [date],
                     'account_name': [account],
                     'token': [token],
+                    'my_shares': [my_shares],
                     'my_pct': [my_pct],
-                    'resource_quantity': [resource_qty],
-                    'dec_quantity': [dec_qty],
-                    'dec_price': [dec_value],
-                    'value': [dec_qty * dec_value * 2]
+                    'my_resource_quantity': [resource_qty],
+                    'my_dec_quantity': [dec_qty],
+                    'value': [dec_qty * dec_value * 2],
+                    'total_shares': float(pool.resource_quantity),
+                    'resource_quantity': float(pool.resource_quantity),
+                    'dec_quantity': float(pool.dec_quantity),
+                    'resource_price': [float(pool.resource_price)],
+                    'dec_price': [float(pool.dec_price)],
+                    'dec_price_usd': [dec_value],
                 })
 
     return pd.DataFrame()
