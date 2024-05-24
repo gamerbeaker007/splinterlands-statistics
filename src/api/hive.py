@@ -183,10 +183,15 @@ def get_account_history_with_retry(account_name, last_id):
         try:
             account = get_hive_account(account_name, retries)
             history = account.get_account_history(last_id, limit, only_ops=['custom_json'])
+            success = False
+            return_list = []
             for h in history:
                 logging.info("get_account_history success continue....")
-                return history
+                success = True
+                return_list.append(h)
 
+            if success:
+                return return_list
             logging.warning("Retrying with a different hive node...")
             retries += 1
         except Exception as e:
