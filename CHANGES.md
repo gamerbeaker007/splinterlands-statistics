@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - Add: land resources value calculation to portfolio (currently only GRAIN)
 - Add: Monitoring of the resources in the trade hub (in-game liquidity pools)
+- FIX/IMPROVE: retry mechanism for hive operations
 
 ## 0.20.3
 
