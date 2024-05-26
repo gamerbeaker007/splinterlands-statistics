@@ -75,57 +75,63 @@ def get_staked_dec_value(account_name):
 
 def process_land_transactions(transactions):
     results = pd.DataFrame()
-    for transaction in transactions:
-        info = transaction['trx_info']
-        data = json.loads(info['data'])
+    if transactions:
+        for transaction in transactions:
+            info = transaction['trx_info']
+            data = json.loads(info['data'])
 
-        process = True
-        if data['op'] == 'harvest_all':
-            temp = json.loads(info['result'])['result']
-            if temp['success']:
-                result = pd.DataFrame(temp['data']['results'])
+            process = True
+            if data['op'] == 'harvest_all':
+                temp = json.loads(info['result'])['result']
+                if temp['success']:
+                    result = pd.DataFrame(temp['data']['results'])
+                else:
+                    logging.info('Ignore false transaction...: ' + str(data['op']))
+                    process = False
+            elif data['op'] in ['harvest_resources', 'mine_sps', 'mine_research']:
+                temp = json.loads(info['result'])['result']
+                if temp['success']:
+                    result = pd.DataFrame(temp['data'], index=[0])
+                else:
+                    logging.info('Ignore false transaction...: ' + str(data['op']))
+                    process = False
+            elif data['op'] == 'tax_collection':
+                temp = json.loads(info['result'])['result']
+                if temp['success']:
+                    result = pd.DataFrame(temp['data'])
+                    for token in result.tokens.values[0]:
+                        result[token['token'] + '_received_tax'] = token['received']
+                    result.drop('tokens', axis=1, inplace=True)
+                else:
+                    logging.info('Ignore false transaction...: ' + str(data['op']))
+                    process = False
             else:
-                logging.info('Ignore false transaction...: ' + str(data['op']))
+                logging.info('Ignore land operation: ' + str(data['op']))
                 process = False
-        elif data['op'] in ['harvest_resources', 'mine_sps', 'mine_research']:
-            temp = json.loads(info['result'])['result']
-            if temp['success']:
-                result = pd.DataFrame(temp['data'], index=[0])
-            else:
-                logging.info('Ignore false transaction...: ' + str(data['op']))
-                process = False
-        elif data['op'] == 'tax_collection':
-            temp = json.loads(info['result'])['result']
-            if temp['success']:
-                result = pd.DataFrame(temp['data'])
-                for token in result.tokens.values[0]:
-                    result[token['token'] + '_received_tax'] = token['received']
-                result.drop('tokens', axis=1, inplace=True)
-            else:
-                logging.info('Ignore false transaction...: ' + str(data['op']))
-                process = False
-        else:
-            logging.info('Ignore land operation: ' + str(data['op']))
-            process = False
 
-        if process:
-            result['trx_id'] = info['id']
-            result['op'] = data['op']
-            result['region_uid'] = data['region_uid']
-            result['auto_buy_grain'] = data['auto_buy_grain']
-            result['created_date'] = info['created_date']
-            result['player'] = info['player']
-            result['created_date'] = info['created_date']  # spl created date
-            result['timestamp'] = transaction['timestamp']  # timestamp hive transaction
+            if process:
+                result['trx_id'] = info['id']
+                result['op'] = data['op']
+                result['region_uid'] = data['region_uid']
+                result['auto_buy_grain'] = data['auto_buy_grain']
+                result['created_date'] = info['created_date']
+                result['player'] = info['player']
+                result['created_date'] = info['created_date']  # spl created date
+                result['timestamp'] = transaction['timestamp']  # timestamp hive transaction
 
-            results = pd.concat([results, result], ignore_index=True)
+                results = pd.concat([results, result], ignore_index=True)
 
-    results = results.reindex(sorted(results.columns), axis=1)
+        results = results.reindex(sorted(results.columns), axis=1)
     return results
 
 
 def get_land_operations(account_name, from_date):
-    land_transactions = hive.get_land_operations(account_name, from_date, -1)
+    progress_util.update_daily_msg('...retrieve land data for \'' + str(account_name) + '\'')
+
+    now = datetime.now()
+    land_transactions = hive.get_spl_transactions(account_name, from_date, till_date=now,
+                                                  filter_spl_transactions=['sm_land_operation'])
+
     progress_util.update_daily_msg('...processing land data for \'' + str(account_name) + '\'')
 
     return process_land_transactions(land_transactions)

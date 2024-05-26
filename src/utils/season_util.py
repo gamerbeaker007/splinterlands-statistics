@@ -64,17 +64,18 @@ def generate_season_hive_blog(season_id, users):
                                                                                     end_date)
 
         progress_util.update_season_msg('Collecting bought and sold cards for: ' + str(account_name))
+
+        from_date = isoparse(start_date).replace(tzinfo=None)
+        till_date = isoparse(end_date).replace(tzinfo=None)
+        transactions = hive.get_spl_transactions(account_name, from_date, till_date)
+
         purchases_dict[account_name], sold_dict[account_name] = market_info.get_purchased_sold_cards(
             account_name,
-            start_date,
-            end_date)
+            transactions)
 
         # get last season rewards
         progress_util.update_season_msg('Collecting last season reward draws for: ' + str(account_name))
-        last_season_rewards_dict[account_name] = get_last_season_reward_draws(
-            account_name,
-            start_date,
-            end_date)
+        last_season_rewards_dict[account_name] = get_last_season_reward_draws(transactions)
     # print single post for each account
     report = hive_blog.write_blog_post(users,
                                        season_info_store,
@@ -88,32 +89,28 @@ def generate_season_hive_blog(season_id, users):
     return report
 
 
-def get_last_season_reward_draws(account_name, from_date, till_date):
-    from_date = isoparse(from_date).replace(tzinfo=None)
-    till_date = isoparse(till_date).replace(tzinfo=None)
-
-    results = hive.get_rewards_draws(account_name, from_date, till_date)
-
+def get_last_season_reward_draws(transactions):
     df = pd.DataFrame()
-    for result in results:
-        result = json.loads(result['trx_info']['result'])
-        reward_sub_type = result['sub_type']
-        data = json.loads(result['data'])
-        if 'result' in data:
-            reward_result = data['result']
-            if reward_result['success']:
-                temp_df = pd.DataFrame(reward_result['rewards'])
-                temp_df['sub_type'] = reward_sub_type
-                if 'card' in temp_df.columns.tolist():
-                    # Expand 'card' column into multiple columns
-                    card_df = pd.json_normalize(temp_df['card'])
-                    # Concatenate temp_df and card_df along columns axis
-                    temp_df = pd.concat([temp_df.drop(columns=['card']), card_df], axis=1)
-                df = pd.concat([df, temp_df])
+    for transaction in transactions:
+        if transaction['operation'] == 'sm_purchase':
+            trx = json.loads(transaction['trx_info']['result'])
+            reward_sub_type = trx['sub_type']
+            data = json.loads(trx['data'])
+            if 'result' in data:
+                reward_result = data['result']
+                if reward_result['success']:
+                    temp_df = pd.DataFrame(reward_result['rewards'])
+                    temp_df['sub_type'] = reward_sub_type
+                    if 'card' in temp_df.columns.tolist():
+                        # Expand 'card' column into multiple columns
+                        card_df = pd.json_normalize(temp_df['card'])
+                        # Concatenate temp_df and card_df along columns axis
+                        temp_df = pd.concat([temp_df.drop(columns=['card']), card_df], axis=1)
+                    df = pd.concat([df, temp_df])
 
-    df.reset_index(drop=True)
-    df.index = range(len(df))
     if not df.empty and 'card_detail_id' in df.columns:
+        df.reset_index(drop=True)
+        df.index = range(len(df))
         not_na_index = df['card_detail_id'].notna()
         if not_na_index.any():  # Check if there are non-NaN values in 'card_detail_id'
             df.loc[not_na_index, 'edition_name'] = df.loc[not_na_index, 'edition'].apply(lambda x: Edition(x).name)

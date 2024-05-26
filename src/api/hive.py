@@ -113,7 +113,15 @@ def get_market_with_retry(token):
         return None
 
 
-def get_rewards_draws(account_name, from_date, till_date, last_id=-1, results=None):
+def get_spl_transactions(account_name,
+                         from_date,
+                         till_date,
+                         last_id=-1,
+                         filter_spl_transactions=None,
+                         results=None):
+    if filter_spl_transactions is None:
+        filter_spl_transactions = ['sm_purchase', 'sm_market_purchase', 'sm_sell_cards']
+
     if results is None:
         results = []
 
@@ -124,46 +132,16 @@ def get_rewards_draws(account_name, from_date, till_date, last_id=-1, results=No
             timestamp = isoparse(h['timestamp'])
 
             days_to_go = (timestamp - from_date).days
-            progress_util.update_season_msg('...retrieve rewards_draws date for \'' + str(account_name) +
+            progress_util.update_season_msg('...retrieve hive transaction for \'' + str(account_name) +
                                             '\' - days to go: ' + str(days_to_go))
 
             last_id = h['index']
             operation = h['id']
             if from_date < timestamp:
-                if operation == 'sm_purchase':
+                if operation in filter_spl_transactions:
                     if till_date > timestamp:
                         results.append({'trx_info': spl.get_transaction(h['trx_id'])['trx_info'],
-                                        'timestamp': timestamp})
-                    else:
-                        logging.info('Skip.. after till date...')
-            else:
-                done = True
-                break
-        if not done:
-            get_rewards_draws(account_name, from_date, till_date, last_id - 1, results=results)
-    return results
-
-
-def get_purchased_sold_cards(account_name, from_date, till_date, last_id=-1, results=None):
-    if results is None:
-        results = []
-
-    history = get_account_history_with_retry(account_name, last_id)
-    if history:
-        done = False
-        for h in history:
-            timestamp = isoparse(h['timestamp'])
-
-            days_to_go = (timestamp - from_date).days
-            progress_util.update_season_msg('...retrieve purchased sold cards for \'' + str(account_name) +
-                                            '\' - days to go: ' + str(days_to_go))
-
-            last_id = h['index']
-            operation = h['id']
-            if from_date < timestamp:
-                if operation == 'sm_market_purchase' or operation == 'sm_sell_cards':
-                    if till_date > timestamp:
-                        results.append({'trx_info': spl.get_transaction(h['trx_id'])['trx_info'],
+                                        'operation': h['id'],
                                         'timestamp': timestamp})
                     else:
                         logging.info('Skip.. after till date...')
@@ -172,7 +150,12 @@ def get_purchased_sold_cards(account_name, from_date, till_date, last_id=-1, res
                 break
 
         if not done:
-            get_purchased_sold_cards(account_name, from_date, till_date, last_id - 1, results=results)
+            get_spl_transactions(account_name,
+                                 from_date,
+                                 till_date,
+                                 last_id=last_id - 1,
+                                 filter_spl_transactions=filter_spl_transactions,
+                                 results=results)
     return results
 
 
@@ -201,40 +184,6 @@ def get_account_history_with_retry(account_name, last_id):
             retries += 1
     logging.error("Max retries reached. Unable to fetch account history.")
     return None
-
-
-def get_land_operations(account_name, from_date, last_id, results=None, days_to_process=None):
-    if results is None:
-        results = []
-
-    history = get_account_history_with_retry(account_name, last_id)
-    if history:
-        done = False
-        for h in history:
-            timestamp = isoparse(h['timestamp'])
-
-            if not days_to_process:
-                days_to_process = (timestamp - from_date).days + 1
-
-            days_to_go = (timestamp - from_date).days
-            pct = (days_to_go / days_to_process * 100 - 100) * -1
-            progress_util.update_daily_msg('...retrieve land date for \'' + str(account_name) +
-                                           '\' - days to go: ' + str(days_to_go) + ' - ' + str(round(pct)) + '%',
-                                           log=False)
-
-            last_id = h['index']
-            if from_date < timestamp:
-                if h['id'] == 'sm_land_operation':
-                    results.append({'trx_info': spl.get_transaction(h['trx_id'])['trx_info'],
-                                    'timestamp': timestamp})
-            else:
-                done = True
-                break
-
-        if not done:
-            get_land_operations(account_name, from_date, last_id - 1, results=results, days_to_process=days_to_process)
-
-    return results
 
 
 def get_hive_account(account_name, retry=0):

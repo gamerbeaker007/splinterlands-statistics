@@ -2,9 +2,8 @@ import json
 import logging
 
 import pandas as pd
-from dateutil.parser import isoparse
 
-from src.api import hive, spl
+from src.api import spl
 from src.configuration import config
 from src.static.static_values_enum import Edition
 from src.utils import collection_util, progress_util
@@ -36,11 +35,7 @@ def get_sold_cards(account_name, cards_df):
     return sold_cards
 
 
-def get_purchased_sold_cards(account_name, start_date, end_date):
-    from_date = isoparse(start_date).replace(tzinfo=None)
-    till_date = isoparse(end_date).replace(tzinfo=None)
-    transactions = hive.get_purchased_sold_cards(account_name, from_date, till_date)
-
+def get_purchased_sold_cards(account_name, transactions):
     # filter purchase transactions
     sm_market_purchase = pd.DataFrame()
     potential_sell = pd.DataFrame()
