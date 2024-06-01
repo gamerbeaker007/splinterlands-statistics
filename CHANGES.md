@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Add: Monitoring of the resources in the trade hub (in-game liquidity pools)
 - Add: trade hub in land page
 - FIX/IMPROVE: retry mechanism for hive operations
+- REMOVE: initiate/adapt/veteran/elite/master from the hive blog.
 
 ## 0.20.3
 
