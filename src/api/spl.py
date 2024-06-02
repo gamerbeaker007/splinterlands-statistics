@@ -13,6 +13,7 @@ from src.api.logRetry import LogRetry
 
 base_url = 'https://api2.splinterlands.com/'
 land_url = 'https://vapi.splinterlands.com/'
+prices_url = 'https://prices.splinterlands.com/'
 
 retry_strategy = LogRetry(
     total=10,
@@ -322,3 +323,38 @@ def verify_token(token_params):
         if result.status_code == 200:
             return True
     return False
+
+
+def get_owned_resource_sum(account, resource):
+    address = land_url + 'land/resources/owned'
+    params = {'player': account, 'resource': resource}
+
+    result = http.get(address, params=params).json()
+    if result and 'data' in result:
+        df = pd.DataFrame(result['data'])
+        if 'amount' in df.columns.tolist():
+            return df.amount.sum()
+    return None
+
+
+def get_prices():
+    address = prices_url + 'prices'
+    return http.get(address).json()
+
+
+def spl_get_pools():
+    address = land_url + 'land/liquidity/pools'
+
+    result = http.get(address).json()
+    if result and 'data' in result:
+        return pd.DataFrame(result['data'])
+    return pd.DataFrame()
+
+
+def get_liquidity(account, resource):
+    address = land_url + 'land/liquidity/pools/' + str(account) + '/' + resource
+
+    result = http.get(address).json()
+    if result and 'data' in result:
+        return pd.DataFrame(result['data'])
+    return pd.DataFrame()

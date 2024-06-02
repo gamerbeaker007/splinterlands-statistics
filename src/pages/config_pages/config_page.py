@@ -88,7 +88,7 @@ def add_remove(add_clicks, account_name):
             if spl.player_exist(account_name):
                 store_util.add_account(account_name)
                 added = True
-                text = 'Account added, started daily update...'
+                text = 'Account added'
                 class_name = 'text-success'
             else:
                 text = 'Account not added no splinterlands account found for: ' + str(account_name)

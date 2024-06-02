@@ -6,7 +6,7 @@ from dash import html, Output, Input, dcc
 
 from src.configuration import store
 from src.graphs import land_graph
-from src.pages.land_pages import land_ids
+from src.pages.land_pages import land_ids, land_pools_page
 from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.utils import store_util, chart_util
@@ -15,6 +15,7 @@ from src.utils.trace_logging import measure_duration
 layout = dbc.Container([
     dcc.Store(id=land_ids.harvest_land_df),
     dcc.Store(id=land_ids.tax_land_df),
+    dcc.Store(id=land_ids.land_pools_df),
 
     dbc.Row([
         html.H1('Land'),
@@ -33,6 +34,7 @@ layout = dbc.Container([
             md=4,
         ),
     ]),
+    dbc.Row(land_pools_page.layout),
     dbc.Row(
         children=[
             html.H3("Harvest Information"),
