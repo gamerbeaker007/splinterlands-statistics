@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.21.2
+
+- FIX: free entry fees (None) causing issue in hive blog generation
+
 ## 0.21.1
 
 - FIX: Tournaments where not in hive blog anymore (reason since free entry fee)

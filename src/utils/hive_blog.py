@@ -287,19 +287,24 @@ def get_tournament_info(tournaments_info):
     if not tournaments_info.empty:
         for index, tournament in tournaments_info.iterrows():
             if tournament.finish:
+                entry_fee = str(tournament.entry_fee) if tournament.entry_fee is not None else str(0)
+
                 result += '| ' + tournament['name']
                 result += '| ' + tournament.league
                 result += '| ' + str(int(tournament.finish)) + ' / ' + str(int(tournament.num_players))
                 result += '| ' + str(int(tournament.wins)) + ' / ' + str(int(tournament.losses)) + ' / ' + str(
                     int(tournament.draws))
-                result += '| ' + tournament.entry_fee
-                result += '| ' + tournament.prize_qty + ' ' + tournament.prize_type
+                result += '| ' + str(entry_fee)
+                result += '| ' + str(tournament.prize_qty) + ' ' + str(tournament.prize_type)
                 result += '| \n'
 
         filters_sps_prizes = tournaments_info[tournaments_info.prize_type == 'SPS']
         total_sps_earned = pd.to_numeric(filters_sps_prizes[['prize_qty']].sum(1), errors='coerce').sum()
 
-        filters_sps_entry_fee = tournaments_info[tournaments_info.entry_fee.str.contains('SPS')].copy()
+        filters_sps_entry_fee = tournaments_info[
+            tournaments_info.entry_fee.notna() &
+            tournaments_info.entry_fee.str.contains('SPS')
+            ].copy()
         split = filters_sps_entry_fee.loc[:, 'entry_fee'].str.split(' ', expand=True)
         total_sps_fee = 0
         if not split.empty:
