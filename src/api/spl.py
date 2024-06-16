@@ -204,13 +204,14 @@ def get_player_tournaments_ids(token_params):
     params = token_params
     params['from_block'] = -1
     params['limit'] = 500
-    params['types'] = 'token_transfer'
+    params['types'] = 'enter_tournament'
 
-    result = http.get(address, params=params).json()
-    tournaments_transfers = list(filter(lambda item: 'enter_tournament' in item['data'], result))
+    df = pd.DataFrame(http.get(address, params=params).json())
     tournaments_ids = []
-    for tournament in tournaments_transfers:
-        tournaments_ids.append(json.loads(tournament['data'])['tournament_id'])
+
+    if not df.empty:
+        for index, row in df.iterrows():
+            tournaments_ids.append(json.loads(row.data)['tournament_id'])
     return tournaments_ids
 
 
@@ -245,16 +246,6 @@ def get_cards_by_ids(ids):
         return result.json()
     else:
         return None
-
-
-def get_player_history_rewards(token_params):
-    address = base_url + 'players/history'
-    params = token_params
-    params['from_block'] = -1
-    params['limit'] = 500
-    params['types'] = 'card_award,claim_reward'
-
-    return http.get(address, params=params).json()
 
 
 def get_player_history_season_rewards_df(token_params):
