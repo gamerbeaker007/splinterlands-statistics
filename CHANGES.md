@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.21.3
+
+- FIX: Wild pass buy cause crash in hive blog generation. Now only reward draws and mertis are processed.
+
 ## 0.21.2
 
 - FIX: free entry fees (None) causing issue in hive blog generation

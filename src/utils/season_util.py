@@ -94,19 +94,21 @@ def get_last_season_reward_draws(transactions):
     for transaction in transactions:
         if transaction['operation'] == 'sm_purchase':
             trx = json.loads(transaction['trx_info']['result'])
-            reward_sub_type = trx['sub_type']
-            data = json.loads(trx['data'])
-            if 'result' in data:
-                reward_result = data['result']
-                if reward_result['success']:
-                    temp_df = pd.DataFrame(reward_result['rewards'])
-                    temp_df['sub_type'] = reward_sub_type
-                    if 'card' in temp_df.columns.tolist():
-                        # Expand 'card' column into multiple columns
-                        card_df = pd.json_normalize(temp_df['card'])
-                        # Concatenate temp_df and card_df along columns axis
-                        temp_df = pd.concat([temp_df.drop(columns=['card']), card_df], axis=1)
-                    df = pd.concat([df, temp_df])
+            if trx['type'] in ['reward_draw', 'reward_merits']:
+                data = json.loads(trx['data'])
+                if 'result' in data:
+                    reward_result = data['result']
+                    if reward_result['success']:
+                        temp_df = pd.DataFrame(reward_result['rewards'])
+                        temp_df['sub_type'] = trx['sub_type']
+                        if 'card' in temp_df.columns.tolist():
+                            # Expand 'card' column into multiple columns
+                            card_df = pd.json_normalize(temp_df['card'])
+                            # Concatenate temp_df and card_df along columns axis
+                            temp_df = pd.concat([temp_df.drop(columns=['card']), card_df], axis=1)
+                        df = pd.concat([df, temp_df])
+            else:
+                print(trx['type'])
 
     if not df.empty and 'card_detail_id' in df.columns:
         df.reset_index(drop=True)
