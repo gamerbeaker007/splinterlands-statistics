@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 
 import pandas as pd
 from dateutil import parser
@@ -108,7 +109,7 @@ def get_last_season_reward_draws(transactions):
                             temp_df = pd.concat([temp_df.drop(columns=['card']), card_df], axis=1)
                         df = pd.concat([df, temp_df])
             else:
-                print(trx['type'])
+                logging.info('Get last season reward draws, skipping transaction type: ' + trx['type'])
 
     if not df.empty and 'card_detail_id' in df.columns:
         df.reset_index(drop=True)
