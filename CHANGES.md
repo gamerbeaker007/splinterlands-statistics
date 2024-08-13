@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - Add rebellion soulbound reward cards. Portfolio and filter options
 - FIX/CHANGE: remove pycoingecko dependency use hive price of SPL
+- FIX: Collection page is update only with current collection for determining portfolio value previous owned rented card are removed.
 
 ## 0.21.3
 
