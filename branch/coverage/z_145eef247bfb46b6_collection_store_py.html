@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_a9628d2be64cb3fa___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-08-13 18:32 +0000
+            created at 2024-08-16 08:32 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -93,7 +93,7 @@
     <p class="mis show_mis"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t">    <span class="key">for</span> <span class="nam">account</span> <span class="key">in</span> <span class="nam">store_util</span><span class="op">.</span><span class="nam">get_account_names</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t">        <span class="nam">progress_util</span><span class="op">.</span><span class="nam">update_daily_msg</span><span class="op">(</span><span class="str">"...update collection for: "</span> <span class="op">+</span> <span class="nam">str</span><span class="op">(</span><span class="nam">account</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t">        <span class="nam">df</span> <span class="op">=</span> <span class="nam">spl</span><span class="op">.</span><span class="nam">get_player_collection_df</span><span class="op">(</span><span class="nam">account</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t">        <span class="nam">df</span><span class="op">[</span><span class="str">'card_name'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">df</span><span class="op">.</span><span class="nam">apply</span><span class="op">(</span><span class="key">lambda</span> <span class="nam">row</span><span class="op">:</span> <span class="nam">config</span><span class="op">.</span><span class="nam">card_details_df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">row</span><span class="op">[</span><span class="str">'card_detail_id'</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="str">'name'</span><span class="op">]</span><span class="op">,</span> <span class="nam">axis</span><span class="op">=</span><span class="num">1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t">        <span class="nam">df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="op">:</span><span class="op">,</span> <span class="str">'card_name'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">df</span><span class="op">.</span><span class="nam">apply</span><span class="op">(</span><span class="key">lambda</span> <span class="nam">row</span><span class="op">:</span> <span class="nam">config</span><span class="op">.</span><span class="nam">card_details_df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">row</span><span class="op">[</span><span class="str">'card_detail_id'</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="str">'name'</span><span class="op">]</span><span class="op">,</span> <span class="nam">axis</span><span class="op">=</span><span class="num">1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t">        <span class="nam">current_collection_df</span> <span class="op">=</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">concat</span><span class="op">(</span><span class="op">[</span><span class="nam">current_collection_df</span><span class="op">,</span> <span class="nam">df</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -107,7 +107,7 @@
             <a class="nav" href="z_a9628d2be64cb3fa___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-08-13 18:32 +0000
+            created at 2024-08-16 08:32 +0000
         </p>
     </div>
 </footer>
