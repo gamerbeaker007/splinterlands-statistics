@@ -35,7 +35,7 @@ def get_collection(df, list_prices_df, market_prices_df):
 
     for index, collection_card in df.iterrows():
         number_of_cards += 1
-        bcx = get_bcx(collection_card)
+        bcx = collection_card.bcx
         total_bcx += bcx
 
         if collection_card['edition'] == Edition.soulbound.value:
