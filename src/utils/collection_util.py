@@ -23,6 +23,10 @@ def get_card_edition_value(account, list_prices_df, market_prices_df):
     return return_df
 
 
+def is_fully_unbound(collection_card):
+    return collection_card.bcx == collection_card.bcx_unbound
+
+
 def get_collection(df, list_prices_df, market_prices_df):
     total_list_value = 0
     total_market_value = 0
@@ -35,8 +39,12 @@ def get_collection(df, list_prices_df, market_prices_df):
         total_bcx += bcx
 
         if collection_card['edition'] == Edition.soulbound.value:
-            pass  # TODO calculate price of unlocked soulbound cards only
-        elif collection_card['edition'] == Edition.rebellion_soulbound.value:
+            # determine total unbound bcx to calculate value.
+            # only fully unbound soulbound units will be used for value calculations
+            if not is_fully_unbound(collection_card):
+                bcx = 0
+
+        if collection_card['edition'] == Edition.soulboundrb.value:
             pass  # TODO not relevant for now
         elif collection_card['edition'] == Edition.gladius.value:
             pass  # Has no value, not relevant for now

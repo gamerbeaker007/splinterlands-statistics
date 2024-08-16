@@ -35,7 +35,7 @@ def get_player_collection_df(username):
     address = base_url + 'cards/collection/' + username
     collection = http.get(address).json()['cards']
     df = pd.DataFrame(sorted(collection, key=lambda card: card['card_detail_id']))
-    return df[['player', 'uid', 'card_detail_id', 'xp', 'gold', 'edition', 'level']].set_index('uid')
+    return df[['player', 'uid', 'card_detail_id', 'xp', 'gold', 'edition', 'level', 'bcx', 'bcx_unbound']]
 
 
 def get_battle_history_df(account_name, token_params):

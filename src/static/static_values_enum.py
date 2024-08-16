@@ -139,7 +139,7 @@ class Edition(ExtendedEnum):
     rift = 8
     soulbound = 10
     rebellion = 12
-    rebellion_soulbound = 13
+    soulboundrb = 13
 
 
 class Element(ExtendedEnum):

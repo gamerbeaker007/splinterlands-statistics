@@ -98,7 +98,7 @@ def get_icon_url(enum, name):
     elif enum == Edition:
         if name == Edition.soulbound.name:
             return app.get_asset_url(os.path.join('icons', 'img_overlay_' + str(name) + '.png'))
-        elif name == Edition.rebellion_soulbound.name:
+        elif name == Edition.soulboundrb.name:
             return app.get_asset_url(os.path.join('icons', 'img_overlay_' + str(name) + '.png'))
         else:
             return prefix + 'icon-edition-' + str(name) + '.svg'

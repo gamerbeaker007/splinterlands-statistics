@@ -11,7 +11,7 @@ def update_collection():
     for account in store_util.get_account_names():
         progress_util.update_daily_msg("...update collection for: " + str(account))
         df = spl.get_player_collection_df(account)
-        df['card_name'] = df.apply(lambda row: config.card_details_df.loc[row['card_detail_id']]['name'], axis=1)
+        df.loc[:, 'card_name'] = df.apply(lambda row: config.card_details_df.loc[row['card_detail_id']]['name'], axis=1)
 
         current_collection_df = pd.concat([current_collection_df, df])
 

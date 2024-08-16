@@ -1,7 +1,7 @@
 import logging
 from threading import Thread
 
-from src.configuration import config
+from src.configuration import config, store
 from src.pages.main_dash import app
 from src.pages.navigation_pages import navigation_page
 from src.utils import store_util, update
@@ -11,7 +11,14 @@ store_util.update_season_end_dates()
 
 
 def migrate_data():
-    pass
+    # Check if there are any columns that start with 'rebellion_soulbound'
+    if any(col.startswith('rebellion_soulbound') for col in store.portfolio.columns):
+        logging.info("Migrating rebellion_soulbound -> soulboundrb")
+        # Rename columns that start with 'rebellion_soulbound' to 'soulboundrb'
+        store.portfolio.rename(
+            columns=lambda col: col.replace('rebellion_soulbound', 'soulboundrb') if col.startswith(
+                'rebellion_soulbound') else col, inplace=True)
+        store_util.save_stores()
 
 
 def main():
