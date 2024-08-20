@@ -11,13 +11,12 @@ store_util.update_season_end_dates()
 
 
 def migrate_data():
-    # Check if there are any columns that start with 'rebellion_soulbound'
-    if any(col.startswith('rebellion_soulbound') for col in store.portfolio.columns):
-        logging.info("Migrating rebellion_soulbound -> soulboundrb")
-        # Rename columns that start with 'rebellion_soulbound' to 'soulboundrb'
-        store.portfolio.rename(
-            columns=lambda col: col.replace('rebellion_soulbound', 'soulboundrb') if col.startswith(
-                'rebellion_soulbound') else col, inplace=True)
+    if not store.secrets.empty and store.secrets.index.size > 1:
+        store.secrets = store.secrets.iloc[0]
+        store_util.save_stores()
+
+    if 'version' in store.secrets.columns:
+        store.secrets.rename(columns={'version': 'timestamp'}, inplace=True)
         store_util.save_stores()
 
 

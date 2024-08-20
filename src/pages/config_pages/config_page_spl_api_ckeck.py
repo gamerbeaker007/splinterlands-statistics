@@ -19,28 +19,29 @@ def get_layout():
         dbc.Row(html.H3('Accounts status overview', className='mt-5')),
         dbc.Row(html.P(info_text, className='')),
     ]
-    for account in store_util.get_account_names():
-        children, color = check_spl_api(account)
-        rows.append(
-            dbc.Row([
-                dbc.Col(
-                    dbc.Alert(
-                        children=children,
-                        color=color,
-                        style={'height': '38px'},
-                        className='p-2'),
-                )
-            ])
+    children, color = check_spl_api()
+
+    return dbc.Row([
+        dbc.Col(
+            dbc.Alert(
+                children=children,
+                color=color,
+                style={'height': '38px'},
+                className='p-2'),
         )
-    return rows
+    ])
 
 
-def check_spl_api(account):
-    if spl.verify_token(store_util.get_token_dict(account)):
-        children = [html.I(className='m-1 fas fa-check-circle'), str(account) + ' - connected']
+def check_spl_api():
+    token_dict = store_util.get_token_dict()
+    if spl.verify_token(token_dict):
+        children = [
+            html.I(className='m-1 fas fa-check-circle'),
+            'Connected to splinterlands API with account ' + str(token_dict['username'])
+        ]
         color = 'success'
     else:
         children = [html.I(className='m-1 fas fa-exclamation-triangle'),
-                    str(account) + ' - not connected, provide token information']
+                    'Not connected to splinterlands API']
         color = 'warning'
     return children, color

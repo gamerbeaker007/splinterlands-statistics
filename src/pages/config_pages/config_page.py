@@ -26,7 +26,10 @@ def get_readonly_text():
 
 layout = dbc.Container([
     dbc.Row([
-        html.H1('Add and remove accounts'),
+        dbc.Row(config_page_authorize.get_layout(), style=get_readonly_style()),
+        dbc.Row(id=config_page_ids.update_account_info),
+
+        html.H1('Add and remove monitoring accounts'),
         html.P('Current accounts that are being monitored: '),
         html.Div(id=config_page_ids.current_accounts),
         dbc.Row([
@@ -59,8 +62,6 @@ layout = dbc.Container([
             ]),
             html.Div(children=get_readonly_text()),
             html.Div(id=config_page_ids.account_text),
-            dbc.Row(config_page_authorize.get_layout(), style=get_readonly_style()),
-            dbc.Row(id=config_page_ids.update_account_info),
 
             dcc.Store(id=config_page_ids.account_added),
             dcc.Store(id=config_page_ids.account_updated),
@@ -147,10 +148,8 @@ def get_accounts(added, removed):
 
 @app.callback(
     Output(config_page_ids.update_account_info, 'children'),
-    Input(config_page_ids.account_added, 'data'),
-    Input(config_page_ids.account_removed, 'data'),
     Input(config_page_ids.account_updated, 'data'),
 )
 @measure_duration
-def update_check_accounts(added, removed, updated):
+def update_check_accounts(updated):
     return config_page_spl_api_ckeck.get_layout()

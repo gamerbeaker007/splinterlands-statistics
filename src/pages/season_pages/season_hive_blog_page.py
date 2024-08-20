@@ -42,7 +42,7 @@ layout = dbc.Accordion(
             dbc.Col(
                 dbc.Button(
                     'Generate',
-                    id=season_ids.generate_blog,
+                    id=season_ids.generate_blog_button,
                     className='mb-3'),
                 style=get_readonly_style(),
                 width='auto'),
@@ -65,16 +65,18 @@ layout = dbc.Accordion(
 
 @app.callback(
     Output(season_ids.error_hive_blog, 'children'),
-    Input(season_ids.generate_blog, 'n_clicks'),
+    Input(season_ids.generate_blog_button, 'n_clicks'),
     State(season_ids.dropdown_user_selection_season_blog, 'value'),
     prevent_initial_call=True,
 )
 @measure_duration
 def generate_hive_blog(n_clicks, users):
     message = [html.P(html.Div('', className='text-warning'))]
-    if season_ids.generate_blog == ctx.triggered_id:
+    if season_ids.generate_blog_button == ctx.triggered_id:
         if config.read_only:
             return [html.P(html.Div('This is not allowed in read-only mode', className='text-danger'))]
+        if not store_util.get_token_dict():
+            return [html.P(html.Div('Not connected to splinterlands API abort generation', className='text-danger'))]
         if users:
             previous_season_id = store.season_end_dates.id.max() - 1
             sps_df = store_util.get_season_values(store.season_sps, previous_season_id, users)
@@ -116,9 +118,9 @@ def update_user_list():
 
 
 @app.callback(
-    Output(season_ids.generate_blog, 'disabled'),
+    Output(season_ids.generate_blog_button, 'disabled'),
     Output(season_ids.update_season_btn, 'disabled'),
-    Input(season_ids.generate_blog, 'n_clicks'),
+    Input(season_ids.generate_blog_button, 'n_clicks'),
     Input(season_ids.update_season_btn, 'n_clicks'),
 )
 @measure_duration
@@ -130,12 +132,12 @@ def disable_buttons(n_clicks_generate_blog, n_clicks_update_season_btn):
 
 
 @app.callback(
-    Output(season_ids.generate_blog, 'disabled'),
+    Output(season_ids.generate_blog_button, 'disabled'),
     Output(season_ids.update_season_btn, 'disabled'),
     Trigger(nav_ids.interval_global, 'n_intervals')
 )
 def check_button_status():
-    if progress.progress_season_txt:
+    if not store_util.get_token_dict() or progress.progress_season_txt:
         return True, True
     else:
         generate_blog_disabled = False

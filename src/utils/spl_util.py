@@ -14,7 +14,7 @@ def get_unclaimed_sps_balance_history_for_token(username, start_date=None):
     offset = None
 
     msg_prefix = 'SPS UNCLAIMED (' + str(username) + ') '
-    token_params = store_util.get_token_dict(username)
+    token_params = store_util.get_token_dict()
 
     total_items = 0
     complete_result = []
@@ -56,7 +56,7 @@ def get_unclaimed_sps_balance_history_for_token(username, start_date=None):
 def get_balance_history_for_token(username, token='DEC', start_date=None):
     limit = 1000
 
-    token_params = store_util.get_token_dict(username)
+    token_params = store_util.get_token_dict()
 
     msg_prefix = str(token) + ' (' + str(username) + ') '
     complete_result = []
@@ -109,11 +109,11 @@ def get_balance_history_for_token(username, token='DEC', start_date=None):
 
 
 def get_battle_history_df(account):
-    return spl.get_battle_history_df(account, store_util.get_token_dict(account))
+    return spl.get_battle_history_df(account, store_util.get_token_dict())
 
 
 def is_season_reward_claimed(account, current_season_data):
-    df = spl.get_player_history_season_rewards_df(store_util.get_token_dict(account))
+    df = spl.get_player_history_season_rewards_df(store_util.get_token_dict())
     if df.empty:
         # in this case there are not season rewards found at all assume inactive account or rental account
         # proceed processing balances

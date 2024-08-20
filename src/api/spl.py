@@ -1,7 +1,6 @@
 import json
 import logging
 from binascii import hexlify
-from time import time
 
 import pandas as pd
 import requests
@@ -283,10 +282,8 @@ def compute_sig(string_to_sign: str, private_key: str):
     return sig
 
 
-def get_token(username: str, private_key: str):
+def get_token(username, ts, sig):
     login_endpoint = base_url + 'players/v2/login'
-    ts = int(time() * 1000)
-    sig = compute_sig(username + str(ts), private_key)
     params = {
         'name': username,
         'ts': ts,
@@ -294,15 +291,15 @@ def get_token(username: str, private_key: str):
     }
     result = http.get(login_endpoint, params=params)
     token = ""
-    version = ""
+    timestamp = ""
     if result and result.status_code == 200:
         result = result.json()
         if 'error' in result:
             raise ValueError(result['error'])
 
-        version = result['timestamp']
+        timestamp = result['timestamp']
         token = result['token']
-    return token, version
+    return token, timestamp
 
 
 def verify_token(token_params):

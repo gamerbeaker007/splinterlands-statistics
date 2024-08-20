@@ -10,7 +10,7 @@ from src.utils import store_util
 
 def get_tournaments_info(username, start_date, end_date):
     collect = pd.DataFrame()
-    tournaments_ids = spl.get_player_tournaments_ids(store_util.get_token_dict(username))
+    tournaments_ids = spl.get_player_tournaments_ids(store_util.get_token_dict())
     for tournament_id in tournaments_ids:
         tournament = spl.get_tournament(tournament_id)
 

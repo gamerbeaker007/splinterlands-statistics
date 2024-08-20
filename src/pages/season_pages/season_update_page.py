@@ -1,5 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash import Output, Input, ctx, dcc
+from dash import Output, Input, ctx
 from dash.exceptions import PreventUpdate
 
 from src.api import spl
@@ -27,19 +27,8 @@ layout = [
             style=styles.get_server_mode_style(),
         ),
     ),
-    dbc.Row(
-        dbc.InputGroup(
-            [
-                dbc.InputGroupText('Account'),
-                dcc.Dropdown(id=season_ids.dropdown_user_selection_season,
-                             className='dbc',
-                             style={'width': '70%'},
-                             ),
-            ],
-            className='mb-3',
-        )
-    ),
     dbc.Row(dbc.Label(id=season_ids.season_update_label, className='text-warning')),
+    dbc.Row(dbc.Label(id=season_ids.season_user_update_label, className='text-warning')),
     dbc.Row(dbc.Label(id=season_ids.season_update_token_provided_label, className='text-warning')),
 ]
 
@@ -79,9 +68,11 @@ def update_season_label(user, tigger):
         raise PreventUpdate
 
     current_season_data = spl.get_current_season()
-    if not store_util.get_token_dict(user) or store_util.is_last_season_processed(user, current_season_data):
-        return '', {'display': 'none'}
+    if not store_util.get_token_dict() or store_util.is_last_season_processed(user, current_season_data):
+        msg = ''
+        display = 'none'
     else:
+        display = 'block'
         if spl_util.is_season_reward_claimed(user, current_season_data):
             if config.server_mode:
                 msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
@@ -93,8 +84,28 @@ def update_season_label(user, tigger):
         else:
             msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
                   'results are NOT processed. Season rewards not claimed yet.'
+    return msg, {'display': display}
 
-        return msg, {'display': 'block'}
+
+@app.callback(
+    Output(season_ids.season_user_update_label, 'children'),
+    Output(season_ids.season_user_update_label, 'style'),
+    Input(season_ids.trigger_season_update, 'data'),
+)
+@measure_duration
+def update_season_user_label(tigger):
+    msg = ''
+    display = 'none'
+    for account in store_util.get_account_names():
+        if store_util.is_new_account(account):
+            # TODO make nice line break comment
+            msg = 'One of the accounts is a new account.'
+            msg += ' Note it will take from a view minutes for a small account till hours for a large account with many transactions.'
+            msg += ' It wil retrieve all battle statistics of all season as well a every balance transaction.'
+            msg += ' Transaction from every rental payment/tranfer/claimed sps etc...'
+            display = 'block'
+            break
+    return msg, {'display': display}
 
 
 @app.callback(
@@ -108,7 +119,7 @@ def update_season_token_label(user, tigger):
     if not user:
         raise PreventUpdate
 
-    if store_util.get_token_dict(user):
+    if store_util.get_token_dict():
         return '', {'display': 'none'}
 
-    return 'No token provided. For this user season statistics will not be updated.', {'display': 'block'}
+    return 'Not connected to splinterlands API, update or configure in config page', {'display': 'block'}

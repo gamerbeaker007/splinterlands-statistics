@@ -11,13 +11,14 @@ from src.utils import chart_util
 from src.utils.trace_logging import measure_duration
 
 layout = [
+    dbc.Row(html.H3('Balances seasonal information')),
     dbc.Row([
         dbc.Col(
             dcc.Graph(id=season_ids.total_balance_graph),
         ),
     ]),
     dbc.Row([
-        html.H1('Detailed per token'),
+        html.H3('Detailed per token'),
         html.P('Select token'),
         html.P('Tip: Double click on the legend to view one or all'),
     ]),

@@ -7,9 +7,10 @@ account_text = 'account-text'
 current_accounts = 'current-accounts'
 account_name_input = 'account-name-input'
 
-posting_key_user_dropdown = 'config-user-dropdown'
-posting_key_input = 'config-posting-key'
 posting_key_text = 'config-posting-key-text'
-add_posting_key_button = 'config-add-posting-key-button'
+
+connect_management_account_button = 'connect_management_account_btn'
+management_account_input = 'management_account_input'
+token_message_store = 'token_message_store'
 
 update_account_info = 'config-update-account-info'
