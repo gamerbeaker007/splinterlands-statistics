@@ -25,48 +25,59 @@ def get_readonly_text():
 
 
 layout = dbc.Container([
+    dcc.Store(id=config_page_ids.account_added),
+    dcc.Store(id=config_page_ids.account_updated),
+    dcc.Store(id=config_page_ids.account_removed),
+
     dbc.Row([
         dbc.Row(config_page_authorize.get_layout(), style=get_readonly_style()),
         dbc.Row(id=config_page_ids.update_account_info),
 
-        html.H1('Add and remove monitoring accounts'),
-        html.P('Current accounts that are being monitored: '),
-        html.Div(id=config_page_ids.current_accounts),
-        dbc.Row([
-            dbc.Col([
-                html.Div(
-                    style=get_readonly_style(),
-                    className='dbc',
-                    children=[
-                        dbc.Input(id=config_page_ids.account_name_input,
-                                  type='text',
-                                  placeholder='account-name',
-                                  className='m-1 border border-dark',
-                                  style={"width": "20%"},
-                                  ),
-                        dbc.Button(
-                            'Add',
-                            id=config_page_ids.add_button,
-                            color='primary',
-                            className='m-1',
-                            n_clicks=0
-                        ),
-                        dbc.Button(
-                            'Remove',
-                            id=config_page_ids.remove_button,
-                            color='danger',
-                            className='m-1',
-                            n_clicks=0
-                        ),
-                    ]),
+        html.H3('Set Up Monitoring Accounts'),
+        dbc.Col([
+            html.P(
+                [
+                    'Add the accounts you want to monitor below.',
+                    html.Br(),
+                    'You can add multiple accounts by separating them with a comma (,).'
+                ]
+            ),
+            dbc.Row([
+                dbc.Col([
+                    html.Div(
+                        style=get_readonly_style(),
+                        className='dbc',
+                        children=[
+                            dbc.Input(id=config_page_ids.account_name_input,
+                                      type='text',
+                                      placeholder='account names',
+                                      className='m-1 border border-dark',
+                                      ),
+                            dbc.Button(
+                                'Add',
+                                id=config_page_ids.add_button,
+                                color='primary',
+                                className='m-1 mb-3',
+                                n_clicks=0
+                            ),
+                            dbc.Button(
+                                'Remove',
+                                id=config_page_ids.remove_button,
+                                color='danger',
+                                className='m-1 mb-3',
+                                n_clicks=0
+                            ),
+                        ]),
+                ]),
+                html.Div(children=get_readonly_text()),
+                html.Div(id=config_page_ids.account_text),
             ]),
-            html.Div(children=get_readonly_text()),
-            html.Div(id=config_page_ids.account_text),
-
-            dcc.Store(id=config_page_ids.account_added),
-            dcc.Store(id=config_page_ids.account_updated),
-            dcc.Store(id=config_page_ids.account_removed)
         ]),
+        dbc.Col([
+            html.H5('Current configured accounts:'),
+            html.Div(id=config_page_ids.current_accounts),
+        ]),
+        html.Hr(),
     ]),
 ])
 
@@ -79,20 +90,28 @@ layout = dbc.Container([
     prevent_initial_call=True,
 )
 @measure_duration
-def add_remove(add_clicks, account_name):
+def add_remove(add_clicks, account_names):
     text = ''
     added = False
     class_name = 'text-warning'
     if config_page_ids.add_button == ctx.triggered_id:
         if not config.read_only:
-            logging.info('Add account button was clicked')
-            if spl.player_exist(account_name):
-                store_util.add_account(account_name)
-                added = True
-                text = 'Account added'
-                class_name = 'text-success'
+            logging.info('Add monitor account button was clicked')
+            accounts = [item.strip() for item in account_names.split(',')]
+
+            incorrect_accounts = []
+            for account in accounts:
+                if not spl.player_exist(account):
+                    incorrect_accounts.append(account)
+
+            if len(incorrect_accounts) == 0:
+                text = 'Accounts added/updated: ' + ','.join(accounts)
+                for account in accounts:
+                    store_util.add_account(account)
+                    added = True
+                    class_name = 'text-success'
             else:
-                text = 'Account not added no splinterlands account found for: ' + str(account_name)
+                text = 'Incorrect accounts found: ' + str(','.join(incorrect_accounts))
         else:
             text = 'This is not allowed in read-only mode'
             class_name = 'text-danger'
@@ -108,17 +127,19 @@ def add_remove(add_clicks, account_name):
     prevent_initial_call=True,
 )
 @measure_duration
-def remove_click(remove_clicks, account_name):
+def remove_click(remove_clicks, account_names):
     text = ''
     removed = False
     class_name = 'text-warning'
     if config_page_ids.remove_button == ctx.triggered_id:
         if not config.read_only:
             logging.info('Remove account button was clicked')
-            store_util.remove_account(account_name)
-            removed = True
-            text = 'Account removed, data is deleted...'
-            class_name = 'text-success'
+            accounts = [item.strip() for item in account_names.split(',')]
+            for account in accounts:
+                store_util.remove_account(account)
+                removed = True
+                text = 'Accounts are removed, data is deleted...'
+                class_name = 'text-success'
         else:
             text = 'This is not allowed in read-only mode'
             class_name = 'text-danger'
@@ -134,7 +155,10 @@ def remove_click(remove_clicks, account_name):
 @measure_duration
 def get_accounts(added, removed):
     current_account_names = store_util.get_account_names()
-    return html.P(', '.join(current_account_names))
+    li = []
+    for account in current_account_names:
+        li.append(html.Li(account))
+    return li
 
 
 # @app.callback(

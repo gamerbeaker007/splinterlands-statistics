@@ -11,24 +11,59 @@ from src.static import static_values_enum
 from src.utils import store_util
 from src.utils.trace_logging import measure_duration
 
+pre_msg = [
+    'One account needs to be connected to the Splinterlands API',
+    html.Br(),
+    'This is essential for full access to the Splinterlands statistics website.',
+    html.Br(),
+    'Without connecting, some functions will be limited.',
+    html.Br(),
+    html.Br(),
+]
+
+msg_limited_access = [
+    'Limited Access (Not Connected):',
+    html.Br(),
+    html.Li('Portfolio features (Portfolio/Land)'),
+]
+
+msg_full_access = [
+    'Full Access (Connected):',
+    html.Br(),
+    html.Li('Portfolio features (Portfolio/Land)'),
+    html.Li('Battle features (Home/Losing/Card/Rating/Nemesis)'),
+    html.Li('Season features (Season/Hive blog generation)'),
+]
+
+post_msg = [
+    html.Br(),
+    'To unlock the full functionality of this site,',
+    ' please ensure that your account is connected to the Splinterlands API.'
+]
+
 
 def get_layout():
     layout = dbc.Row([
-        html.H3('Connect to splinterlands API:', className='mt-5'),
-        html.P([
-            'This account is used to communicate with the splinterlands API.',
-            html.Br(),
-            'If not connected not all function will be available',
-            html.Br(),
-            html.Br(),
-            'Not connected functions:',
-            html.Li('Portfolio (Portfolio/Land)'),
-            html.Br(),
-            'Connected functions: ',
-            html.Li('Portfolio (Portfolio/Land)'),
-            html.Li('Battle monitoring (Home/Losing/Card/Rating/Nemesis)'),
-            html.Li('Season monitoring (Season/Hive blog generation)'),
+        html.H3('Connect to splinterlands API:', className='mt-2'),
+        html.P(pre_msg),
+        dbc.Row([
+            dbc.Col(
+                html.Div(
+                    children=msg_limited_access,
+                    className='text-left'
+                ),
+                width=6
+            ),
+            dbc.Col(
+                html.Div(
+                    children=msg_full_access,
+                    className='text-left'
+                ),
+                width=6
+            )
         ]),
+        html.P(post_msg),
+
         dbc.Col(
             html.Div(
                 children=[
@@ -59,9 +94,7 @@ def get_layout():
             ),
         ),
         html.Div(id=config_page_ids.posting_key_text, className='mb-3'),
-
         dcc.Store(id=config_page_ids.token_message_store),
-
     ]),
     return layout
 

@@ -2,6 +2,7 @@ import logging
 
 import pandas as pd
 from dateutil import parser
+from dateutil.parser import isoparse
 from pandas import json_normalize
 
 from src.api import spl
@@ -72,7 +73,6 @@ def get_balance_history_for_token(username, token='DEC', start_date=None):
     #
     # The last_update_date should always be distinct, and ensures that you don't get skipped results.
     # However, created_date is the only one indexed, so it's needed for performance reasons.
-    total_items = 0
     while True:
         data = spl.get_balance_history_for_token_impl_v2(
             token=token,
@@ -82,10 +82,9 @@ def get_balance_history_for_token(username, token='DEC', start_date=None):
             token_params=token_params
         )
 
-        total_items += len(data)
-        progress_util.update_season_msg(msg_prefix + 'get balance history found items: ' + str(total_items))
-
         if data:
+            update_message(data, msg_prefix)
+
             complete_result += data
             # Update the parameters for the next request
             from_date = data[-1]["created_date"]
@@ -106,6 +105,17 @@ def get_balance_history_for_token(username, token='DEC', start_date=None):
             break
 
     return complete_result
+
+
+def update_message(data, msg_prefix):
+    date_str = data[-1]['created_date']
+    date_obj = isoparse(date_str)
+    formatted_date = date_obj.strftime('%Y-%m-%d %H:%M:%S')
+
+    progress_util.update_season_msg(
+        msg_prefix + 'get balance history: ' +
+        str(formatted_date)
+    )
 
 
 def get_battle_history_df(account):

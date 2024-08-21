@@ -1,5 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash import Output, Input, ctx
+from dash import Output, Input, ctx, html
 from dash.exceptions import PreventUpdate
 
 from src.api import spl
@@ -28,8 +28,8 @@ layout = [
         ),
     ),
     dbc.Row(dbc.Label(id=season_ids.season_update_label, className='text-warning')),
-    dbc.Row(dbc.Label(id=season_ids.season_user_update_label, className='text-warning')),
     dbc.Row(dbc.Label(id=season_ids.season_update_token_provided_label, className='text-warning')),
+    dbc.Row(dbc.Label(id=season_ids.season_user_update_label, className='text-warning')),
 ]
 
 
@@ -99,10 +99,14 @@ def update_season_user_label(tigger):
     for account in store_util.get_account_names():
         if store_util.is_new_account(account):
             # TODO make nice line break comment
-            msg = 'One of the accounts is a new account.'
-            msg += ' Note it will take from a view minutes for a small account till hours for a large account with many transactions.'
-            msg += ' It wil retrieve all battle statistics of all season as well a every balance transaction.'
-            msg += ' Transaction from every rental payment/tranfer/claimed sps etc...'
+            msg = [
+                'Note:',
+                html.Br(),
+                'Retrieving data from a new account may take a few minutes for small accounts and several hours ',
+                'for large ones with many transactions.',
+                html.Br(),
+                'The process will gather all seasonal battle stats and every balance transaction,',
+                ' including rentals, transfers, and claimed SPS.']
             display = 'block'
             break
     return msg, {'display': display}

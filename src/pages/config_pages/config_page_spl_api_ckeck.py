@@ -15,10 +15,6 @@ def get_layout():
         html.Br(),
         'Information like portfolio and land are currently still public information.'
     ]
-    rows = [
-        dbc.Row(html.H3('Accounts status overview', className='mt-5')),
-        dbc.Row(html.P(info_text, className='')),
-    ]
     children, color = check_spl_api()
 
     return dbc.Row([
@@ -28,7 +24,8 @@ def get_layout():
                 color=color,
                 style={'height': '38px'},
                 className='p-2'),
-        )
+        ),
+        html.Hr(),
     ])
 
 
