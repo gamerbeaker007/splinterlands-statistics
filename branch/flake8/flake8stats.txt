@@ -1,2 +1,1 @@
-1     E501 line too long (134 > 120 characters)
-1     F841 local variable 'rows' is assigned to but never used
+1     F841 local variable 'info_text' is assigned to but never used
