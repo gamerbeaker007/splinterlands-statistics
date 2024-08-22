@@ -168,10 +168,10 @@ def get_season_values(df, season_id, users, season_id_column='season_id'):
         return df
 
 
-def is_last_season_processed(account, current_season_data):
+def is_last_season_processed(account, season_id):
     if not (store.season_sps.empty or store.season_sps.loc[store.season_sps.player == account].empty):
         last_season = store.season_sps.loc[store.season_sps.player == account].season_id.max()
-        if last_season == current_season_data['id'] - 1:
+        if last_season == season_id:
             return True
     return False
 
@@ -207,19 +207,21 @@ def update_season_log():
     if get_token_dict():
         for account in get_account_names():
             progress_util.update_season_msg('Start season update for: ' + str(account))
-            if not is_last_season_processed(account, current_season_data):
-                if spl_util.is_season_reward_claimed(account, current_season_data):
-                    season_balances_info.update_balances_store(account, current_season_data)
+            last_season_id = current_season_data['id'] - 1
+            current_season_id = current_season_data['id']
+            if not is_last_season_processed(account, last_season_id):
+                if spl_util.is_season_reward_claimed(account, last_season_id):
+                    season_balances_info.update_balances_store(account, current_season_id)
                     store.season_modern_battle_info = season_battle_info.get_season_battles(
                         account,
                         store.season_modern_battle_info.copy(),
                         Format.modern,
-                        current_season_data)
+                        current_season_id)
                     store.season_wild_battle_info = season_battle_info.get_season_battles(
                         account,
                         store.season_wild_battle_info.copy(),
                         Format.wild,
-                        current_season_data)
+                        current_season_id)
             else:
                 progress_util.update_season_msg('No seasons to process for: ' + str(account))
     else:

@@ -5,15 +5,13 @@ from src.api import spl
 from src.utils import progress_util
 
 
-def get_season_battles(account_name, store_df, mode, current_season_data):
+def get_season_battles(account_name, store_df, mode, current_season_id):
     if not (store_df.empty or
             store_df.loc[store_df.player == account_name].empty):
-        next_season = store_df.loc[
-                          store_df.player == account_name].season.max() + 1
-        season_array = np.arange(next_season, current_season_data['id'])
-
+        next_season = store_df.loc[store_df.player == account_name].season.max() + 1
+        season_array = np.arange(next_season, current_season_id)
     else:
-        season_array = np.arange(1, current_season_data['id'])
+        season_array = np.arange(1, current_season_id)
 
     if len(season_array) > 0:
         for season_id in season_array:

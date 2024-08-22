@@ -122,7 +122,7 @@ def get_battle_history_df(account):
     return spl.get_battle_history_df(account, store_util.get_token_dict())
 
 
-def is_season_reward_claimed(account, current_season_data):
+def is_season_reward_claimed(account, season_id):
     df = spl.get_player_history_season_rewards_df(store_util.get_token_dict())
     if df.empty:
         # in this case there are not season rewards found at all assume inactive account or rental account
@@ -131,7 +131,7 @@ def is_season_reward_claimed(account, current_season_data):
         logging.info('Assume inactive account or rental account continue processing season for : ' + str(account))
         return True
 
-    if df.loc[df.season == current_season_data['id'] - 1].empty:
+    if df.loc[df.season == season_id].empty:
         logging.info('Season results not claimed yet for account: ' + str(account))
         logging.info('Stop season processing for: ' + str(account))
         return False

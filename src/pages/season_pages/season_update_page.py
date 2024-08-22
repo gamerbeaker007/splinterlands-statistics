@@ -59,32 +59,73 @@ def update_output(n_clicks):
 @app.callback(
     Output(season_ids.season_update_label, 'children'),
     Output(season_ids.season_update_label, 'style'),
-    Input(season_ids.dropdown_user_selection_season, 'value'),
     Input(season_ids.trigger_season_update, 'data'),
 )
 @measure_duration
-def update_season_label(user, tigger):
-    if not user:
-        raise PreventUpdate
-
+def update_season_label(tigger):
     current_season_data = spl.get_current_season()
-    if not store_util.get_token_dict() or store_util.is_last_season_processed(user, current_season_data):
+    season_id = current_season_data['id'] - 1
+    not_process_accounts = get_not_process_accounts(season_id)
+    if not store_util.get_token_dict() or not not_process_accounts:
         msg = ''
         display = 'none'
     else:
         display = 'block'
-        if spl_util.is_season_reward_claimed(user, current_season_data):
+        claimed_users, not_claimed_users = get_season_claimed_not_claimed_users(season_id)
+        msg = []
+
+        if not_claimed_users:
+            msg.append(html.P(
+                'Season \'' + str(season_id) + '\' is finished these account have not claimed their rewards:'))
+            for user in not_claimed_users:
+                msg.append(html.Li(user))
+            msg.append(html.P('Claim result on splinterlands website.'))
+            msg.append(html.Br())
+
+        if claimed_users:
+            msg.append(
+                html.P(
+                    'Season \'' + str(season_id) + '\' is finished these account have claimed their rewards:'))
+            for user in claimed_users:
+                if user in not_process_accounts:
+                    msg.append(html.Li(user))
+
             if config.server_mode:
-                msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
-                      'results are in. Waiting to be process max waiting time: ' + \
-                      str(SERVER_MODE_INTERVAL_IN_MINUTES) + ' minutes'
+                msg.append(
+                    html.P(
+                        [
+                            'Running in server mode.',
+                            html.Br(),
+                            'Waiting for processing max: ' + str(SERVER_MODE_INTERVAL_IN_MINUTES) + ' minutes',
+                        ]
+                    )
+                )
+                msg.append(html.Br())
             else:
-                msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
-                      'results are in. Press update seasons to process.'
-        else:
-            msg = 'Season (' + str(current_season_data['id'] - 1) + ') ' + \
-                  'results are NOT processed. Season rewards not claimed yet.'
+                msg.append(html.P('Click \'Update seasons\' button above to process the results'))
     return msg, {'display': display}
+
+
+def get_not_process_accounts(season_id):
+    not_processed_accounts = []
+    for account in store_util.get_account_names():
+        if not store_util.is_last_season_processed(account, season_id):
+            not_processed_accounts.append(account)
+
+    return not_processed_accounts
+
+
+def get_season_claimed_not_claimed_users(season_id):
+    accounts = store_util.get_account_names()
+    not_claimed_users = []
+    claimed_users = []
+    for account in accounts:
+        if spl_util.is_season_reward_claimed(account, season_id):
+            claimed_users.append(account)
+        else:
+            not_claimed_users.append(account)
+
+    return claimed_users, not_claimed_users
 
 
 @app.callback(
