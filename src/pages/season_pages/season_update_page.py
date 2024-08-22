@@ -96,7 +96,8 @@ def update_season_label(tigger):
                         [
                             'Running in server mode.',
                             html.Br(),
-                            'Waiting for processing max: ' + str(SERVER_MODE_INTERVAL_IN_MINUTES) + ' minutes',
+                            'Wait for server to process, wait max: ' + str(
+                                SERVER_MODE_INTERVAL_IN_MINUTES) + ' minutes',
                         ]
                     )
                 )
