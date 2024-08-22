@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_f1b38b22aeb65474_store_util_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-08-21 19:26 +0000
+            created at 2024-08-22 18:15 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -204,7 +204,7 @@
     <p class="mis show_mis"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t">    <span class="key">return</span> <span class="nam">spl</span><span class="op">.</span><span class="nam">get_battle_history_df</span><span class="op">(</span><span class="nam">account</span><span class="op">,</span> <span class="nam">store_util</span><span class="op">.</span><span class="nam">get_token_dict</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t"><span class="key">def</span> <span class="nam">is_season_reward_claimed</span><span class="op">(</span><span class="nam">account</span><span class="op">,</span> <span class="nam">current_season_data</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t"><span class="key">def</span> <span class="nam">is_season_reward_claimed</span><span class="op">(</span><span class="nam">account</span><span class="op">,</span> <span class="nam">season_id</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t">    <span class="nam">df</span> <span class="op">=</span> <span class="nam">spl</span><span class="op">.</span><span class="nam">get_player_history_season_rewards_df</span><span class="op">(</span><span class="nam">store_util</span><span class="op">.</span><span class="nam">get_token_dict</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t127" href="#t127">127</a></span><span class="t">    <span class="key">if</span> <span class="nam">df</span><span class="op">.</span><span class="nam">empty</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t128" href="#t128">128</a></span><span class="t">        <span class="com"># in this case there are not season rewards found at all assume inactive account or rental account</span>&nbsp;</span><span class="r"></span></p>
@@ -213,7 +213,7 @@
     <p class="mis show_mis"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t">        <span class="nam">logging</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="str">'Assume inactive account or rental account continue processing season for : '</span> <span class="op">+</span> <span class="nam">str</span><span class="op">(</span><span class="nam">account</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t">        <span class="key">return</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t133" href="#t133">133</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t134" href="#t134">134</a></span><span class="t">    <span class="key">if</span> <span class="nam">df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">df</span><span class="op">.</span><span class="nam">season</span> <span class="op">==</span> <span class="nam">current_season_data</span><span class="op">[</span><span class="str">'id'</span><span class="op">]</span> <span class="op">-</span> <span class="num">1</span><span class="op">]</span><span class="op">.</span><span class="nam">empty</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t134" href="#t134">134</a></span><span class="t">    <span class="key">if</span> <span class="nam">df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">df</span><span class="op">.</span><span class="nam">season</span> <span class="op">==</span> <span class="nam">season_id</span><span class="op">]</span><span class="op">.</span><span class="nam">empty</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t">        <span class="nam">logging</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="str">'Season results not claimed yet for account: '</span> <span class="op">+</span> <span class="nam">str</span><span class="op">(</span><span class="nam">account</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t">        <span class="nam">logging</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="str">'Stop season processing for: '</span> <span class="op">+</span> <span class="nam">str</span><span class="op">(</span><span class="nam">account</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t">        <span class="key">return</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
@@ -249,7 +249,7 @@
             <a class="nav" href="z_f1b38b22aeb65474_store_util_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-08-21 19:26 +0000
+            created at 2024-08-22 18:15 +0000
         </p>
     </div>
 </footer>
