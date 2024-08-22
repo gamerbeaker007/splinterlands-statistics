@@ -76,7 +76,7 @@ def update_season_label(tigger):
 
         if not_claimed_users:
             msg.append(html.P(
-                'Season \'' + str(season_id) + '\' is finished these account have not claimed their rewards:'))
+                'Season \'' + str(season_id) + '\' is finished these account(s) have not claimed their rewards:'))
             for user in not_claimed_users:
                 msg.append(html.Li(user))
             msg.append(html.P('Claim result on splinterlands website.'))
@@ -85,7 +85,7 @@ def update_season_label(tigger):
         if claimed_users:
             msg.append(
                 html.P(
-                    'Season \'' + str(season_id) + '\' is finished these account have claimed their rewards:'))
+                    'Season \'' + str(season_id) + '\' is finished these account(s) have claimed their rewards:'))
             for user in claimed_users:
                 if user in not_process_accounts:
                     msg.append(html.Li(user))

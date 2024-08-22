@@ -7,6 +7,7 @@ from src.api import spl
 from src.configuration import config, store
 from src.pages.config_pages import config_page_ids
 from src.pages.main_dash import app
+from src.pages.shared_modules import styles
 from src.static import static_values_enum
 from src.utils import store_util
 from src.utils.trace_logging import measure_duration
@@ -92,6 +93,7 @@ def get_layout():
                 ],
                 className='dbc',
             ),
+            style=styles.get_read_only_mode_style(),
         ),
         html.Div(id=config_page_ids.posting_key_text, className='mb-3'),
         dcc.Store(id=config_page_ids.token_message_store),

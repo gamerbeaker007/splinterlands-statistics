@@ -3,12 +3,13 @@ from dash import html, dcc
 
 from src.pages.season_pages import season_ids, season_update_page, season_hive_blog_page, season_battle_info_page, \
     season_balance_info_page
+from src.pages.shared_modules import styles
 
 layout = dbc.Container([
     dbc.Row([
         html.H2('Season statistics'),
+        dbc.Col(children=season_hive_blog_page.layout, className='mb-3', style=styles.get_read_only_mode_style()),
         dbc.Col(children=season_update_page.layout, className='mb-3'),
-        dbc.Col(children=season_hive_blog_page.layout, className='mb-3'),
         dbc.Row(html.Hr()),
         dbc.Row(
             dbc.InputGroup(

@@ -100,14 +100,16 @@ def filter_battle_df(filter_settings):
     if not group_levels:
         columns.append('level')
 
-    df = df.groupby(columns, as_index=False).agg(battles=pd.NamedAgg(column='xp', aggfunc='count'),
-                                                 level=pd.NamedAgg(column='level', aggfunc='max'))
+    if not df.empty:
+        df = df.groupby(columns, as_index=False).agg(battles=pd.NamedAgg(column='xp', aggfunc='count'),
+                                                     level=pd.NamedAgg(column='level', aggfunc='max'))
 
     df = analyse.filter_battle_count(df, filter_settings)
     df = analyse.filter_abilities(df, filter_settings)
 
     # count the losses with the filtered data
-    df.sort_values('battles', ascending=False, inplace=True)
+    if not df.empty:
+        df.sort_values('battles', ascending=False, inplace=True)
 
     return df.to_json(date_format='iso', orient='split')
 

@@ -7,15 +7,9 @@ from src.api import spl
 from src.configuration import config
 from src.pages.config_pages import config_page_ids, config_page_authorize, config_page_spl_api_ckeck
 from src.pages.main_dash import app
+from src.pages.shared_modules import styles
 from src.utils import store_util
 from src.utils.trace_logging import measure_duration
-
-
-def get_readonly_style():
-    if config.read_only:
-        return {'display': 'none'}
-    else:
-        return {'display': 'block'}
 
 
 def get_readonly_text():
@@ -30,10 +24,11 @@ layout = dbc.Container([
     dcc.Store(id=config_page_ids.account_removed),
 
     dbc.Row([
-        dbc.Row(config_page_authorize.get_layout(), style=get_readonly_style()),
+        dbc.Row(children=get_readonly_text()),
+        dbc.Row(config_page_authorize.get_layout()),
         dbc.Row(id=config_page_ids.update_account_info),
 
-        html.H3('Set Up Monitoring Accounts'),
+        html.H3('Set-up monitoring accounts'),
         dbc.Col([
             html.P(
                 [
@@ -45,7 +40,7 @@ layout = dbc.Container([
             dbc.Row([
                 dbc.Col([
                     html.Div(
-                        style=get_readonly_style(),
+                        style=styles.get_read_only_mode_style(),
                         className='dbc',
                         children=[
                             dbc.Input(id=config_page_ids.account_name_input,
@@ -69,7 +64,6 @@ layout = dbc.Container([
                             ),
                         ]),
                 ]),
-                html.Div(children=get_readonly_text()),
                 html.Div(id=config_page_ids.account_text),
             ]),
         ]),
