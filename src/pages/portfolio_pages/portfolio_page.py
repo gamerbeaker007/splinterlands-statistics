@@ -40,11 +40,8 @@ layout = dbc.Container([
     dbc.Row(id=portfolio_ids.update_values_row, className='mb-3'),
     dbc.Row(dcc.Graph(id=portfolio_ids.total_all_portfolio_graph), className='mb-3'),
 
-    dbc.Row([
-        dbc.Col(portfolio_editions.get_edition_layout(), className='mb-3'),
-        dbc.Col(portfolio_sps.get_sps_layout(), className='mb-3'),
-
-    ]),
+    dbc.Row(portfolio_editions.get_edition_layout(), className='mb-3'),
+    dbc.Row(portfolio_sps.get_sps_layout(), className='mb-3'),
 
     dbc.Row(dcc.Graph(id=portfolio_ids.all_portfolio_graph), className='mb-3'),
 ])

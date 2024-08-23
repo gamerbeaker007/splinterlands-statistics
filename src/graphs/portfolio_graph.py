@@ -4,6 +4,8 @@ import plotly.graph_objects as go
 
 from src.static.static_values_enum import Edition
 
+DEFAULT_HEIGHT = 800
+
 
 def plot_portfolio_total(portfolio_df, combined_users, theme):
     portfolio_df.sort_values('date', inplace=True)
@@ -29,7 +31,6 @@ def plot_portfolio_total(portfolio_df, combined_users, theme):
             showgrid=True,
             gridwidth=1,
         ),
-
     )
     return fig
 
@@ -108,6 +109,7 @@ def plot_portfolio_all(df, theme, skip_zero=True):
             range=[0, max_value * 1.05],
             title='value $',
         ),
+        height=DEFAULT_HEIGHT,
     )
 
     return fig
@@ -199,6 +201,8 @@ def get_editions_fig(editions_df, theme):
             # range=[0, max_value * 1.05],
             title='value $',
         ),
+        height=DEFAULT_HEIGHT,
+
     )
 
     return fig
@@ -265,6 +269,7 @@ def get_sps_fig(sps_df, theme):
             range=[0, max_value * 1.05],
             title='value $',
         ),
+        height=DEFAULT_HEIGHT,
     )
 
     return fig
