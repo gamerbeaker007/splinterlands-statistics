@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.22.0
+
+- Add rebellion soulbound reward cards. Portfolio and filter options
+- Add calculation of chaos legion soulbound for portfolio
+- Streamlined account registration, now only requiring a single management account for easier setup.
+- Update the messages for season statistics retrieval
+- FIX/CHANGE: remove pycoingecko dependency use hive price of SPL
+- FIX: Collection page is update only with current collection for determining portfolio value previous owned rented card are removed.
+- Update small layout improvements on season and portfolio page
+
 ## 0.21.3
 
 - FIX: Wild pass buy cause crash in hive blog generation. Now only reward draws and merits are processed.
@@ -63,7 +73,8 @@ All notable changes to this project will be documented in this file.
 ## 0.17.0
 
 - FIX: change icon locations
-- FIX: modern format battle not processed correctly. battle history2 doesn't standard retrieve both formats therefor for now 2 calls
+- FIX: modern format battle not processed correctly. battle history2 doesn't standard retrieve both formats therefor for
+  now 2 calls
 - FIX: secondary axis on rating graph
 - FIX: daily battle stats graph when 0 wins or loss
 - Add ability filter (main/losing page)

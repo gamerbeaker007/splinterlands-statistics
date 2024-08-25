@@ -39,7 +39,7 @@ layout = dbc.Row(
 @measure_duration
 def update_last_battles(filtered_df, theme):
     if not filtered_df:
-        return "No card selected"
+        return "No card selected", "No card selected"
 
     df = pd.read_json(StringIO(filtered_df), orient='split')
     account = df.account.tolist()[0]

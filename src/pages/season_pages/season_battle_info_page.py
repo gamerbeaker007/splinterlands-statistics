@@ -1,34 +1,27 @@
 import dash_bootstrap_components as dbc
 from dash import html, Output, Input, dcc
 
-from src.pages.main_dash import app
 from src.configuration import store
 from src.graphs import season_graph
+from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.pages.season_pages import season_ids
 from src.utils import chart_util
 from src.utils.trace_logging import measure_duration
 
 layout = [
+    dbc.Row(html.H3('Battle seasonal information')),
     dbc.Row([
-        dbc.Col(html.H1('Modern')),
-        dbc.Col(html.H1('Wild')),
+        dbc.Col(html.H3('Modern')),
+        dbc.Col(html.H3('Wild')),
     ]),
     dbc.Row([
-        dbc.Col(
-            dcc.Graph(id=season_ids.modern_season_rating_graph),
-        ),
-        dbc.Col(
-            dcc.Graph(id=season_ids.wild_season_rating_graph),
-        ),
+        dbc.Col(dcc.Graph(id=season_ids.modern_season_rating_graph)),
+        dbc.Col(dcc.Graph(id=season_ids.wild_season_rating_graph)),
     ]),
     dbc.Row([
-        dbc.Col(
-            dcc.Graph(id=season_ids.modern_season_battle_graph),
-        ),
-        dbc.Col(
-            dcc.Graph(id=season_ids.wild_season_battle_graph),
-        ),
+        dbc.Col(dcc.Graph(id=season_ids.modern_season_battle_graph)),
+        dbc.Col(dcc.Graph(id=season_ids.wild_season_battle_graph)),
     ])
 ]
 

@@ -17,9 +17,9 @@ def update_season_end_dates():
         from_season_id = store.season_end_dates.id.max() + 1
 
     till_season_id = spl.get_current_season()['id']
-    # logging.info("Update season end dates for '" + str(till_season_id) + "' seasons")
+    # logging.info('Update season end dates for '' + str(till_season_id) + '' seasons')
     for season_id in range(from_season_id, till_season_id + 1):
-        logging.info("Update season end date for season: " + str(season_id))
+        logging.info('Update season end date for season: ' + str(season_id))
 
         store.season_end_dates = pd.concat([store.season_end_dates,
                                             spl.get_season_end_time(season_id)],
@@ -68,7 +68,7 @@ def save_single_store(store_name):
         store_file = get_store_file(store_name)
         store.__dict__[store_name].sort_index().to_csv(store_file)
     else:
-        logging.error("Invalid store name")
+        logging.error('Invalid store name')
 
 
 def get_account_names():
@@ -91,7 +91,7 @@ def get_played_players(account):
 
 def get_first_account_name():
     if store.accounts.empty:
-        return ""
+        return ''
     else:
         return store.accounts.values[0][0]
 
@@ -168,11 +168,17 @@ def get_season_values(df, season_id, users, season_id_column='season_id'):
         return df
 
 
-def is_last_season_processed(account, current_season_data):
+def is_last_season_processed(account, season_id):
     if not (store.season_sps.empty or store.season_sps.loc[store.season_sps.player == account].empty):
         last_season = store.season_sps.loc[store.season_sps.player == account].season_id.max()
-        if last_season == current_season_data['id'] - 1:
+        if last_season == season_id:
             return True
+    return False
+
+
+def is_new_account(account):
+    if store.season_sps.empty or store.season_sps.loc[store.season_sps.player == account].empty:
+        return True
     return False
 
 
@@ -195,33 +201,34 @@ def update_battle_log():
 
 
 def update_season_log():
-    progress_util.set_season_title("Season update process initiated")
+    progress_util.set_season_title('Season update process initiated')
     update_season_end_dates()
     current_season_data = spl.get_current_season()
-
-    for account in get_account_names():
-        progress_util.update_season_msg('Start season update for: ' + str(account))
-        if get_token_dict(account):
-            if not is_last_season_processed(account, current_season_data):
-                if spl_util.is_season_reward_claimed(account, current_season_data):
-                    season_balances_info.update_balances_store(account, current_season_data)
+    if get_token_dict():
+        for account in get_account_names():
+            progress_util.update_season_msg('Start season update for: ' + str(account))
+            last_season_id = current_season_data['id'] - 1
+            current_season_id = current_season_data['id']
+            if not is_last_season_processed(account, last_season_id):
+                if spl_util.is_season_reward_claimed(account, last_season_id):
+                    season_balances_info.update_balances_store(account, current_season_id)
                     store.season_modern_battle_info = season_battle_info.get_season_battles(
                         account,
                         store.season_modern_battle_info.copy(),
                         Format.modern,
-                        current_season_data)
+                        current_season_id)
                     store.season_wild_battle_info = season_battle_info.get_season_battles(
                         account,
                         store.season_wild_battle_info.copy(),
                         Format.wild,
-                        current_season_data)
+                        current_season_id)
             else:
-                progress_util.update_season_msg("No seasons to process for: " + str(account))
-        else:
-            progress_util.update_season_msg("Skip... No token found for : " + str(account))
+                progress_util.update_season_msg('No seasons to process for: ' + str(account))
+    else:
+        progress_util.update_season_msg('Skip... no token found. Check config page.')
 
     save_stores()
-    progress_util.set_season_title("Season update done")
+    progress_util.set_season_title('Season update done')
     progress_util.update_season_msg('Done')
 
 
@@ -234,21 +241,18 @@ def update_data(battle_update=True, season_update=False):
             if season_update:
                 update_season_log()
         else:
-            logging.info("Splinterlands server is in maintenance mode skip this update cycle")
+            logging.info('Splinterlands server is in maintenance mode skip this update cycle')
     except Exception as e:
-        logging.error("Exception during update data")
+        logging.error('Exception during update data')
         logging.exception(e)
 
 
-def get_token_dict(username):
+def get_token_dict():
     if not store.secrets.empty:
-        row = store.secrets.loc[(store.secrets.username == username)]
-        if not row.empty:
-            row = row.iloc[0]
-            params = {
-                "username": row.username,
-                'version': row.version,
-                'token': row.token,
-            }
-            return params
+        row = store.secrets.iloc[0]
+        params = {
+            'username': row.username,
+            'token': row.token,
+        }
+        return params
     return None

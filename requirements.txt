@@ -11,4 +11,3 @@ dash-extensions==1.0.7
 dash_iconify==0.1.2
 dash_bootstrap_templates==1.1.1
 hiveengine==0.2.2
-pycoingecko==3.1.0

@@ -3,7 +3,7 @@ from time import sleep
 
 import pandas as pd
 
-from src.api import spl, coingecko, hive
+from src.api import spl, hive
 
 
 def get_all_tokens(account_name):
@@ -60,7 +60,7 @@ def calculate_prices(df, all_tokens, hive_in_dollar):
 
 
 def get_token_value(account):
-    hive_in_dollar = float(coingecko.get_current_hive_price())
+    hive_in_dollar = float(spl.get_prices()['hive'])
     all_tokens = get_all_tokens(account)
     df = pd.DataFrame({'date': datetime.today().strftime('%Y-%m-%d'),
                        'account_name': account},

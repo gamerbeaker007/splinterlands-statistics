@@ -70,6 +70,9 @@ replay_icon_url = WEB_URL + 'website/ui_elements/icon_replay_active.svg'
 trophy_icon_url = WEB_URL + 'website/ui_elements/img_monster-trophy.png'
 mana_icon_url = WEB_URL + 'website/ui_elements/bg_mana.png'
 
+helm_icon_url = WEB_URL + 'website/icons/icon_helm.svg'
+hive_keychain_logo = WEB_URL + 'website/icons/logo_keychain.svg'
+
 
 class ExtendedEnum(Enum):
 
@@ -139,6 +142,7 @@ class Edition(ExtendedEnum):
     rift = 8
     soulbound = 10
     rebellion = 12
+    soulboundrb = 13
 
 
 class Element(ExtendedEnum):

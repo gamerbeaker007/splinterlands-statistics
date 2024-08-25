@@ -6,15 +6,15 @@ from src.configuration import store
 from src.utils import store_util, progress_util, spl_util
 
 
-def update_balances_store(account_name, current_season_data):
+def update_balances_store(account_name, current_season_id):
     if not (store.season_sps.empty or store.season_sps.loc[store.season_sps.player == account_name].empty):
         start_from_season = store.season_sps.loc[store.season_sps.player == account_name].season_id.max() + 1
 
-        if start_from_season == current_season_data['id']:
+        if start_from_season == current_season_id:
             progress_util.update_season_msg("No new season balances to process for: " + str(account_name))
             return
 
-        season_array = np.arange(start_from_season, current_season_data['id'])
+        season_array = np.arange(start_from_season, current_season_id)
         start_date, end_date = get_start_end_time_season(start_from_season)
         start_date = parser.parse(start_date)
         dec_df = pd.DataFrame(
@@ -115,7 +115,7 @@ def update_balances_store(account_name, current_season_data):
                                 ignore_index=True)
 
         first_season = determine_first_season_id_played(combined_df)
-        season_array = np.arange(first_season, current_season_data['id'])
+        season_array = np.arange(first_season, current_season_id)
 
     if len(season_array) > 0:
         progress_util.update_season_msg("Start processing DEC")

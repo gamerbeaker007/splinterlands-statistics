@@ -23,6 +23,10 @@ def get_card_edition_value(account, list_prices_df, market_prices_df):
     return return_df
 
 
+def is_fully_unbound(collection_card):
+    return collection_card.bcx == collection_card.bcx_unbound
+
+
 def get_collection(df, list_prices_df, market_prices_df):
     total_list_value = 0
     total_market_value = 0
@@ -31,38 +35,32 @@ def get_collection(df, list_prices_df, market_prices_df):
 
     for index, collection_card in df.iterrows():
         number_of_cards += 1
-        bcx = get_bcx(collection_card)
+        bcx = collection_card.bcx
         total_bcx += bcx
-        list_flag = False
-        market_flag = False
-        list_price = 9999999
 
-        list_price_filtered = find_card(collection_card, list_prices_df)
-        if not list_price_filtered.empty:
-            list_price = float(list_price_filtered.low_price_bcx.iloc[0])
-            total_list_value += bcx * list_price
-            list_flag = True
+        if collection_card['edition'] == Edition.soulbound.value:
+            # determine total unbound bcx to calculate value.
+            # only fully unbound soulbound units will be used for value calculations
+            if not is_fully_unbound(collection_card):
+                bcx = 0
 
-        market_prices_filtered = find_card(collection_card, market_prices_df)
-        if not market_prices_filtered.empty:
-            market_price = float(market_prices_filtered.last_bcx_price.iloc[0])
-            if list_flag:
-                bcx_price = min(market_price, list_price)
-            else:
-                bcx_price = market_price
+        if collection_card['edition'] == Edition.soulboundrb.value:
+            pass  # TODO not relevant for now
+        elif collection_card['edition'] == Edition.gladius.value:
+            pass  # Has no value, not relevant for now
+        else:
+            list_price = get_list_price(collection_card, list_prices_df)
+            if list_price:
+                total_list_value += bcx * list_price
 
-            total_market_value += bcx * bcx_price
-            market_flag = True
+            market_price = get_market_price(collection_card, market_prices_df, list_price)
+            if market_price:
+                total_market_value += bcx * market_price
 
-        if not list_flag \
-                and not market_flag \
-                and not collection_card['edition'] == Edition.gladius.value \
-                and not collection_card['edition'] == Edition.soulbound.value:
-            # TODO in future soulbound may become on the market then warning should be given when not found then
-
-            logging.warning("Card '" +
-                            str(collection_card['card_name']) +
-                            "' Not found on the markt (list/market) ignore for collection value")
+            if not list_price and not market_price:
+                logging.warning("Card '" +
+                                str(collection_card['card_name']) +
+                                "' Not found on the markt (list/market) ignore for collection value")
 
     return {'list_value': total_list_value,
             'market_value': total_market_value,
@@ -71,19 +69,30 @@ def get_collection(df, list_prices_df, market_prices_df):
             }
 
 
+def get_list_price(collection_card, list_prices_df):
+    list_price_filtered = find_card(collection_card, list_prices_df)
+    if not list_price_filtered.empty:
+        return float(list_price_filtered.low_price_bcx.iloc[0])
+    return None
+
+
+def get_market_price(collection_card, market_prices_df, list_price):
+    market_prices_filtered = find_card(collection_card, market_prices_df)
+    if not market_prices_filtered.empty:
+        market_price = float(market_prices_filtered.last_bcx_price.iloc[0])
+        if list_price:
+            return min(market_price, list_price)
+        else:
+            return market_price
+    return None
+
+
 def find_card(collection_card, market_df):
     mask = (market_df.card_detail_id == collection_card['card_detail_id']) \
            & (market_df.gold == collection_card['gold']) \
            & (market_df.edition == collection_card['edition'])
     filtered_df = market_df.loc[mask]
     return filtered_df
-
-
-def does_card_match(collection_card, market_card):
-    same_id = (collection_card["card_detail_id"] == market_card["card_detail_id"])
-    same_foil = (collection_card["gold"] == market_card["gold"])
-    same_edition = (collection_card["edition"] == market_card["edition"])
-    return same_id and same_foil and same_edition
 
 
 def get_bcx(collection_card):
@@ -108,26 +117,3 @@ def get_bcx(collection_card):
         bcx = xp
 
     return bcx
-
-
-def get_card_price(card_id, price_list, low_price_string):
-    card_price = {}
-    for card in price_list:
-        if card["card_detail_id"] == card_id:
-            if card["edition"] == 0:
-                if card["gold"]:
-                    card_price["alpha_gold"] = card[low_price_string]
-                else:
-                    card_price["alpha_regular"] = card[low_price_string]
-            elif card["edition"] == 1:
-                if card["gold"]:
-                    card_price["beta_gold"] = card[low_price_string]
-                else:
-                    card_price["beta_regular"] = card[low_price_string]
-
-            if card["gold"]:
-                card_price["gold"] = card[low_price_string]
-            else:
-                card_price["regular"] = card[low_price_string]
-
-    return card_price

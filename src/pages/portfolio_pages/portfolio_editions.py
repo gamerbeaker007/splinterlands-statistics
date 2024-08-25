@@ -45,9 +45,10 @@ def update_portfolio_editions_graph(filtered_df, theme):
 
         # drop columns that have a sum of 0 bxc and market_value
         for edition in Edition.list_names():
-            if (editions_df[str(edition) + "_market_value"] + editions_df[str(edition) + "_bcx"]).sum() == 0:
-                # drop columns that have a sum of 0
-                editions_df.drop(columns=str(edition) + "_market_value", inplace=True)
-                editions_df.drop(columns=str(edition) + "_bcx", inplace=True)
+            if str(edition) + "_market_value" in editions_df.columns.tolist():
+                if (editions_df[str(edition) + "_market_value"] + editions_df[str(edition) + "_bcx"]).sum() == 0:
+                    # drop columns that have a sum of 0
+                    editions_df.drop(columns=str(edition) + "_market_value", inplace=True)
+                    editions_df.drop(columns=str(edition) + "_bcx", inplace=True)
 
         return portfolio_graph.get_editions_fig(editions_df, theme)

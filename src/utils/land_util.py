@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from src.api import spl, hive, coingecko
+from src.api import spl, hive
 from src.static.static_values_enum import LAND_SWAP_FEE
 from src.utils import progress_util
 
@@ -61,7 +61,7 @@ def get_staked_dec_value(account_name):
     if not dec_staked_df.empty:
         dec_staked_qty = dec_staked_df.amount.sum()
         token_market = hive.get_market_with_retry('DEC')
-        hive_in_dollar = float(coingecko.get_current_hive_price())
+        hive_in_dollar = float(spl.get_prices()['hive'])
 
         if token_market:
             hive_value = float(token_market["highestBid"])

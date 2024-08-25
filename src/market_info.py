@@ -60,7 +60,7 @@ def get_purchased_sold_cards(account_name, transactions):
     if not sm_market_purchase.empty:
         sm_market_purchase = sm_market_purchase.reset_index(drop=True)
         count = sm_market_purchase.count().values[0]
-        logging.info("Number card to get: " + str())
+        logging.info("Number card to get: " + str(count))
         for index, row in sm_market_purchase.iterrows():
             progress_util.update_season_msg("Collecting bought and sold cards transaction: "
                                             + str(index) + "/" + str(count))
