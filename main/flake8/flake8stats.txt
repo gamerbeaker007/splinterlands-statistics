@@ -1,0 +1,1 @@
+1     F841 local variable 'info_text' is assigned to but never used
