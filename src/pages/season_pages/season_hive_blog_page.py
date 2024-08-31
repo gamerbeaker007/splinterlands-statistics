@@ -75,8 +75,12 @@ def generate_hive_blog(n_clicks, users):
     if season_ids.generate_blog_button == ctx.triggered_id:
         if config.read_only:
             return [html.P(html.Div('This is not allowed in read-only mode', className='text-danger'))]
-        if not store_util.get_token_dict():
-            return [html.P(html.Div('Not connected to splinterlands API abort generation', className='text-danger'))]
+
+        for account in users:
+            if not store_util.get_token_dict(account):
+                return [
+                    html.P(html.Div('Not connected to splinterlands API abort generation', className='text-danger'))]
+
         if users:
             previous_season_id = store.season_end_dates.id.max() - 1
             sps_df = store_util.get_season_values(store.season_sps, previous_season_id, users)
@@ -137,7 +141,7 @@ def disable_buttons(n_clicks_generate_blog, n_clicks_update_season_btn):
     Trigger(nav_ids.interval_global, 'n_intervals')
 )
 def check_button_status():
-    if not store_util.get_token_dict() or progress.progress_season_txt:
+    if progress.progress_season_txt:
         return True, True
     else:
         generate_blog_disabled = False

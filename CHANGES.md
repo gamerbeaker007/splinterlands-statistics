@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.22.1
+
+- FIX: one management account is not working for seasons, update to connect every account.
+
 ## 0.22.0
 
 - Add rebellion soulbound reward cards. Portfolio and filter options

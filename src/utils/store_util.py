@@ -204,8 +204,8 @@ def update_season_log():
     progress_util.set_season_title('Season update process initiated')
     update_season_end_dates()
     current_season_data = spl.get_current_season()
-    if get_token_dict():
-        for account in get_account_names():
+    for account in get_account_names():
+        if get_token_dict(account):
             progress_util.update_season_msg('Start season update for: ' + str(account))
             last_season_id = current_season_data['id'] - 1
             current_season_id = current_season_data['id']
@@ -224,8 +224,8 @@ def update_season_log():
                         current_season_id)
             else:
                 progress_util.update_season_msg('No seasons to process for: ' + str(account))
-    else:
-        progress_util.update_season_msg('Skip... no token found. Check config page.')
+        else:
+            progress_util.update_season_msg('Skip... no token found. Check config page.')
 
     save_stores()
     progress_util.set_season_title('Season update done')
@@ -247,12 +247,15 @@ def update_data(battle_update=True, season_update=False):
         logging.exception(e)
 
 
-def get_token_dict():
+def get_token_dict(username):
     if not store.secrets.empty:
-        row = store.secrets.iloc[0]
-        params = {
-            'username': row.username,
-            'token': row.token,
-        }
-        return params
+        df = store.secrets.loc[store.secrets.username == username]
+        if not df.empty:
+            row = df.iloc[0]
+            params = {
+                'username': row.username,
+                'token': row.token,
+            }
+            return params
+
     return None

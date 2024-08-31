@@ -219,9 +219,9 @@ def is_surrender(battle_details):
 
 def process_battles():
     progress_util.update_daily_msg("Start processing battles")
-    if store_util.get_token_dict():
-        for account in store_util.get_account_names():
+    for account in store_util.get_account_names():
+        if store_util.get_token_dict(account):
             progress_util.update_daily_msg("...processing: " + account)
             process_battle(account)
-    else:
-        logging.info('Skip battle process... not token found. Check config page.')
+        else:
+            logging.info('Skip battle process... not token found. Check config page.')

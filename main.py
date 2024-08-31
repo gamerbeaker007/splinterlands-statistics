@@ -11,10 +11,6 @@ store_util.update_season_end_dates()
 
 
 def migrate_data():
-    if not store.secrets.empty and store.secrets.index.size > 1:
-        store.secrets = store.secrets.iloc[:1]
-        store_util.save_stores()
-
     if not store.secrets.empty and 'version' in store.secrets.columns:
         store.secrets.rename(columns={'version': 'timestamp'}, inplace=True)
         store_util.save_stores()

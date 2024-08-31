@@ -10,7 +10,8 @@ account_name_input = 'account-name-input'
 posting_key_text = 'config-posting-key-text'
 
 connect_management_account_button = 'connect_management_account_btn'
-management_account_input = 'management_account_input'
 token_message_store = 'token_message_store'
 
 update_account_info = 'config-update-account-info'
+
+authorize_place_holder = 'authorize_place_holder'
