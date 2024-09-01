@@ -206,16 +206,28 @@
                class="code sev- "><tt><i>60</i>     <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">html</span><span class="o">.</span><span class="n">H5</span><span class="p">(</span><span class="s2">&quot;Configured accounts &quot;</span><span class="p">)]</span></tt>
             </div>
             <div id="l61"
-               class="code sev- "><tt><i>61</i>     <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">store_util</span><span class="o">.</span><span class="n">get_account_names</span><span class="p">():</span></tt>
+               class="code sev- "><tt><i>61</i>     <span class="n">accounts</span> <span class="o">=</span> <span class="n">store_util</span><span class="o">.</span><span class="n">get_account_names</span><span class="p">()</span></tt>
             </div>
             <div id="l62"
-               class="code sev- "><tt><i>62</i>         <span class="n">temp</span> <span class="o">=</span> <span class="n">get_account_status_row</span><span class="p">(</span><span class="n">account</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>62</i>     <span class="k">if</span> <span class="n">accounts</span><span class="p">:</span></tt>
             </div>
             <div id="l63"
-               class="code sev- "><tt><i>63</i>         <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dbc</span><span class="o">.</span><span class="n">Row</span><span class="p">(</span><span class="n">temp</span><span class="p">))</span></tt>
+               class="code sev- "><tt><i>63</i>         <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">accounts</span><span class="p">:</span></tt>
             </div>
             <div id="l64"
-               class="code sev- "><tt><i>64</i>     <span class="k">return</span> <span class="n">rows</span></tt>
+               class="code sev- "><tt><i>64</i>             <span class="n">temp</span> <span class="o">=</span> <span class="n">get_account_status_row</span><span class="p">(</span><span class="n">account</span><span class="p">)</span></tt>
+            </div>
+            <div id="l65"
+               class="code sev- "><tt><i>65</i>             <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dbc</span><span class="o">.</span><span class="n">Row</span><span class="p">(</span><span class="n">temp</span><span class="p">))</span></tt>
+            </div>
+            <div id="l66"
+               class="code sev- "><tt><i>66</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l67"
+               class="code sev- "><tt><i>67</i>         <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">html</span><span class="o">.</span><span class="n">Li</span><span class="p">(</span><span class="s2">&quot;None&quot;</span><span class="p">))</span></tt>
+            </div>
+            <div id="l68"
+               class="code sev- "><tt><i>68</i>     <span class="k">return</span> <span class="n">rows</span></tt>
             </div>
             
          </div>

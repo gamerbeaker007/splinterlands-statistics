@@ -54,9 +54,9 @@
             </div>
         </aside>
         <h2>
-            <span class="text">117 statements &nbsp;</span>
+            <span class="text">118 statements &nbsp;</span>
             <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">0<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">117<span class="text"> missing</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">118<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_145eef247bfb46b6_land_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-01 12:36 +0000
+            created at 2024-09-01 13:01 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -413,23 +413,26 @@
     <p class="mis show_mis"><span class="n"><a id="t331" href="#t331">331</a></span><span class="t">    <span class="key">if</span> <span class="nam">skip_zero</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t332" href="#t332">332</a></span><span class="t">        <span class="nam">season_df</span> <span class="op">=</span> <span class="nam">season_df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="op">:</span><span class="op">,</span> <span class="op">(</span><span class="nam">season_df</span><span class="op">.</span><span class="nam">sum</span><span class="op">(</span><span class="nam">axis</span><span class="op">=</span><span class="num">0</span><span class="op">)</span> <span class="op">!=</span> <span class="num">0.0</span><span class="op">)</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t333" href="#t333">333</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t334" href="#t334">334</a></span><span class="t">    <span class="nam">markers</span> <span class="op">=</span> <span class="key">False</span> <span class="key">if</span> <span class="nam">len</span><span class="op">(</span><span class="nam">season_df</span><span class="op">)</span> <span class="op">></span> <span class="num">1</span> <span class="key">else</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t335" href="#t335">335</a></span><span class="t">    <span class="nam">fig</span> <span class="op">=</span> <span class="nam">px</span><span class="op">.</span><span class="nam">line</span><span class="op">(</span><span class="nam">season_df</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t336" href="#t336">336</a></span><span class="t">                  <span class="nam">x</span><span class="op">=</span><span class="str">'season_id'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t337" href="#t337">337</a></span><span class="t">                  <span class="nam">y</span><span class="op">=</span><span class="nam">season_df</span><span class="op">.</span><span class="nam">columns</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t338" href="#t338">338</a></span><span class="t">                  <span class="nam">markers</span><span class="op">=</span><span class="nam">markers</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t339" href="#t339">339</a></span><span class="t">                  <span class="nam">title</span><span class="op">=</span><span class="nam">title</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t340" href="#t340">340</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t341" href="#t341">341</a></span><span class="t">    <span class="nam">fig</span><span class="op">.</span><span class="nam">update_layout</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t342" href="#t342">342</a></span><span class="t">        <span class="nam">template</span><span class="op">=</span><span class="nam">theme</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t343" href="#t343">343</a></span><span class="t">        <span class="nam">xaxis</span><span class="op">=</span><span class="nam">dict</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t344" href="#t344">344</a></span><span class="t">            <span class="nam">showgrid</span><span class="op">=</span><span class="key">True</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t345" href="#t345">345</a></span><span class="t">            <span class="nam">gridwidth</span><span class="op">=</span><span class="num">1</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t346" href="#t346">346</a></span><span class="t">            <span class="nam">tickvals</span><span class="op">=</span><span class="nam">season_df</span><span class="op">.</span><span class="nam">season_id</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t347" href="#t347">347</a></span><span class="t">        <span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t348" href="#t348">348</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t349" href="#t349">349</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t350" href="#t350">350</a></span><span class="t">    <span class="key">return</span> <span class="nam">fig</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t334" href="#t334">334</a></span><span class="t">    <span class="com"># Sort the columns alphabetically</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t335" href="#t335">335</a></span><span class="t">    <span class="nam">season_df</span> <span class="op">=</span> <span class="nam">season_df</span><span class="op">.</span><span class="nam">reindex</span><span class="op">(</span><span class="nam">sorted</span><span class="op">(</span><span class="nam">season_df</span><span class="op">.</span><span class="nam">columns</span><span class="op">)</span><span class="op">,</span> <span class="nam">axis</span><span class="op">=</span><span class="num">1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t336" href="#t336">336</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t337" href="#t337">337</a></span><span class="t">    <span class="nam">markers</span> <span class="op">=</span> <span class="key">False</span> <span class="key">if</span> <span class="nam">len</span><span class="op">(</span><span class="nam">season_df</span><span class="op">)</span> <span class="op">></span> <span class="num">1</span> <span class="key">else</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t338" href="#t338">338</a></span><span class="t">    <span class="nam">fig</span> <span class="op">=</span> <span class="nam">px</span><span class="op">.</span><span class="nam">line</span><span class="op">(</span><span class="nam">season_df</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t339" href="#t339">339</a></span><span class="t">                  <span class="nam">x</span><span class="op">=</span><span class="str">'season_id'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t340" href="#t340">340</a></span><span class="t">                  <span class="nam">y</span><span class="op">=</span><span class="nam">season_df</span><span class="op">.</span><span class="nam">columns</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t341" href="#t341">341</a></span><span class="t">                  <span class="nam">markers</span><span class="op">=</span><span class="nam">markers</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t342" href="#t342">342</a></span><span class="t">                  <span class="nam">title</span><span class="op">=</span><span class="nam">title</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t343" href="#t343">343</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t344" href="#t344">344</a></span><span class="t">    <span class="nam">fig</span><span class="op">.</span><span class="nam">update_layout</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t345" href="#t345">345</a></span><span class="t">        <span class="nam">template</span><span class="op">=</span><span class="nam">theme</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t346" href="#t346">346</a></span><span class="t">        <span class="nam">xaxis</span><span class="op">=</span><span class="nam">dict</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t347" href="#t347">347</a></span><span class="t">            <span class="nam">showgrid</span><span class="op">=</span><span class="key">True</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t348" href="#t348">348</a></span><span class="t">            <span class="nam">gridwidth</span><span class="op">=</span><span class="num">1</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t349" href="#t349">349</a></span><span class="t">            <span class="nam">tickvals</span><span class="op">=</span><span class="nam">season_df</span><span class="op">.</span><span class="nam">season_id</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t350" href="#t350">350</a></span><span class="t">        <span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t351" href="#t351">351</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t352" href="#t352">352</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t353" href="#t353">353</a></span><span class="t">    <span class="key">return</span> <span class="nam">fig</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -439,7 +442,7 @@
             <a class="nav" href="z_145eef247bfb46b6_land_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-01 12:36 +0000
+            created at 2024-09-01 13:01 +0000
         </p>
     </div>
 </footer>
