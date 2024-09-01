@@ -331,6 +331,9 @@ def plot_season_stats_earnings_all(season_df,
     if skip_zero:
         season_df = season_df.loc[:, (season_df.sum(axis=0) != 0.0)]
 
+    # Sort the columns alphabetically
+    season_df = season_df.reindex(sorted(season_df.columns), axis=1)
+
     markers = False if len(season_df) > 1 else True
     fig = px.line(season_df,
                   x='season_id',

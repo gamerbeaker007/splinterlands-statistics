@@ -58,7 +58,11 @@ def get_layout():
 @measure_duration
 def update_status_field(added, removed, updated):
     rows = [html.H5("Configured accounts ")]
-    for account in store_util.get_account_names():
-        temp = get_account_status_row(account)
-        rows.append(dbc.Row(temp))
+    accounts = store_util.get_account_names()
+    if accounts:
+        for account in accounts:
+            temp = get_account_status_row(account)
+            rows.append(dbc.Row(temp))
+    else:
+        rows.append(html.Li("None"))
     return rows
