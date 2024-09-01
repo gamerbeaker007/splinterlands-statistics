@@ -146,7 +146,7 @@ def store_new_management_account(data):
                 class_name = 'text-success'
 
         else:
-            text = 'Unsuccessful sign message with hive'
+            text = 'Connect with hive keychain was unsuccessful'
             class_name = 'text-danger'
     else:
         text = 'This is not allowed in read-only mode'
