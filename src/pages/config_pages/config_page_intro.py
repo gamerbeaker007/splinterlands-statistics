@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import html
 
 pre_msg = [
-    'Your account(s) needs to be connected to the Splinterlands API',
+    'Your account(s) needs to be connected to the Splinterlands API.',
     html.Br(),
     'This is essential for full access to the Splinterlands statistics website.',
     html.Br(),

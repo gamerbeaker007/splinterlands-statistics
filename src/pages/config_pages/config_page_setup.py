@@ -7,7 +7,6 @@ from src.api import spl
 from src.configuration import config
 from src.pages.config_pages import config_page_ids
 from src.pages.main_dash import app
-from src.pages.shared_modules import styles
 from src.utils import store_util
 from src.utils.trace_logging import measure_duration
 
@@ -24,7 +23,6 @@ layout = dbc.Row([
         dbc.Row([
             dbc.Col([
                 html.Div(
-                    style=styles.get_read_only_mode_style(),
                     className='dbc',
                     children=[
                         dbc.Input(id=config_page_ids.account_name_input,
@@ -51,7 +49,6 @@ layout = dbc.Row([
             html.Div(id=config_page_ids.account_text),
         ]),
     ]),
-    html.Hr(),
 ])
 
 

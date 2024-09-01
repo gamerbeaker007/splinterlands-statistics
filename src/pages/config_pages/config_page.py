@@ -2,7 +2,9 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc
 
 from src.configuration import config
-from src.pages.config_pages import config_page_ids, config_page_authorize, config_page_intro, config_page_setup
+from src.pages.config_pages import config_page_ids, config_page_authorize, config_page_intro, config_page_setup, \
+    config_page_accounts_overview
+from src.pages.shared_modules import styles
 
 
 def get_readonly_text():
@@ -18,9 +20,11 @@ layout = dbc.Container([
 
     dbc.Row([
         dbc.Row(children=get_readonly_text()),
-        dbc.Row(children=config_page_setup.layout),
+        dbc.Row(config_page_setup.layout, style=styles.get_read_only_mode_style()),
+        dbc.Row(children=config_page_accounts_overview.get_layout()),
+
+        html.Hr(className="mt-3"),
         dbc.Row(children=config_page_intro.layout),
-        dbc.Row(id=config_page_ids.authorize_place_holder, children=config_page_authorize.layout),
-        dbc.Row(id=config_page_ids.update_account_info),
+        dbc.Row(children=config_page_authorize.layout, style=styles.get_read_only_mode_style()),
     ]),
 ])
