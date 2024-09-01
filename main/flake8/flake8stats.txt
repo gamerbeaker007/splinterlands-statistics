@@ -1,1 +1,2 @@
-1     F841 local variable 'info_text' is assigned to but never used
+1     F541 f-string is missing placeholders
+1     W291 trailing whitespace
