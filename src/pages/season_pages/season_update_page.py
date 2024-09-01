@@ -1,6 +1,5 @@
 import dash_bootstrap_components as dbc
 from dash import Output, Input, ctx, html
-from dash.exceptions import PreventUpdate
 
 from src.api import spl
 from src.configuration import config
@@ -28,7 +27,6 @@ layout = [
         ),
     ),
     dbc.Row(dbc.Label(id=season_ids.season_update_label, className='text-warning')),
-    dbc.Row(dbc.Label(id=season_ids.season_update_token_provided_label, className='text-warning')),
     dbc.Row(dbc.Label(id=season_ids.season_user_update_label, className='text-warning')),
 ]
 
@@ -66,15 +64,25 @@ def update_season_label(tigger):
     current_season_data = spl.get_current_season()
     season_id = current_season_data['id'] - 1
     not_process_accounts = get_not_process_accounts(season_id)
-    if not store_util.get_token_dict() or not not_process_accounts:
+    if not not_process_accounts:
         msg = ''
         display = 'none'
     else:
         display = 'block'
-        claimed_users, not_claimed_users = get_season_claimed_not_claimed_users(season_id)
+        claimed_users, not_claimed_users, not_connected_users = get_season_claimed_not_claimed_users(season_id)
         msg = []
 
+        if not_connected_users:
+            msg.append(html.P(
+                'One or more accounts are not connected, these will not be updated!'))
+            for user in not_connected_users:
+                msg.append(html.Li(user))
+            msg.append(html.P('Connect account(s) in config page'))
+            msg.append(html.Br())
+
+        print_update_msg = False
         if not_claimed_users:
+            print_update_msg = True
             msg.append(html.P(
                 'Season \'' + str(season_id) + '\' is finished these account(s) have not claimed their rewards:'))
             for user in not_claimed_users:
@@ -83,14 +91,19 @@ def update_season_label(tigger):
             msg.append(html.Br())
 
         if claimed_users:
-            msg.append(
-                html.P(
-                    'Season \'' + str(season_id) + '\' is finished these account(s) have claimed their rewards:'))
+            msg_temp = []
             for user in claimed_users:
                 if user in not_process_accounts:
-                    msg.append(html.Li(user))
+                    msg_temp.append(html.Li(user))
+            if msg_temp:
+                print_update_msg = True
+                msg.append(
+                    html.P(
+                        'Season \'' + str(season_id) + '\' is finished these account(s) have claimed their rewards:'))
+                msg.extend(msg_temp)
 
-            if config.server_mode:
+            if config.server_mode and print_update_msg:
+                msg.append(html.Br())
                 msg.append(
                     html.P(
                         [
@@ -103,6 +116,7 @@ def update_season_label(tigger):
                 )
                 msg.append(html.Br())
             else:
+                msg.append(html.Br())
                 msg.append(html.P('Click \'Update seasons\' button above to process the results'))
     return msg, {'display': display}
 
@@ -120,13 +134,16 @@ def get_season_claimed_not_claimed_users(season_id):
     accounts = store_util.get_account_names()
     not_claimed_users = []
     claimed_users = []
+    not_connect_users = []
     for account in accounts:
-        if spl_util.is_season_reward_claimed(account, season_id):
+        if not store_util.get_token_dict(account):
+            not_connect_users.append(account)
+        elif spl_util.is_season_reward_claimed(account, season_id):
             claimed_users.append(account)
         else:
             not_claimed_users.append(account)
 
-    return claimed_users, not_claimed_users
+    return claimed_users, not_claimed_users, not_connect_users
 
 
 @app.callback(
@@ -152,20 +169,3 @@ def update_season_user_label(tigger):
             display = 'block'
             break
     return msg, {'display': display}
-
-
-@app.callback(
-    Output(season_ids.season_update_token_provided_label, 'children'),
-    Output(season_ids.season_update_token_provided_label, 'style'),
-    Input(season_ids.dropdown_user_selection_season, 'value'),
-    Input(season_ids.trigger_season_update, 'data'),
-)
-@measure_duration
-def update_season_token_label(user, tigger):
-    if not user:
-        raise PreventUpdate
-
-    if store_util.get_token_dict():
-        return '', {'display': 'none'}
-
-    return 'Not connected to splinterlands API, update or configure in config page', {'display': 'block'}

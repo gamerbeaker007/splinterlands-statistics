@@ -131,7 +131,7 @@ def update_earnings_all_graph(account, token, skip_zero, season_trigger, theme):
 
     season_df = season_df.sort_values(by=['season_id']).fillna(0)
     season_df.drop(columns=['player'], inplace=True)
-    season_df['Total'] = season_df.select_dtypes(include=['float']).sum(axis=1)
+    season_df['total'] = season_df.select_dtypes(include=['float']).sum(axis=1)
 
     return season_graph.plot_season_stats_earnings_all(season_df,
                                                        token,
