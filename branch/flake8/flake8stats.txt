@@ -1,2 +1,2 @@
 1     F541 f-string is missing placeholders
-2     W293 blank line contains whitespace
+1     W291 trailing whitespace
