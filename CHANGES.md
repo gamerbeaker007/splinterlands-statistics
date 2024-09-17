@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.22.2
+
+- ADD (Portfolio): Value is calculated for fully unlocked rebellion soulbound rewards unit.
+
 ## 0.22.1
 
 - FIX: one management account is not working for seasons, update to connect every account.

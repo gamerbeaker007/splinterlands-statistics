@@ -38,15 +38,14 @@ def get_collection(df, list_prices_df, market_prices_df):
         bcx = collection_card.bcx
         total_bcx += bcx
 
-        if collection_card['edition'] == Edition.soulbound.value:
+        if (collection_card['edition'] == Edition.soulbound.value or
+                collection_card['edition'] == Edition.soulboundrb.value):
             # determine total unbound bcx to calculate value.
             # only fully unbound soulbound units will be used for value calculations
             if not is_fully_unbound(collection_card):
                 bcx = 0
 
-        if collection_card['edition'] == Edition.soulboundrb.value:
-            pass  # TODO not relevant for now
-        elif collection_card['edition'] == Edition.gladius.value:
+        if collection_card['edition'] == Edition.gladius.value:
             pass  # Has no value, not relevant for now
         else:
             list_price = get_list_price(collection_card, list_prices_df)
