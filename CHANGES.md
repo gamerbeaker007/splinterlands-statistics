@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.23.1
+
+- FIX: Icons not correctly loaded in standalone version
+
 ## 0.23.0
 
 - UPDATE: generation of executable improved, changed executable name and windows admin warning removed
