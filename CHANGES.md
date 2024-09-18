@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.23.0
+
+- UPDATE: generation of executable improved, changed executable name and windows admin warning removed
+
 ## 0.22.2
 
 - ADD (Portfolio): Value is calculated for fully unlocked rebellion soulbound rewards unit.
