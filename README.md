@@ -14,7 +14,7 @@ Main:
 
 * Download executable
 * Unzip
-* Run main.exe or main.sh
+* Run spl_statistics_tool_<x>.exe or spl_statistics_tool_<x>.sh
 * Browse to http://127.0.0.1:8050
 * In the config tab add the accounts you want to monitor
   Tip for windows: to see the console log of the program run this via and command prompt
@@ -59,4 +59,3 @@ TODO
 NOTE: Sometimes the clipboard icon is not shown when hive blog generated.
 This might be caused by insecure connection http instead of https for example with home network local synology.  
 For more information: https://community.plotly.com/t/dcc-clipboard-is-not-working-in-my-company-network/55899/13
-

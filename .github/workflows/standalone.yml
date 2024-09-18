@@ -45,7 +45,10 @@ jobs:
           --collect-data dash_bootstrap_templates 
           --hidden-import _scrypt
           --add-data="assets;assets"
+          --icon=assets/icons/img_icon_splinterlands_32.ico
+          --manifest=windows.manifest
           --distpath splinterlands-stats-v2
+          --name spl_statistics_tool_latest
           main.py
 
       - if: matrix.os == 'ubuntu-latest'
@@ -57,12 +60,10 @@ jobs:
           --collect-data dash_bootstrap_templates 
           --hidden-import _scrypt
           --add-data="assets:assets"
+          --icon=assets/icons/img_icon_splinterlands_32.ico
           --distpath splinterlands-stats-v2
+          --name spl_statistics_tool_latest.sh
           main.py
-
-      - if: matrix.os == 'ubuntu-latest'
-        run: |
-          mv "splinterlands-stats-v2/main" "splinterlands-stats-v2/main.sh"
 
       - uses: actions/upload-artifact@v3
         with:
@@ -105,7 +106,10 @@ jobs:
           --collect-data dash_bootstrap_templates 
           --hidden-import _scrypt
           --add-data="assets;assets"
+          --icon=assets/icons/img_icon_splinterlands_32.ico
+          --manifest=windows.manifest
           --distpath splinterlands-stats-v2
+          --name spl_statistics_tool_${{ github.event.release.tag_name }}
           main.py
 
       - if: matrix.os == 'ubuntu-latest'
@@ -117,12 +121,10 @@ jobs:
           --collect-data dash_bootstrap_templates 
           --hidden-import _scrypt
           --add-data="assets:assets"
+          --icon=assets/icons/img_icon_splinterlands_32.ico
           --distpath splinterlands-stats-v2
+          --name spl_statistics_tool_${{ github.event.release.tag_name }}.sh
           main.py
-
-      - if: matrix.os == 'ubuntu-latest'
-        run: |
-          mv "splinterlands-stats-v2/main" "splinterlands-stats-v2/main.sh"
 
       - if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v3
