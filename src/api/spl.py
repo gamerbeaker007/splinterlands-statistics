@@ -203,14 +203,16 @@ def get_player_tournaments_ids(token_params):
     params = token_params
     params['from_block'] = -1
     params['limit'] = 500
-    params['types'] = 'enter_tournament'
+    params['types'] = 'token_transfer'
 
     df = pd.DataFrame(http.get(address, params=params).json())
     tournaments_ids = []
 
     if not df.empty:
         for index, row in df.iterrows():
-            tournaments_ids.append(json.loads(row.data)['tournament_id'])
+            data = json.loads(row.data)
+            if 'tournament_id' in data:
+                tournaments_ids.append(data['tournament_id'])
     return tournaments_ids
 
 

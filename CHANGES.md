@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.23.2
+
+- FIX: tournament generation for the hive blog
+
 ## 0.23.1
 
 - FIX: Icons not correctly loaded in standalone version
