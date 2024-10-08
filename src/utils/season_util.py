@@ -57,6 +57,7 @@ def generate_season_hive_blog(season_id, users):
     purchases_dict = {}
     sold_dict = {}
     last_season_rewards_dict = {}
+    last_season_league_rewards_dict = {}
     for account_name in users:
         # get tournament information
         progress_util.update_season_msg('Collecting tournament information for: ' + str(account_name))
@@ -77,10 +78,13 @@ def generate_season_hive_blog(season_id, users):
         # get last season rewards
         progress_util.update_season_msg('Collecting last season reward draws for: ' + str(account_name))
         last_season_rewards_dict[account_name] = get_last_season_reward_draws(transactions)
+        last_season_league_rewards_dict[account_name] = get_last_season_league_rewards(transactions)
+
     # print single post for each account
     report = hive_blog.write_blog_post(users,
                                        season_info_store,
                                        last_season_rewards_dict,
+                                       last_season_league_rewards_dict,
                                        tournaments_info_dict,
                                        purchases_dict,
                                        sold_dict,
@@ -102,12 +106,7 @@ def get_last_season_reward_draws(transactions):
                     if reward_result['success']:
                         temp_df = pd.DataFrame(reward_result['rewards'])
                         temp_df['sub_type'] = trx['sub_type']
-                        if 'card' in temp_df.columns.tolist():
-                            # Expand 'card' column into multiple columns
-                            card_df = pd.json_normalize(temp_df['card'])
-                            # Concatenate temp_df and card_df along columns axis
-                            temp_df = pd.concat([temp_df.drop(columns=['card']), card_df], axis=1)
-                        df = pd.concat([df, temp_df])
+                        df = extract_card_info(df, temp_df)
             else:
                 logging.info('Get last season reward draws, skipping transaction type: ' + trx['type'])
 
@@ -120,4 +119,49 @@ def get_last_season_reward_draws(transactions):
             df.loc[not_na_index, 'bcx'] = df.loc[not_na_index, 'quantity']
             df.loc[not_na_index, 'card_name'] = df.loc[not_na_index, 'card_detail_id'].apply(
                 lambda x: config.card_details_df.loc[x, 'name'])
+    return df
+
+
+def get_last_season_league_rewards(transactions):
+    df = pd.DataFrame()
+    for transaction in transactions:
+        if (transaction['operation'] == 'sm_claim_reward'
+                and transaction['trx_info']['success'] is True):
+            data = json.loads(transaction['trx_info']['data'])
+            league_format = data['format']
+            tier = data['tier']
+            trx = json.loads(transaction['trx_info']['result'])
+            if trx['type'] in ['league']:
+                types = ['minor', 'major', 'ultimate']
+                for sub_type in types:
+                    rewards = trx['rewards'][sub_type]
+                    if rewards:
+                        temp_df = pd.DataFrame(rewards['result']['rewards'])
+                        temp_df['format'] = league_format
+                        temp_df['tier'] = tier
+                        temp_df['sub_type'] = sub_type
+                        df = extract_card_info(df, temp_df)
+
+            else:
+                logging.info('Get last season league chest rewards, skipping transaction type: ' + trx['type'])
+
+    if not df.empty and 'card_detail_id' in df.columns:
+        df.reset_index(drop=True)
+        df.index = range(len(df))
+        not_na_index = df['card_detail_id'].notna()
+        if not_na_index.any():  # Check if there are non-NaN values in 'card_detail_id'
+            df.loc[not_na_index, 'edition_name'] = df.loc[not_na_index, 'edition'].apply(lambda x: Edition(x).name)
+            df.loc[not_na_index, 'bcx'] = df.loc[not_na_index, 'quantity']
+            df.loc[not_na_index, 'card_name'] = df.loc[not_na_index, 'card_detail_id'].apply(
+                lambda x: config.card_details_df.loc[x, 'name'])
+    return df
+
+
+def extract_card_info(df, input_df):
+    if 'card' in input_df.columns.tolist():
+        # Expand 'card' column into multiple columns
+        card_df = pd.json_normalize(input_df['card'])
+        # Concatenate temp_df and card_df along columns axis
+        input_df = pd.concat([input_df.drop(columns=['card']), card_df], axis=1)
+    df = pd.concat([df, input_df])
     return df

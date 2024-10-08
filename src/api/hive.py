@@ -120,7 +120,7 @@ def get_spl_transactions(account_name,
                          filter_spl_transactions=None,
                          results=None):
     if filter_spl_transactions is None:
-        filter_spl_transactions = ['sm_purchase', 'sm_market_purchase', 'sm_sell_cards']
+        filter_spl_transactions = ['sm_purchase', 'sm_market_purchase', 'sm_sell_cards', 'sm_claim_reward']
 
     if results is None:
         results = []
