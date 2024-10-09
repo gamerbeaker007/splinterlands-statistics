@@ -591,10 +591,10 @@ def get_last_season_rewards(last_season_rewards, account_name=None):
 ## <div class="phishy"><center>Reward draws purchased """ + str(account_suffix) + """</center></div>
 """ + str(get_reward_draws_table(last_season_rewards)) + """
 
-## <div class="phishy"><center>Special items earned""" + str(account_suffix) + """</center></div>
+### <div class="phishy"><center>Special items earned""" + str(account_suffix) + """</center></div>
 """ + str(get_rewards_draws_result_table(last_season_rewards)) + """
 
-## <div class="phishy"><center>Cards earned""" + str(account_suffix) + """</center></div>
+### <div class="phishy"><center>Cards earned""" + str(account_suffix) + """</center></div>
 """ + str(get_card_table(last_season_rewards)) + """
     """
 
@@ -605,13 +605,13 @@ def get_last_season_league_rewards(last_season_league_rewards, account_name=None
         account_suffix = ' (' + str(account_name) + ')'
 
     return """
-## <div class="phishy"><center>League rewards earned""" + str(account_suffix) + """</center></div>
+## <div class="phishy"><center>League rewards""" + str(account_suffix) + """</center></div>
 """ + str(get_season_league_rewards_table(last_season_league_rewards)) + """
 
-## <div class="phishy"><center>League rewards special items earned""" + str(account_suffix) + """</center></div>
+### <div class="phishy"><center>League rewards special items earned""" + str(account_suffix) + """</center></div>
 """ + str(get_rewards_draws_result_table(last_season_league_rewards)) + """
 
-## <div class="phishy"><center>League rewards cards earned""" + str(account_suffix) + """</center></div>
+### <div class="phishy"><center>League rewards cards earned""" + str(account_suffix) + """</center></div>
 """ + str(get_card_table(last_season_league_rewards)) + """
     """
 
