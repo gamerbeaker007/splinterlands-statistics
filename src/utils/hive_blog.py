@@ -547,6 +547,41 @@ def get_rewards_draws_result_table(df):
     return result
 
 
+def get_season_league_rewards_table(df):
+    wild_df = df[(df.format == 'wild')]
+    modern_df = df[(df.format == 'modern')]
+    wild_league_logo = 'https://images.hive.blog/50x0/' + wild_league_icon_url
+    modern_league_logo = 'https://images.hive.blog/50x0/' + modern_league_icon_url
+    suffix = ')'
+
+    result = '| <center>Format</center> '
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_minor_icon_url
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_major_icon_url
+    result += '|' + image_hive_blog_150_url + static_values_enum.reward_draw_ultimate_icon_url
+    result += '|\n'
+    result += '|-|-|-|-|\n'
+
+    result += '|'
+    for badge in modern_df.tier.unique().tolist():
+        prefix = '![' + Leagues(badge).name + ']('
+        result += prefix + modern_league_logo.replace('0.png', str(badge) + '.png') + suffix
+    result += '| <center>' + str(get_sub_type_sum(modern_df, 'minor')) + 'x</center>'
+    result += '| <center>' + str(get_sub_type_sum(modern_df, 'major')) + 'x</center>'
+    result += '| <center>' + str(get_sub_type_sum(modern_df, 'ultimate')) + 'x</center>'
+    result += '|\n'
+
+    result += '|'
+    for badge in wild_df.tier.unique().tolist():
+        prefix = '![' + Leagues(badge).name + ']('
+        result += prefix + wild_league_logo.replace('0.png', str(badge) + '.png') + suffix
+    result += '| <center>' + str(get_sub_type_sum(wild_df, 'minor')) + 'x</center>'
+    result += '| <center>' + str(get_sub_type_sum(wild_df, 'major')) + 'x</center>'
+    result += '| <center>' + str(get_sub_type_sum(wild_df, 'ultimate')) + 'x</center>'
+    result += '|\n'
+
+    return result
+
+
 def get_last_season_rewards(last_season_rewards, account_name=None):
     account_suffix = ''
     if account_name:
@@ -556,11 +591,28 @@ def get_last_season_rewards(last_season_rewards, account_name=None):
 ## <div class="phishy"><center>Reward draws purchased """ + str(account_suffix) + """</center></div>
 """ + str(get_reward_draws_table(last_season_rewards)) + """
 
-## <div class="phishy"><center>Special items earned""" + str(account_suffix) + """</center></div>
+### <div class="phishy"><center>Special items earned""" + str(account_suffix) + """</center></div>
 """ + str(get_rewards_draws_result_table(last_season_rewards)) + """
 
-## <div class="phishy"><center>Cards earned""" + str(account_suffix) + """</center></div>
+### <div class="phishy"><center>Cards earned""" + str(account_suffix) + """</center></div>
 """ + str(get_card_table(last_season_rewards)) + """
+    """
+
+
+def get_last_season_league_rewards(last_season_league_rewards, account_name=None):
+    account_suffix = ''
+    if account_name:
+        account_suffix = ' (' + str(account_name) + ')'
+
+    return """
+## <div class="phishy"><center>League rewards""" + str(account_suffix) + """</center></div>
+""" + str(get_season_league_rewards_table(last_season_league_rewards)) + """
+
+### <div class="phishy"><center>League rewards special items earned""" + str(account_suffix) + """</center></div>
+""" + str(get_rewards_draws_result_table(last_season_league_rewards)) + """
+
+### <div class="phishy"><center>League rewards cards earned""" + str(account_suffix) + """</center></div>
+""" + str(get_card_table(last_season_league_rewards)) + """
     """
 
 
@@ -603,6 +655,7 @@ def get_account_names_str(account_names):
 def write_blog_post(account_names,
                     season_info_store,
                     last_season_rewards_dict,
+                    last_season_league_rewards_dict,
                     tournaments_info_dict,
                     purchases_cards_dict,
                     sold_cards_dict,
@@ -637,6 +690,8 @@ def write_blog_post(account_names,
                                                     account_name=print_account_name)
         post += get_last_season_rewards(last_season_rewards_dict[account_name],
                                         account_name=print_account_name)
+        post += get_last_season_league_rewards(last_season_league_rewards_dict[account_name],
+                                               account_name=print_account_name)
 
         if single_account:
             post += get_closure_chapter()
