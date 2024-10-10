@@ -128,10 +128,10 @@ def get_last_season_league_rewards(transactions):
         if (transaction['operation'] == 'sm_claim_reward'
                 and transaction['trx_info']['success'] is True):
             data = json.loads(transaction['trx_info']['data'])
-            league_format = data['format']
-            tier = data['tier']
             trx = json.loads(transaction['trx_info']['result'])
-            if trx['type'] in ['league']:
+            if data['type'] in ['league']:
+                league_format = data['format']
+                tier = data['tier']
                 types = ['minor', 'major', 'ultimate']
                 for sub_type in types:
                     rewards = trx['rewards'][sub_type]
@@ -143,7 +143,7 @@ def get_last_season_league_rewards(transactions):
                         df = extract_card_info(df, temp_df)
 
             else:
-                logging.info('Get last season league chest rewards, skipping transaction type: ' + trx['type'])
+                logging.info('Get last season league chest rewards, skipping transaction type: ' + data['type'])
 
     if not df.empty and 'card_detail_id' in df.columns:
         df.reset_index(drop=True)
