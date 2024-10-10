@@ -528,6 +528,9 @@ def get_reward_draws_table(df):
 
 
 def get_rewards_draws_result_table(df):
+    if df.empty:
+        return 'None'
+
     result = '| ' + image_hive_blog_150_url + static_values_enum.merit_icon_url
     result += '| ' + image_hive_blog_150_url + static_values_enum.energy_icon_url
     result += '| ' + image_hive_blog_150_url + static_values_enum.potion_gold_icon_url
@@ -548,6 +551,9 @@ def get_rewards_draws_result_table(df):
 
 
 def get_season_league_rewards_table(df):
+    if df.empty:
+        return 'None'
+
     wild_df = df[(df.format == 'wild')]
     modern_df = df[(df.format == 'modern')]
     wild_league_logo = 'https://images.hive.blog/50x0/' + wild_league_icon_url
