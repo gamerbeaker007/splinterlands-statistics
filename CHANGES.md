@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.24.1
+
+- ADD: GOLD foil rarity draws to the hive blog
+
 ## 0.24.0
 
 - ADD: league rewards chapter added to the hive blog

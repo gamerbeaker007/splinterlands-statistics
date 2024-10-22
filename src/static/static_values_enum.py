@@ -55,6 +55,11 @@ reward_draw_rare_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img
 reward_draw_epic_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_draws-epic_800.png'
 reward_draw_legendary_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_draws-legendary_800.png'
 
+reward_draw_common_gold_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_draws-common_gold_800.webp'
+reward_draw_rare_gold_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_draws-rare_gold_800.webp'
+reward_draw_epic_gold_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_draws-epic_gold_800.webp'
+reward_draw_legendary_gold_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_draws-legendary_gold_800.webp'
+
 reward_draw_minor_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_chest-minor_250.webp'
 reward_draw_major_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_chest-major_250.webp'
 reward_draw_ultimate_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_chest-ultimate_250.webp'
