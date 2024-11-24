@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.24.2
+
+- UPDATE: Change link to battle replays to the next.splinterlands/battle
+
 ## 0.24.1
 
 - ADD: GOLD foil rarity draws to the hive blog

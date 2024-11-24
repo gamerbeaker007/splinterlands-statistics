@@ -54,7 +54,7 @@ def get_ruleset_div(rule_sets):
 
 
 def get_replay_link(battle_id):
-    link = 'https://splinterlands.com/?p=battle&id=' + battle_id
+    link = 'https://next.splinterlands.com/battle/' + battle_id
 
     img_style = {'height': '40px',
                  'width': '40px'}
@@ -113,7 +113,7 @@ def get_battle_rows(account, battle_ids):
         rule_sets = battle_row['ruleset'].split('|')
         match_type = battle_row['match_type']
         match_format = battle_row['format']
-        print(match_format)
+
         is_brawl = False
         if 'is_brawl' in battle_details:
             is_brawl = battle_details['is_brawl']
