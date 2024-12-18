@@ -6,7 +6,6 @@ from dateutil.parser import isoparse
 from pandas import json_normalize
 
 from src.api import spl
-from src.configuration import config
 from src.utils import progress_util, store_util
 
 
@@ -138,14 +137,6 @@ def is_season_reward_claimed(account, season_id):
 
     logging.info('Continue season results are claimed for account: ' + str(account))
     return True
-
-
-def get_rule_sets_list():
-    rule_sets = config.settings['battles']['rulesets']
-    list_of_ruleset = []
-    for rule_set in rule_sets:
-        list_of_ruleset.append(rule_set['name'])
-    return list(list_of_ruleset)
 
 
 def get_ability_list():

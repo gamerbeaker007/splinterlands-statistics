@@ -30,6 +30,12 @@ def get_card_details():
     return pd.DataFrame(http.get(address).json()).set_index('id')
 
 
+def get_rule_sets_list():
+    address = base_url + 'battle/rulesets'
+    df = pd.DataFrame(http.get(address).json())
+    return df.name.to_list()
+
+
 def get_player_collection_df(username):
     address = base_url + 'cards/collection/' + username
     collection = http.get(address).json()['cards']
