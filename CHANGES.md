@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.24.4
+
+- FIX: ghost card in training have no xp so skip them from battle log
+
 ## 0.24.3
 
 - UPDATE: Change retrieval of rulesets

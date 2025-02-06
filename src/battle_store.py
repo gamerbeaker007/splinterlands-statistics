@@ -1,3 +1,4 @@
+import json
 import logging
 
 import pandas as pd
@@ -162,7 +163,7 @@ def process_battle(account):
                 match_type = battle['match_type']
 
                 battle_details = battle.details
-                if not is_surrender(battle_details):
+                if not is_surrender(battle_details) and not is_training(battle):
                     winner_name = battle_details['winner']
 
                     if battle_details['team1']['player'] == account:
@@ -215,6 +216,11 @@ def update_last_processed_df(account, last_processed_date):
 
 def is_surrender(battle_details):
     return 'type' in battle_details and battle_details['type'] == 'Surrender'
+
+
+def is_training(battle):
+    return (battle['match_type'] == MatchType.CHALLENGE.value
+            and json.loads(battle['settings'])['is_training'] == 'true')
 
 
 def process_battles():
