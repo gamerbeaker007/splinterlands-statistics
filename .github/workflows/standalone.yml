@@ -65,7 +65,7 @@ jobs:
           --name spl_statistics_tool_latest.sh
           main.py
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: splinterlands-stats-v2-${{ matrix.os }}
           path: ./splinterlands-stats-v2/*
@@ -127,13 +127,13 @@ jobs:
           main.py
 
       - if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: splinterlands-stats-v2-ubuntu-${{ github.event.release.tag_name }}
           path: ./splinterlands-stats-v2/*
 
       - if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: splinterlands-stats-v2-windows-${{ github.event.release.tag_name }}
           path: ./splinterlands-stats-v2/*
