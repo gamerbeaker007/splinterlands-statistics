@@ -17,7 +17,7 @@
 
          <div id="doc">
             <div id="l1"
-               class="code sev- "><tt><i>1</i> <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span></tt>
+               class="code sev- "><tt><i>1</i> <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span></tt>
             </div>
             <div id="l2"
                class="code sev- "><tt><i>2</i> &nbsp;</tt>
@@ -269,7 +269,7 @@
                class="code sev- "><tt><i>81</i> &nbsp;</tt>
             </div>
             <div id="l82"
-               class="code sev- "><tt><i>82</i> <span class="k">class</span> <span class="nc">ExtendedEnum</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>82</i> <span class="k">class</span><span class="w"> </span><span class="nc">ExtendedEnum</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span></tt>
             </div>
             <div id="l83"
                class="code sev- "><tt><i>83</i> &nbsp;</tt>
@@ -278,7 +278,7 @@
                class="code sev- "><tt><i>84</i>     <span class="nd">@classmethod</span></tt>
             </div>
             <div id="l85"
-               class="code sev- "><tt><i>85</i>     <span class="k">def</span> <span class="nf">list_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>85</i>     <span class="k">def</span><span class="w"> </span><span class="nf">list_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span></tt>
             </div>
             <div id="l86"
                class="code sev- "><tt><i>86</i>         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="p">))</span></tt>
@@ -290,7 +290,7 @@
                class="code sev- "><tt><i>88</i>     <span class="nd">@classmethod</span></tt>
             </div>
             <div id="l89"
-               class="code sev- "><tt><i>89</i>     <span class="k">def</span> <span class="nf">list_values</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>89</i>     <span class="k">def</span><span class="w"> </span><span class="nf">list_values</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span></tt>
             </div>
             <div id="l90"
                class="code sev- "><tt><i>90</i>         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="p">))</span></tt>
@@ -302,7 +302,7 @@
                class="code sev- "><tt><i>92</i> &nbsp;</tt>
             </div>
             <div id="l93"
-               class="code sev- "><tt><i>93</i> <span class="k">class</span> <span class="nc">Format</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>93</i> <span class="k">class</span><span class="w"> </span><span class="nc">Format</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
             </div>
             <div id="l94"
                class="code sev- "><tt><i>94</i>     <span class="n">wild</span> <span class="o">=</span> <span class="s1">&#39;wild&#39;</span></tt>
@@ -317,7 +317,7 @@
                class="code sev- "><tt><i>97</i> &nbsp;</tt>
             </div>
             <div id="l98"
-               class="code sev- "><tt><i>98</i> <span class="k">class</span> <span class="nc">MatchType</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>98</i> <span class="k">class</span><span class="w"> </span><span class="nc">MatchType</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
             </div>
             <div id="l99"
                class="code sev- "><tt><i>99</i>     <span class="n">RANKED</span> <span class="o">=</span> <span class="s1">&#39;Ranked&#39;</span></tt>
@@ -338,7 +338,7 @@
                class="code sev- "><tt><i>104</i> &nbsp;</tt>
             </div>
             <div id="l105"
-               class="code sev- "><tt><i>105</i> <span class="k">class</span> <span class="nc">CardType</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>105</i> <span class="k">class</span><span class="w"> </span><span class="nc">CardType</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
             </div>
             <div id="l106"
                class="code sev- "><tt><i>106</i>     <span class="n">summoner</span> <span class="o">=</span> <span class="s1">&#39;Summoner&#39;</span></tt>
@@ -353,7 +353,7 @@
                class="code sev- "><tt><i>109</i> &nbsp;</tt>
             </div>
             <div id="l110"
-               class="code sev- "><tt><i>110</i> <span class="k">class</span> <span class="nc">Leagues</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>110</i> <span class="k">class</span><span class="w"> </span><span class="nc">Leagues</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
             </div>
             <div id="l111"
                class="code sev- "><tt><i>111</i>     <span class="n">NOVICE</span> <span class="o">=</span> <span class="mi">0</span></tt>
@@ -410,7 +410,7 @@
                class="code sev- "><tt><i>128</i> &nbsp;</tt>
             </div>
             <div id="l129"
-               class="code sev- "><tt><i>129</i> <span class="k">class</span> <span class="nc">RatingLevel</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>129</i> <span class="k">class</span><span class="w"> </span><span class="nc">RatingLevel</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
             </div>
             <div id="l130"
                class="code sev- "><tt><i>130</i>     <span class="n">Novice</span> <span class="o">=</span> <span class="mi">0</span></tt>
@@ -437,7 +437,7 @@
                class="code sev- "><tt><i>137</i> &nbsp;</tt>
             </div>
             <div id="l138"
-               class="code sev- "><tt><i>138</i> <span class="k">class</span> <span class="nc">Edition</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>138</i> <span class="k">class</span><span class="w"> </span><span class="nc">Edition</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
             </div>
             <div id="l139"
                class="code sev- "><tt><i>139</i>     <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span></tt>
@@ -482,7 +482,7 @@
                class="code sev- "><tt><i>152</i> &nbsp;</tt>
             </div>
             <div id="l153"
-               class="code sev- "><tt><i>153</i> <span class="k">class</span> <span class="nc">Element</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>153</i> <span class="k">class</span><span class="w"> </span><span class="nc">Element</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
             </div>
             <div id="l154"
                class="code sev- "><tt><i>154</i>     <span class="n">water</span> <span class="o">=</span> <span class="s1">&#39;Blue&#39;</span></tt>
@@ -512,7 +512,7 @@
                class="code sev- "><tt><i>162</i> &nbsp;</tt>
             </div>
             <div id="l163"
-               class="code sev- "><tt><i>163</i> <span class="k">class</span> <span class="nc">Rarity</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>163</i> <span class="k">class</span><span class="w"> </span><span class="nc">Rarity</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
             </div>
             <div id="l164"
                class="code sev- "><tt><i>164</i>     <span class="n">common</span> <span class="o">=</span> <span class="mi">1</span></tt>
@@ -533,7 +533,7 @@
                class="code sev- "><tt><i>169</i> &nbsp;</tt>
             </div>
             <div id="l170"
-               class="code sev- "><tt><i>170</i> <span class="k">class</span> <span class="nc">ManaCap</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>170</i> <span class="k">class</span><span class="w"> </span><span class="nc">ManaCap</span><span class="p">(</span><span class="n">ExtendedEnum</span><span class="p">):</span></tt>
             </div>
             <div id="l171"
                class="code sev- "><tt><i>171</i>     <span class="n">low</span> <span class="o">=</span> <span class="s1">&#39;0-20&#39;</span></tt>
