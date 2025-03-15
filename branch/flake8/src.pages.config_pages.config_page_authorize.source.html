@@ -17,37 +17,37 @@
 
          <div id="doc">
             <div id="l1"
-               class="code sev- "><tt><i>1</i> <span class="kn">import</span> <span class="nn">dash_bootstrap_components</span> <span class="k">as</span> <span class="nn">dbc</span></tt>
+               class="code sev- "><tt><i>1</i> <span class="kn">import</span><span class="w"> </span><span class="nn">dash_bootstrap_components</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dbc</span></tt>
             </div>
             <div id="l2"
-               class="code sev- "><tt><i>2</i> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span></tt>
+               class="code sev- "><tt><i>2</i> <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span></tt>
             </div>
             <div id="l3"
-               class="code sev- "><tt><i>3</i> <span class="kn">from</span> <span class="nn">dash</span> <span class="kn">import</span> <span class="n">Output</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">State</span><span class="p">,</span> <span class="n">dcc</span><span class="p">,</span> <span class="n">html</span></tt>
+               class="code sev- "><tt><i>3</i> <span class="kn">from</span><span class="w"> </span><span class="nn">dash</span><span class="w"> </span><span class="kn">import</span> <span class="n">Output</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">State</span><span class="p">,</span> <span class="n">dcc</span><span class="p">,</span> <span class="n">html</span></tt>
             </div>
             <div id="l4"
                class="code sev- "><tt><i>4</i> &nbsp;</tt>
             </div>
             <div id="l5"
-               class="code sev- "><tt><i>5</i> <span class="kn">from</span> <span class="nn">src.api</span> <span class="kn">import</span> <span class="n">spl</span></tt>
+               class="code sev- "><tt><i>5</i> <span class="kn">from</span><span class="w"> </span><span class="nn">src.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">spl</span></tt>
             </div>
             <div id="l6"
-               class="code sev- "><tt><i>6</i> <span class="kn">from</span> <span class="nn">src.configuration</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">store</span></tt>
+               class="code sev- "><tt><i>6</i> <span class="kn">from</span><span class="w"> </span><span class="nn">src.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">store</span></tt>
             </div>
             <div id="l7"
-               class="code sev- "><tt><i>7</i> <span class="kn">from</span> <span class="nn">src.pages.config_pages</span> <span class="kn">import</span> <span class="n">config_page_ids</span></tt>
+               class="code sev- "><tt><i>7</i> <span class="kn">from</span><span class="w"> </span><span class="nn">src.pages.config_pages</span><span class="w"> </span><span class="kn">import</span> <span class="n">config_page_ids</span></tt>
             </div>
             <div id="l8"
-               class="code sev- "><tt><i>8</i> <span class="kn">from</span> <span class="nn">src.pages.main_dash</span> <span class="kn">import</span> <span class="n">app</span></tt>
+               class="code sev- "><tt><i>8</i> <span class="kn">from</span><span class="w"> </span><span class="nn">src.pages.main_dash</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span></tt>
             </div>
             <div id="l9"
-               class="code sev- "><tt><i>9</i> <span class="kn">from</span> <span class="nn">src.static</span> <span class="kn">import</span> <span class="n">static_values_enum</span></tt>
+               class="code sev- "><tt><i>9</i> <span class="kn">from</span><span class="w"> </span><span class="nn">src.static</span><span class="w"> </span><span class="kn">import</span> <span class="n">static_values_enum</span></tt>
             </div>
             <div id="l10"
-               class="code sev- "><tt><i>10</i> <span class="kn">from</span> <span class="nn">src.utils</span> <span class="kn">import</span> <span class="n">store_util</span></tt>
+               class="code sev- "><tt><i>10</i> <span class="kn">from</span><span class="w"> </span><span class="nn">src.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">store_util</span></tt>
             </div>
             <div id="l11"
-               class="code sev- "><tt><i>11</i> <span class="kn">from</span> <span class="nn">src.utils.trace_logging</span> <span class="kn">import</span> <span class="n">measure_duration</span></tt>
+               class="code sev- "><tt><i>11</i> <span class="kn">from</span><span class="w"> </span><span class="nn">src.utils.trace_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">measure_duration</span></tt>
             </div>
             <div id="l12"
                class="code sev- "><tt><i>12</i> &nbsp;</tt>
@@ -380,7 +380,7 @@
                class="code sev- "><tt><i>118</i> <span class="nd">@measure_duration</span></tt>
             </div>
             <div id="l119"
-               class="code sev- "><tt><i>119</i> <span class="k">def</span> <span class="nf">store_new_management_account</span><span class="p">(</span><span class="n">data</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>119</i> <span class="k">def</span><span class="w"> </span><span class="nf">store_new_management_account</span><span class="p">(</span><span class="n">data</span><span class="p">):</span></tt>
             </div>
             <div id="l120"
                class="code sev- "><tt><i>120</i>     <span class="n">updated</span> <span class="o">=</span> <span class="kc">False</span></tt>
@@ -521,7 +521,7 @@
                class="code sev- "><tt><i>165</i> <span class="nd">@measure_duration</span></tt>
             </div>
             <div id="l166"
-               class="code sev- "><tt><i>166</i> <span class="k">def</span> <span class="nf">update_user_list</span><span class="p">(</span><span class="n">added</span><span class="p">,</span> <span class="n">removed</span><span class="p">,</span> <span class="n">updated</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>166</i> <span class="k">def</span><span class="w"> </span><span class="nf">update_user_list</span><span class="p">(</span><span class="n">added</span><span class="p">,</span> <span class="n">removed</span><span class="p">,</span> <span class="n">updated</span><span class="p">):</span></tt>
             </div>
             <div id="l167"
                class="code sev- "><tt><i>167</i>     <span class="k">return</span> <span class="n">store_util</span><span class="o">.</span><span class="n">get_first_account_name</span><span class="p">(),</span> <span class="n">store_util</span><span class="o">.</span><span class="n">get_account_names</span><span class="p">()</span></tt>
