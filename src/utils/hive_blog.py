@@ -219,6 +219,22 @@ def get_last_season_earnings_table(account, season_info_store, skip_zeros):
         if 'claim_staking_rewards' in sps_df:
             earning_rows += cost_earning_row('SPS staking reward', sps_icon, sps_df.claim_staking_rewards,
                                              skip_zeros)
+        if 'claim_staking_rewards_staking_rewards' in sps_df:
+            earning_rows += cost_earning_row('SPS staking reward',
+                                             sps_icon,
+                                             sps_df.claim_staking_rewards_staking_rewards,
+                                             skip_zeros)
+        if 'claim_staking_rewards_validator_rewards' in sps_df:
+            earning_rows += cost_earning_row('SPS validator reward',
+                                             sps_icon,
+                                             sps_df.claim_staking_rewards_validator_rewards,
+                                             skip_zeros)
+        if 'validate_block' in sps_df:
+            earning_rows += cost_earning_row('SPS validator block validation',
+                                             sps_icon,
+                                             sps_df.validate_block,
+                                             skip_zeros)
+
         if 'token_award' in sps_df:
             earning_rows += cost_earning_row('SPS token award (pools)', sps_icon, sps_df.token_award, skip_zeros)
 
@@ -231,6 +247,8 @@ def get_last_season_earnings_table(account, season_info_store, skip_zeros):
                                              skip_zeros)
         if 'wild' in unclaimed_sps_df:
             earning_rows += cost_earning_row('SPS ranked battle (wild)', sps_icon, unclaimed_sps_df.wild, skip_zeros)
+        if 'survival' in unclaimed_sps_df:
+            earning_rows += cost_earning_row('SPS survival battle', sps_icon, unclaimed_sps_df.survival, skip_zeros)
         if 'focus' in unclaimed_sps_df:
             earning_rows += cost_earning_row('SPS daily focus', sps_icon, unclaimed_sps_df.focus, skip_zeros)
         if 'season' in unclaimed_sps_df:

@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.25.0
+
+- Update season SPS graph (add validator rewards)
+- Update hive blog generation with validator node rewards
+
 ## 0.24.4
 
 - FIX: ghost card in training have no xp so skip them from battle log

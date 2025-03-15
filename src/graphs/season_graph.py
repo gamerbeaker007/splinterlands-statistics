@@ -183,6 +183,9 @@ def plot_season_stats_earnings(season_df_sps,
         'wild_leaderboard_prizes']
     columns_sps = [
         'claim_staking_rewards',
+        'claim_staking_rewards_staking_rewards',
+        'claim_staking_rewards_validator_rewards',
+        'validate_block',
         'token_award',
         'tournament_prize',
         'token_transfer_multi',
