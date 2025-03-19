@@ -158,14 +158,16 @@ def get_liquidity_pools_info(account):
     pools = spl.spl_get_pools()
 
     date = datetime.today().strftime('%Y-%m-%d')
-
     dec_value = spl.get_prices()['dec']
+
+    data = []  # List to store each row of data before converting to DataFrame
 
     if not pools.empty:
         for resource in pools.token_symbol.tolist():
             pool = pools.loc[pools.token_symbol == resource].iloc[0]
             liq = spl.get_liquidity(account, resource)
             token = 'DEC-' + resource
+
             if not liq.empty and not liq.loc[liq.token == token].empty:
                 liq = liq.loc[liq.token == token].iloc[0]
                 my_shares = liq.balance
@@ -174,21 +176,21 @@ def get_liquidity_pools_info(account):
                 resource_qty = float(pool.resource_quantity) / 100 * my_pct
                 dec_qty = float(pool.dec_quantity) / 100 * my_pct
 
-                return pd.DataFrame({
-                    'date': [date],
-                    'account_name': [account],
-                    'token': [token],
-                    'my_shares': [my_shares],
-                    'my_pct': [my_pct],
-                    'my_resource_quantity': [resource_qty],
-                    'my_dec_quantity': [dec_qty],
-                    'value': [dec_qty * dec_value * 2],
-                    'total_shares': float(pool.resource_quantity),
+                data.append({
+                    'date': date,
+                    'account_name': account,
+                    'token': token,
+                    'my_shares': my_shares,
+                    'my_pct': my_pct,
+                    'my_resource_quantity': resource_qty,
+                    'my_dec_quantity': dec_qty,
+                    'value': dec_qty * dec_value * 2,
+                    'total_shares': float(pool.total_shares),
                     'resource_quantity': float(pool.resource_quantity),
                     'dec_quantity': float(pool.dec_quantity),
-                    'resource_price': [float(pool.resource_price)],
-                    'dec_price': [float(pool.dec_price)],
-                    'dec_price_usd': [dec_value],
+                    'resource_price': float(pool.resource_price),
+                    'dec_price': float(pool.dec_price),
+                    'dec_price_usd': dec_value,
                 })
 
-    return pd.DataFrame()
+    return pd.DataFrame(data)  # Convert list of dictionaries to DataFrame

@@ -16,7 +16,7 @@ layout = dbc.Row(
     children=[
         html.H3("Trade hub, land pools "),
         html.P("View your deposited resources and value."),
-        dcc.Graph(id=land_ids.land_pools_graph)
+        html.Div(id=land_ids.land_pools_container)
     ],
     className='mb-3'),
 
@@ -36,7 +36,7 @@ def update_land_pool_filter_data(account):
 
 
 @app.callback(
-    Output(land_ids.land_pools_graph, 'figure'),
+    Output(land_ids.land_pools_container, 'children'),
     Input(land_ids.land_pools_df, 'data'),
     Input(nav_ids.theme_store, 'data'),
 )
@@ -44,10 +44,21 @@ def update_land_pool_filter_data(account):
 def update_land_pools_graph(filtered_df, theme):
     if not filtered_df:
         return chart_util.blank_fig(theme)
-    else:
-        temp_df = pd.read_json(StringIO(filtered_df), orient='split')
+
+    temp_df = pd.read_json(StringIO(filtered_df), orient='split')
 
     if temp_df.empty:
         return chart_util.blank_fig(theme)
-    else:
-        return land_graph.plot_land_pools(temp_df, theme)
+
+    # Get multiple figures (one per token)
+    figures_dict = land_graph.plot_land_pools(temp_df, theme)
+
+    # Generate a list of dcc.Graph components dynamically
+    graph_components = [
+        dcc.Graph(
+            id=f'land-pool-graph-{token}',
+            figure=fig
+        ) for token, fig in figures_dict.items()
+    ]
+
+    return graph_components  # Return the list of graphs
