@@ -352,5 +352,5 @@ def get_liquidity(account, resource):
 
     result = http.get(address).json()
     if result and 'data' in result:
-        return pd.DataFrame(result['data'])
+        return pd.DataFrame(result['data']['single'])
     return pd.DataFrame()
