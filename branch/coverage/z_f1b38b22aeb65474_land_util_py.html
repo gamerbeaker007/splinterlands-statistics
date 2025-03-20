@@ -54,9 +54,9 @@
             </div>
         </aside>
         <h2>
-            <span class="text">126 statements &nbsp;</span>
+            <span class="text">136 statements &nbsp;</span>
             <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">0<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">126<span class="text"> missing</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">136<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_f1b38b22aeb65474_portfolio_util_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.7.0">coverage.py v7.7.0</a>,
-            created at 2025-03-19 18:42 +0000
+            created at 2025-03-20 19:38 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -276,6 +276,22 @@
     <p class="pln"><span class="n"><a id="t194" href="#t194">194</a></span><span class="t">                <span class="op">}</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t195" href="#t195">195</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t196" href="#t196">196</a></span><span class="t">    <span class="key">return</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">(</span><span class="nam">data</span><span class="op">)</span>  <span class="com"># Convert list of dictionaries to DataFrame</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t197" href="#t197">197</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t198" href="#t198">198</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t"><span class="key">def</span> <span class="nam">get_land_resources_info</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t200" href="#t200">200</a></span><span class="t">    <span class="nam">resources_df</span> <span class="op">=</span> <span class="nam">spl</span><span class="op">.</span><span class="nam">get_land_resources_pools</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t201" href="#t201">201</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t202" href="#t202">202</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">resources_df</span><span class="op">.</span><span class="nam">empty</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t203" href="#t203">203</a></span><span class="t">        <span class="nam">date</span> <span class="op">=</span> <span class="nam">datetime</span><span class="op">.</span><span class="nam">today</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">strftime</span><span class="op">(</span><span class="str">'%Y-%m-%d'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t204" href="#t204">204</a></span><span class="t">        <span class="nam">resources_df</span><span class="op">[</span><span class="str">'date'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">date</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t205" href="#t205">205</a></span><span class="t">        <span class="nam">resources_df</span><span class="op">[</span><span class="str">'dec_usd_value'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">spl</span><span class="op">.</span><span class="nam">get_prices</span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="str">'dec'</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t206" href="#t206">206</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t207" href="#t207">207</a></span><span class="t">        <span class="com"># Reorder columns to place 'date' at the front</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t208" href="#t208">208</a></span><span class="t">        <span class="nam">columns_order</span> <span class="op">=</span> <span class="op">[</span><span class="str">'date'</span><span class="op">]</span> <span class="op">+</span> <span class="op">[</span><span class="nam">col</span> <span class="key">for</span> <span class="nam">col</span> <span class="key">in</span> <span class="nam">resources_df</span><span class="op">.</span><span class="nam">columns</span> <span class="key">if</span> <span class="nam">col</span> <span class="op">!=</span> <span class="str">'date'</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t209" href="#t209">209</a></span><span class="t">        <span class="nam">resources_df</span> <span class="op">=</span> <span class="nam">resources_df</span><span class="op">[</span><span class="nam">columns_order</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t210" href="#t210">210</a></span><span class="t">        <span class="key">return</span> <span class="nam">resources_df</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t211" href="#t211">211</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t212" href="#t212">212</a></span><span class="t">    <span class="key">return</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">(</span><span class="op">)</span>  <span class="com"># Convert list of dictionaries to DataFrame</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -285,7 +301,7 @@
             <a class="nav" href="z_f1b38b22aeb65474_portfolio_util_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.7.0">coverage.py v7.7.0</a>,
-            created at 2025-03-19 18:42 +0000
+            created at 2025-03-20 19:38 +0000
         </p>
     </div>
 </footer>
