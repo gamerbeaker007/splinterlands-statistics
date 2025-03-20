@@ -354,3 +354,12 @@ def get_liquidity(account, resource):
     if result and 'data' in result:
         return pd.DataFrame(result['data']['single'])
     return pd.DataFrame()
+
+
+def get_land_resources_pools():
+    address = land_url + 'land/liquidity/pools/'
+
+    result = http.get(address).json()
+    if result and 'data' in result:
+        return pd.DataFrame(result['data'])
+    return pd.DataFrame()

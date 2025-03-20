@@ -194,3 +194,19 @@ def get_liquidity_pools_info(account):
                 })
 
     return pd.DataFrame(data)  # Convert list of dictionaries to DataFrame
+
+
+def get_land_resources_info():
+    resources_df = spl.get_land_resources_pools()
+
+    if not resources_df.empty:
+        date = datetime.today().strftime('%Y-%m-%d')
+        resources_df['date'] = date
+        resources_df['dec_usd_value'] = spl.get_prices()['dec']
+
+        # Reorder columns to place 'date' at the front
+        columns_order = ['date'] + [col for col in resources_df.columns if col != 'date']
+        resources_df = resources_df[columns_order]
+        return resources_df
+
+    return pd.DataFrame()  # Convert list of dictionaries to DataFrame

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## 0.25.0
 
+- Add land resources monitoring
+
+## 0.25.0
+
 - Update season SPS graph (add validator rewards)
 - Update hive blog generation with validator node rewards
 - Update land pools (DEC-WOOD, DEC-STONE, DEC-IRON)
