@@ -21,10 +21,7 @@ layout = dbc.Container(
             children=[
                 html.H3("Land Resources  "),
                 html.P("Tracking land resource prices"),
-                dcc.Graph(
-                    id=land_resources_ids.land_resources_graph,
-                    className='mb-3',
-                ),
+                dbc.Row(id=land_resources_ids.land_resources_container, className="dbc"),
                 dbc.Accordion(
                     children=[
                         dbc.AccordionItem(
@@ -73,7 +70,7 @@ def update_df(trigger):
 
 
 @app.callback(
-    Output(land_resources_ids.land_resources_graph, 'figure'),
+    Output(land_resources_ids.land_resources_container, 'children'),
     Input(land_resources_ids.land_resources_df, 'data'),
     Input(nav_ids.theme_store, 'data'),
 
@@ -84,7 +81,19 @@ def update_container(data, theme):
         return chart_util.blank_fig(theme)
     else:
         df = pd.read_json(StringIO(data), orient='split')
-        return land_resources_graph.create_land_resources_graph(df, theme)
+        return dbc.Row(children=[
+            html.P("SOME TEXT"),
+            dcc.Graph(
+                figure=land_resources_graph.create_land_resources_dec_graph(df, theme),
+                className='mb-3',
+            ),
+            html.P("SOME TEXT"),
+            dcc.Graph(
+                figure=land_resources_graph.create_land_resources_graph(df, theme),
+                className='mb-3',
+            ),
+            html.P("SOME TEXT"),
+        ], className="dbc")
 
 
 @app.callback(
