@@ -32,7 +32,7 @@ def get_status(account):
     if spl.verify_token(token_dict):
         children = [
             html.I(className='m-1 fas fa-check-circle'),
-            f'Connected to Splinterlands API'
+            'Connected to Splinterlands API'
         ]
         color = 'text-success'
     else:

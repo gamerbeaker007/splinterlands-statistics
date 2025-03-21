@@ -16,12 +16,35 @@ from src.utils.trace_logging import measure_duration
 layout = dbc.Container(
     [
         dcc.Store(id=land_resources_ids.land_resources_df),
+        dcc.Store(id=land_resources_ids.land_resources_graph_settings),
 
         dbc.Row(
             children=[
                 html.H3("Land Resources  "),
                 html.P("Tracking land resource prices"),
+                dbc.Col(
+                    dbc.Accordion(
+                        children=[
+                            dbc.AccordionItem(
+                                children=[
+                                    dbc.Checkbox(
+                                        id=land_resources_ids.land_resources_checkbox_state,
+                                        label="Log-y",
+                                        value=False,
+                                        className="dbc"
+                                    ),
+                                ],
+                                title='Graph Settings',
+                                className='dbc',
+                            ),
+                        ],
+                        start_collapsed=True,
+                        className='mb-3'
+                    ),
+                    width=3,
+                ),
                 dbc.Row(id=land_resources_ids.land_resources_container, className="dbc"),
+
                 dbc.Accordion(
                     children=[
                         dbc.AccordionItem(
@@ -30,7 +53,7 @@ layout = dbc.Container(
                                     id=land_resources_ids.land_resources_data_table,
                                     className='mb-3',
                                 ),
-                                dbc.Row(
+                                dbc.Col(
                                     dbc.Button(
                                         "Download CSV",
                                         id="download-btn",
@@ -38,6 +61,7 @@ layout = dbc.Container(
                                         className="mb-3"
                                     ),
                                     className='mb-3',
+                                    width=3,
                                 ),
                             ],
                             title='Data',
@@ -52,6 +76,20 @@ layout = dbc.Container(
 
         dcc.Download(id="download-dataframe-csv")
     ])
+
+
+@app.callback(
+    Output(land_resources_ids.land_resources_checkbox_state, "children"),
+    Output(land_resources_ids.land_resources_graph_settings, "data"),
+    Input(land_resources_ids.land_resources_checkbox_state, "value"),
+    State(land_resources_ids.land_resources_graph_settings, "data")
+)
+def checkbox(checked, graph_settings):
+    if not graph_settings:
+        graph_settings = {'log-y': checked}
+    else:
+        graph_settings['log-y'] = checked
+    return str(checked), graph_settings
 
 
 @app.callback(
@@ -72,27 +110,28 @@ def update_df(trigger):
 @app.callback(
     Output(land_resources_ids.land_resources_container, 'children'),
     Input(land_resources_ids.land_resources_df, 'data'),
-    Input(nav_ids.theme_store, 'data'),
-
+    Input(land_resources_ids.land_resources_graph_settings, "data"),
+    State(nav_ids.theme_store, 'data'),
+    prevent_initial_call=True,
 )
 @measure_duration
-def update_container(data, theme):
-    if not data:
+def update_container(data, graph_settings, theme):
+    if not data or not graph_settings:
         return chart_util.blank_fig(theme)
     else:
+        log_y = graph_settings['log-y']
         df = pd.read_json(StringIO(data), orient='split')
         return dbc.Row(children=[
-            html.P("SOME TEXT"),
+            html.P("Below a char that represent how much resources you will receive for 1000 DEC (1$)"),
             dcc.Graph(
-                figure=land_resources_graph.create_land_resources_dec_graph(df, theme),
+                figure=land_resources_graph.create_land_resources_dec_graph(df, log_y, theme),
                 className='mb-3',
             ),
-            html.P("SOME TEXT"),
+            html.P("Below a chart that represent how much it cost (DEC) to get 1000 of the resource."),
             dcc.Graph(
-                figure=land_resources_graph.create_land_resources_graph(df, theme),
+                figure=land_resources_graph.create_land_resources_graph(df, log_y, theme),
                 className='mb-3',
             ),
-            html.P("SOME TEXT"),
         ], className="dbc")
 
 
@@ -101,7 +140,7 @@ def update_container(data, theme):
     Input(land_resources_ids.land_resources_df, 'data'),
 )
 @measure_duration
-def update_container(data):
+def update_data_table(data):
     if not data:
         return None
     else:
@@ -115,7 +154,6 @@ def update_container(data):
             filter_action='native',
             sort_action='native',
             style_table={'overflowX': 'auto'},
-            # style_cell_conditional=[{'if': {'column_id': 'url'}, 'width': '200px'}, ],
             page_size=10,
         )
 
