@@ -132,6 +132,19 @@ def update_container(data, graph_settings, theme):
                 figure=land_resources_graph.create_land_resources_graph(df, log_y, theme),
                 className='mb-3',
             ),
+            html.P([
+                "Below a chart that represent what the factor is against grain based on the whitepaper", html.Br(),
+                "Grain: 0.02", html.Br(),
+                "Wood:  0.005  1 Wood  = 4  Grain", html.Br(),
+                "Stone: 0.002  1 Stone = 10 Grain", html.Br(),
+                "Iron:  0.0005 1 Iron  = 40 Grain"
+            ]
+            ),
+            dcc.Graph(
+                figure=land_resources_graph.create_land_resources_factor_graph(df, log_y, theme),
+                className='mb-3',
+            ),
+
         ], className="dbc")
 
 
