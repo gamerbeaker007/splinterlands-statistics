@@ -79,6 +79,11 @@ mana_icon_url = WEB_URL + 'website/ui_elements/bg_mana.png'
 helm_icon_url = WEB_URL + 'website/icons/icon_helm.svg'
 hive_keychain_logo = WEB_URL + 'website/icons/logo_keychain.svg'
 
+grain_icon_url = WEB_URL + 'website/land/resources/grain.png'
+stone_icon_url = WEB_URL + 'website/land/resources/stone_500.webp'
+wood_icon_url = WEB_URL + 'website/land/resources/wood_500.webp'
+iron_icon_url = WEB_URL + 'website/land/resources/iron_500.webp'
+
 
 class ExtendedEnum(Enum):
 

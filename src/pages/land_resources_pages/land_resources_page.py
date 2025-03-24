@@ -7,7 +7,7 @@ from dash import html, Input, Output, dcc, dash_table, State
 
 from src.configuration import store
 from src.graphs import land_resources_graph
-from src.pages.land_resources_pages import land_resources_ids
+from src.pages.land_resources_pages import land_resources_ids, land_resource_convert
 from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.utils import chart_util
@@ -21,6 +21,7 @@ layout = dbc.Container(
         dbc.Row(
             children=[
                 html.H3("Land Resources  "),
+                land_resource_convert.layout,
                 html.P("Tracking land resource prices"),
                 dbc.Col(
                     dbc.Accordion(
@@ -111,7 +112,7 @@ def update_df(trigger):
     Output(land_resources_ids.land_resources_container, 'children'),
     Input(land_resources_ids.land_resources_df, 'data'),
     Input(land_resources_ids.land_resources_graph_settings, "data"),
-    State(nav_ids.theme_store, 'data'),
+    Input(nav_ids.theme_store, 'data'),
     prevent_initial_call=True,
 )
 @measure_duration

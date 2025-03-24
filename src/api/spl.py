@@ -357,7 +357,7 @@ def get_liquidity(account, resource):
 
 
 def get_land_resources_pools():
-    address = land_url + 'land/liquidity/pools/'
+    address = land_url + 'land/liquidity/landpools'
 
     result = http.get(address).json()
     if result and 'data' in result:

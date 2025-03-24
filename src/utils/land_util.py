@@ -196,6 +196,25 @@ def get_liquidity_pools_info(account):
     return pd.DataFrame(data)  # Convert list of dictionaries to DataFrame
 
 
+conversion_ratios = {
+    'WOOD': 4,
+    'STONE': 10,
+    'IRON': 40
+}
+
+
+def calculate_grain_equivalent_and_factor(row, grain_price):
+    if row['token_symbol'] == 'GRAIN':
+        return pd.Series([1, 1])
+    else:
+        if grain_price:
+            grain_equiv = row['resource_price'] / grain_price
+            factor = grain_equiv / conversion_ratios[row['token_symbol']]
+            return pd.Series([grain_equiv, factor])
+        else:
+            return pd.Series([None, None])
+
+
 def get_land_resources_info():
     resources_df = spl.get_land_resources_pools()
 
@@ -207,6 +226,13 @@ def get_land_resources_info():
         # Reorder columns to place 'date' at the front
         columns_order = ['date'] + [col for col in resources_df.columns if col != 'date']
         resources_df = resources_df[columns_order]
+
+        grain_price = resources_df[resources_df['token_symbol'] == 'GRAIN']['resource_price'].values[0]
+
+        resources_df[['grain_equivalent', 'factor']] = resources_df.apply(
+            lambda row: calculate_grain_equivalent_and_factor(row, grain_price), axis=1
+        )
+
         return resources_df
 
     return pd.DataFrame()  # Convert list of dictionaries to DataFrame
