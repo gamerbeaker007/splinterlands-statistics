@@ -7,7 +7,7 @@ from dash import html, Input, Output, dcc, dash_table, State
 
 from src.configuration import store
 from src.graphs import land_resources_graph
-from src.pages.land_resources_pages import land_resources_ids, land_resource_convert
+from src.pages.land_resources_pages import land_resources_ids, land_resource_convert, land_region_page
 from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.utils import chart_util
@@ -57,7 +57,7 @@ layout = dbc.Container(
                                 dbc.Col(
                                     dbc.Button(
                                         "Download CSV",
-                                        id="download-btn",
+                                        id=land_resources_ids.land_download_btn_resources,
                                         color="primary",
                                         className="mb-3"
                                     ),
@@ -71,11 +71,13 @@ layout = dbc.Container(
                     ],
                     start_collapsed=True,
                     className='mb-3'
-                )
+                ),
+                land_region_page.layout,
+
             ],
             className='mb-3'),
 
-        dcc.Download(id="download-dataframe-csv")
+        dcc.Download(id=land_resources_ids.land_download_dataframe_csv_resources)
     ])
 
 
@@ -173,8 +175,8 @@ def update_data_table(data):
 
 
 @app.callback(
-    Output("download-dataframe-csv", "data"),
-    Input("download-btn", "n_clicks"),
+    Output(land_resources_ids.land_download_btn_resources, "data"),
+    Input(land_resources_ids.land_download_dataframe_csv_resources, "n_clicks"),
     State(land_resources_ids.land_resources_df, 'data'),
     prevent_initial_call=True
 )

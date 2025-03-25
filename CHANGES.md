@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## 0.25.0
 
 - Add land resources monitoring
+- Add land region monitoring (only in server mode)
 
 ## 0.25.0
 

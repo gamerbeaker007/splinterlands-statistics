@@ -236,3 +236,69 @@ def get_land_resources_info():
         return resources_df
 
     return pd.DataFrame()  # Convert list of dictionaries to DataFrame
+
+
+def get_land_region_info(region=None):
+    result_df = pd.DataFrame()
+    if region:
+        regions = [region]
+    else:
+        regions = range(1, 151)
+
+    date = datetime.today().strftime('%Y-%m-%d')
+
+    for i in regions:
+        progress_util.update_daily_msg("...update land region info for region: " + str(i))
+        resources_df = spl.get_land_region_details(i)
+        if not resources_df.empty:
+            # Split into non-TAX and TAX
+            non_tax_df = resources_df[resources_df["token_symbol"] != "TAX"]
+            tax_df = resources_df[resources_df["token_symbol"] == "TAX"]
+
+            # Group non-TAX by token_symbol only (ignore worksite_type)
+            non_tax_grouped = non_tax_df.groupby(
+                ["region_uid", "token_symbol"], as_index=False
+            )[["total_base_pp_after_cap", "total_harvest_pp"]].sum()
+
+            # Add a placeholder worksite_type for consistency
+            non_tax_grouped["worksite_type"] = ""
+
+            # Group TAX by token_symbol and worksite_type
+            tax_grouped = tax_df.groupby(
+                ["region_uid", "token_symbol", "worksite_type"], as_index=False
+            )[["total_base_pp_after_cap", "total_harvest_pp"]].sum()
+
+            # Combine both
+            grouped_df = pd.concat([non_tax_grouped, tax_grouped], ignore_index=True)
+
+            # Step 2: Rename columns
+            grouped_df = grouped_df.rename(columns={
+                "total_base_pp_after_cap": "raw_pp",
+                "total_harvest_pp": "boosted_pp"
+            })
+
+            # Step 3: Pivot to wide format (flattened)
+            pivot_df = grouped_df.pivot(
+                index=["region_uid"],
+                columns=["token_symbol", "worksite_type"]
+            )[["raw_pp", "boosted_pp"]]
+
+            # Step 4: Flatten MultiIndex columns
+            pivot_df.columns = [
+                f"{token}_{col}".lower() if token != "TAX" else f"{token}_{worksite}_{col}".lower()
+                for col, token, worksite in pivot_df.columns
+            ]
+
+            # Reset index make region_uid as column again
+            pivot_df = pivot_df.reset_index()
+            pivot_df['date'] = date
+            pivot_df['active'] = resources_df.loc[resources_df.total_base_pp_after_cap != 0].index.size
+            if result_df.empty:
+                result_df = pivot_df.copy()
+            else:
+                result_df = pd.concat([result_df, pivot_df], ignore_index=True)
+
+    # Reorder columns to place 'date' at the front
+    columns_order = ['date'] + [col for col in result_df.columns if col != 'date']
+    result_df = result_df[columns_order]
+    return result_df
