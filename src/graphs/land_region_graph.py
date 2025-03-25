@@ -28,7 +28,7 @@ def create_land_region_active_graph(df, theme):
         barmode='stack',
         title=f'Active vs Inactive Deeds per Region (as of {latest_date.date()})',
         xaxis_title='Region UID',
-        yaxis_title='Power',
+        yaxis_title='Deeds',
         xaxis_tickangle=45,
         legend=dict(x=0.85, y=0.95),
         template=theme,
