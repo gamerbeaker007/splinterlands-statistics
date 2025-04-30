@@ -2,10 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## 0.25.0
+## 0.25.1
 
-- Add land resources monitoring
-- Add land region monitoring (only in server mode)
+- FIX for ghost card in ranked battles by spl team
 
 ## 0.25.0
 
