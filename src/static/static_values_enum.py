@@ -58,7 +58,8 @@ reward_draw_legendary_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draw
 reward_draw_common_gold_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_draws-common_gold_800.webp'
 reward_draw_rare_gold_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_draws-rare_gold_800.webp'
 reward_draw_epic_gold_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_draws-epic_gold_800.webp'
-reward_draw_legendary_gold_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_draws-legendary_gold_800.webp'
+reward_draw_legendary_gold_icon_url = (WEB_URL +
+                                       'website/ui_elements/shop/ranked/draws/img_draws-legendary_gold_800.webp')
 
 reward_draw_minor_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_chest-minor_250.webp'
 reward_draw_major_icon_url = WEB_URL + 'website/ui_elements/shop/ranked/draws/img_chest-major_250.webp'
@@ -77,6 +78,11 @@ mana_icon_url = WEB_URL + 'website/ui_elements/bg_mana.png'
 
 helm_icon_url = WEB_URL + 'website/icons/icon_helm.svg'
 hive_keychain_logo = WEB_URL + 'website/icons/logo_keychain.svg'
+
+grain_icon_url = WEB_URL + 'website/land/resources/grain.png'
+stone_icon_url = WEB_URL + 'website/land/resources/stone_500.webp'
+wood_icon_url = WEB_URL + 'website/land/resources/wood_500.webp'
+iron_icon_url = WEB_URL + 'website/land/resources/iron_500.webp'
 
 
 class ExtendedEnum(Enum):

@@ -11,6 +11,7 @@ from src.pages import main_page
 from src.pages.card_pages import card_page, card_page_filter
 from src.pages.config_pages import config_page
 from src.pages.land_pages import land_page
+from src.pages.land_resources_pages import land_resources_page
 from src.pages.losing_pages import losing_page
 from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
@@ -52,17 +53,19 @@ navbar = dbc.Navbar(
                         dbc.NavItem(dbc.NavLink('Season', href='/season')),
                         dbc.NavItem(dbc.NavLink('Portfolio', href='/portfolio')),
                         dbc.NavItem(dbc.NavLink('Land', href='/land')),
+                        dbc.NavItem(dbc.NavLink('Land R', href='/land-resources')),
                         dbc.NavItem(dbc.NavLink('Config', href='/config')),
                     ],
                     brand_href='/',
                 ),
+                width='auto'
             ),
             dbc.Col(
                 ThemeSwitchAIO(aio_id='theme',
                                themes=[dbc.themes.MINTY, dbc.themes.CYBORG],
                                switch_props={'value': False}),
-                width='auto'),
-
+                width='auto'
+            ),
             dbc.Col(
                 dbc.Button(
                     'Update daily',
@@ -125,6 +128,8 @@ def display_page(pathname, search, search_hash):
         return portfolio_page.layout
     if pathname == '/land':
         return land_page.layout
+    if pathname == '/land-resources':
+        return land_resources_page.layout
     if pathname == '/config':
         return config_page.layout
     else:  # if redirected to unknown link

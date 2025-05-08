@@ -91,7 +91,7 @@ def process_land_transactions(transactions):
             elif data['op'] in ['harvest_resources', 'mine_sps', 'mine_research']:
                 temp = json.loads(info['result'])['result']
                 if temp['success']:
-                    result = pd.DataFrame(temp['data'], index=[0])
+                    result = pd.DataFrame(temp['data'])
                 else:
                     logging.info('Ignore false transaction...: ' + str(data['op']))
                     process = False

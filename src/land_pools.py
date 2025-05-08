@@ -25,11 +25,10 @@ def update_land_pools_for_account(account, land_pools):
 
 
 def update_pools():
-    progress_util.update_daily_msg("Start update land pools")
+    progress_util.update_daily_msg("Start update land")
 
     for account in store_util.get_account_names():
         progress_util.update_daily_msg("...update land pools for: " + str(account))
         store.land_pools = update_land_pools_for_account(account, store.land_pools.copy())
 
-    store.land.fillna(0, inplace=True)
     store_util.save_stores()

@@ -50,7 +50,7 @@ layout = dbc.Row([
 app.clientside_callback(
     """
     function(n_clicks, username) {
-        if (n_clicks) {           
+        if (n_clicks) {
             // Check if hive_keychain is available
             if (typeof window.hive_keychain === 'undefined') {
                 console.error('Hive Keychain SDK not found!');

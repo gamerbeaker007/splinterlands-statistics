@@ -1,7 +1,7 @@
 import logging
 from threading import Thread
 
-from src.configuration import config, store
+from src.configuration import config
 from src.pages.main_dash import app
 from src.pages.navigation_pages import navigation_page
 from src.utils import store_util, update
@@ -11,9 +11,7 @@ store_util.update_season_end_dates()
 
 
 def migrate_data():
-    if not store.secrets.empty and 'version' in store.secrets.columns:
-        store.secrets.rename(columns={'version': 'timestamp'}, inplace=True)
-        store_util.save_stores()
+    pass
 
 
 def main():

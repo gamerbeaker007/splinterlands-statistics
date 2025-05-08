@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.25.1
+
+- FIX for ghost card in ranked battles by spl team
+
 ## 0.25.0
 
 - Update season SPS graph (add validator rewards)
