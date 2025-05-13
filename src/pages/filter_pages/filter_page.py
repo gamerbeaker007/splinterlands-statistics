@@ -3,9 +3,8 @@ import os
 import dash_bootstrap_components as dbc
 from dash import html
 
-from src.configuration import config
 from src.pages.main_dash import app
-from src.static.static_values_enum import Element, CardType, Edition, Rarity, MatchType, Format
+from src.static.static_values_enum import Element, CardType, Edition, Rarity, MatchType, Format, SPL_NEXT_URL, WEB_URL
 
 
 def get_filter_buttons(enumeration):
@@ -79,40 +78,46 @@ def get_filter_buttons_text(enumeration):
 
 
 def get_icon_url(enum, name):
-    # https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-edition-alpha.svg
-    prefix = str(config.settings['asset_url']) + 'website/icons/'
-    next_prefix = 'https://next.splinterlands.com/assets/cards/'
+    prefix = f'{WEB_URL}website/icons/'
+    battle_prefix = f'{WEB_URL}website/nav/'
+    ui_elements_prefix = f'{WEB_URL}website/ui_elements/'
+    rarity_prefix = f'{WEB_URL}website/create_team/'
+    card_prefix = f'{SPL_NEXT_URL}assets/cards/'
+    icon_prefix = f'{WEB_URL}website/collection/'
 
     if enum == Element:
-        # Other option https://next.splinterlands.com/assets/cards/icon_element_water_off.svg
-        return next_prefix + 'icon_element_' + str(name) + '_off.svg'
+        return f'{card_prefix}icon_element_{name}_off.svg'
+
     elif enum == CardType:
-        # https://next.splinterlands.com/assets/cards/icon_role_units_on.svg
-        if name == CardType.monster.name:
-            return next_prefix + 'icon_role_units_off.svg'
-        elif name == CardType.summoner.name:
-            return next_prefix + 'icon_role_summoners_off.svg'
-        else:
-            # fallback noattack_off.png
-            return next_prefix + 'noattack_off.png'
+        cardtype_map = {
+            CardType.monster.name: f'{icon_prefix}icon_filter_units.svg',
+            CardType.summoner.name: f'{icon_prefix}icon_filter_archons.svg'
+        }
+        return cardtype_map.get(name, f'{card_prefix}noattack_off.png')
+
     elif enum == Edition:
-        if name == Edition.soulbound.name:
-            return app.get_asset_url(os.path.join('icons', 'img_overlay_' + str(name) + '.png'))
-        elif name == Edition.soulboundrb.name:
-            return app.get_asset_url(os.path.join('icons', 'img_overlay_' + str(name) + '.png'))
+        if name in {Edition.soulbound.name, Edition.soulboundrb.name}:
+            return app.get_asset_url(os.path.join('icons', f'img_overlay_{name}.png'))
+        elif name == Edition.conclave.name:
+            return f'{prefix}icon-edition-{name}-arcana.svg'
         else:
-            return prefix + 'icon-edition-' + str(name) + '.svg'
+            return f'{prefix}icon-edition-{name}.svg'
+
     elif enum == Rarity:
-        return next_prefix + str(name) + 'Off.svg'
+        # https://d36mxiodymuqjm.cloudfront.net/website/create_team/icon_rarity_common_new.svg
+        # https://d36mxiodymuqjm.cloudfront.net/website/create_team/icon_rarity_common.svg
+        return f'{rarity_prefix}icon_rarity_{name}_new.svg'
+
     elif enum == Format:
-        return next_prefix + 'icon_format_' + str(name) + '_off.svg'
+        return f'{card_prefix}icon_format_{name}_off.svg'
+
     elif enum == MatchType:
-        battle_prefix = str(config.settings['asset_url']) + 'website/nav/'
-        if MatchType.CHALLENGE.name == name:
-            return 'https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/img_challenge-sword.png'
-        elif MatchType.RANKED.name == name:
-            return battle_prefix + 'icon_nav_battle_active@2x.png'
-        elif MatchType.BRAWL.name == name:
-            return battle_prefix + 'icon_nav_guilds_active@2x.png'
-        elif MatchType.TOURNAMENT.name == name:
-            return battle_prefix + 'icon_nav_events_active@2x.png'
+        matchtype_map = {
+            MatchType.CHALLENGE.name: f'{ui_elements_prefix}img_challenge-sword.png',
+            MatchType.RANKED.name: f'{battle_prefix}icon_nav_battle_active@2x.png',
+            MatchType.BRAWL.name: f'{battle_prefix}icon_nav_guilds_active@2x.png',
+            MatchType.TOURNAMENT.name: f'{battle_prefix}icon_nav_events_active@2x.png'
+        }
+        return matchtype_map.get(name)
+
+    return None  # fallback in case nothing matched

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.26.0
+ 
+- Add conclave arcana
+
 ## 0.25.1
 
 - FIX for ghost card in ranked battles by spl team
