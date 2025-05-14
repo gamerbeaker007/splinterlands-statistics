@@ -26,6 +26,7 @@ league_ratings = [0, 260, 1000, 1900, 2800, 3700]
 league_colors = ['lightgray', 'brown', 'gray', 'yellow', 'purple', 'orange']
 
 WEB_URL = 'https://d36mxiodymuqjm.cloudfront.net/'
+SPL_NEXT_URL = 'https://next.splinterlands.com/'
 cards_icon_url = WEB_URL + 'website/ui_elements/open_packs/packsv2/img_pack_chaos-legion_opt.png'
 dec_icon_url = WEB_URL + 'website/icon_dec.png'
 land_icon_url_svg = WEB_URL + 'website/ui_elements/popups/land_presale/img_plot.svg'
@@ -109,8 +110,8 @@ class MatchType(ExtendedEnum):
 
 
 class CardType(ExtendedEnum):
-    summoner = 'Summoner'
     monster = 'Monster'
+    summoner = 'Summoner'
 
 
 class Leagues(ExtendedEnum):
@@ -154,6 +155,7 @@ class Edition(ExtendedEnum):
     soulbound = 10
     rebellion = 12
     soulboundrb = 13
+    conclave = 14
 
 
 class Element(ExtendedEnum):
