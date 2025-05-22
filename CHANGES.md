@@ -2,8 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.26.1
+
+Migrate:
+
+- Black Dragon → Korjack
+- Void Dragon → Voidmaw
+- Gem Meteor → Etherite Construct
+- Chaos Legion Fiends → Spawns
+
+Include foil for card price information (portfolio asset value)
+
 ## 0.26.0
- 
+
 - Add conclave arcana
 
 ## 0.25.1

@@ -180,3 +180,27 @@ class ManaCap(ExtendedEnum):
     medium = '21-40'
     high = '41-60'
     max = '61-999'
+
+
+class Foil(ExtendedEnum):
+    regular = 0
+    gold = 1
+    black = 2
+    gold_arcane = 3
+    black_arcane = 4
+
+    def display_name(self):
+        return {
+            Foil.regular: "Regular",
+            Foil.gold: "Gold",
+            Foil.black: "Black",
+            Foil.gold_arcane: "Gold Arcane",
+            Foil.black_arcane: "Black Arcane",
+        }[self]
+
+    @classmethod
+    def get(cls, value):
+        try:
+            return cls(value).display_name()
+        except (ValueError, KeyError):
+            return None
