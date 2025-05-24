@@ -4,7 +4,7 @@ from datetime import datetime
 import pandas as pd
 
 from src.configuration import store, config
-from src.static.static_values_enum import Edition
+from src.static.static_values_enum import Edition, Foil
 
 
 def get_card_edition_value(account, list_prices_df, market_prices_df):
@@ -57,9 +57,10 @@ def get_collection(df, list_prices_df, market_prices_df):
                 total_market_value += bcx * market_price
 
             if not list_price and not market_price:
-                logging.warning("Card '" +
-                                str(collection_card['card_name']) +
-                                "' Not found on the markt (list/market) ignore for collection value")
+                logging.warning(f"Card '{collection_card['card_name']}' - {collection_card['card_detail_id']} - "
+                                f"{Foil.get(collection_card['foil'])}. "
+                                "Not found with either a list price or market price on Peakmonsters.com — "
+                                "ignored in collection value.")
 
     return {'list_value': total_list_value,
             'market_value': total_market_value,
@@ -88,7 +89,7 @@ def get_market_price(collection_card, market_prices_df, list_price):
 
 def find_card(collection_card, market_df):
     mask = (market_df.card_detail_id == collection_card['card_detail_id']) \
-           & (market_df.gold == collection_card['gold']) \
+           & (market_df.foil == collection_card['foil']) \
            & (market_df.edition == collection_card['edition'])
     filtered_df = market_df.loc[mask]
     return filtered_df
