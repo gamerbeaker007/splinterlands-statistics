@@ -59,7 +59,8 @@ def get_collection(df, list_prices_df, market_prices_df):
             if not list_price and not market_price:
                 logging.warning(f"Card '{collection_card['card_name']}' - {collection_card['card_detail_id']} - "
                                 f"{Foil.get(collection_card['foil'])}. "
-                                "Not found on the markt (list/market) ignore for collection value")
+                                "Not found with either a list price or market price on Peakmonsters.com — "
+                                "ignored in collection value.")
 
     return {'list_value': total_list_value,
             'market_value': total_market_value,
