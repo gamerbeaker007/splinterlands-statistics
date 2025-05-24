@@ -10,6 +10,7 @@ Migrate:
 - Void Dragon → Voidmaw
 - Gem Meteor → Etherite Construct
 - Chaos Legion Fiends → Spawns
+- Silenced Summoners -> Silenced Archons
 
 Include foil for card price information (portfolio asset value)
 

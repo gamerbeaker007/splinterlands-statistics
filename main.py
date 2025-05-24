@@ -20,18 +20,26 @@ def migrate_data():
     def needs_migration(df):
         if df.empty:
             return False
+
         old_names_present = df['card_name'].isin(name_map.keys()).any()
         fiend_present = df['card_name'].str.contains(r'\bFiend\b', regex=True).any()
-        return old_names_present or fiend_present
+        silenced_summoners_present = df[['ruleset1', 'ruleset2', 'ruleset3']].isin(['Silenced Summoners']).any().any()
+
+        return old_names_present or fiend_present or silenced_summoners_present
+
+    def apply_migrations(df):
+        df['card_name'] = df['card_name'].replace(name_map)
+        df['card_name'] = df['card_name'].str.replace(r'\bFiend\b', 'Spawn', regex=True)
+
+        for col in ['ruleset1', 'ruleset2', 'ruleset3']:
+            df[col] = df[col].replace('Silenced Summoners', 'Silenced Archons')
 
     if needs_migration(store.battle_big):
-        store.battle_big['card_name'] = store.battle_big['card_name'].replace(name_map)
-        store.battle_big['card_name'] = store.battle_big['card_name'].str.replace(r'\bFiend\b', 'Spawn', regex=True)
+        apply_migrations(store.battle_big)
         store_util.save_stores()
 
     if needs_migration(store.losing_big):
-        store.losing_big['card_name'] = store.losing_big['card_name'].replace(name_map)
-        store.losing_big['card_name'] = store.losing_big['card_name'].str.replace(r'\bFiend\b', 'Spawn', regex=True)
+        apply_migrations(store.losing_big)
         store_util.save_stores()
 
 
