@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.26.2
+
+- Add Foundation set
+
 ## 0.26.1
 
 Migrate:
