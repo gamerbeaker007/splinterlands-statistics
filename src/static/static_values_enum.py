@@ -156,6 +156,7 @@ class Edition(ExtendedEnum):
     rebellion = 12
     soulboundrb = 13
     conclave = 14
+    foundations = 15
 
 
 class Element(ExtendedEnum):
