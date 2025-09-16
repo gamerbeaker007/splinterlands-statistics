@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage for src/utils/token_util.py: 0%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
-    <link rel="stylesheet" href="style_cb_8e611ae1.css" type="text/css">
+    <link rel="stylesheet" href="style_cb_6b508a39.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
 </head>
 <body class="pyfile">
@@ -64,8 +64,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_f1b38b22aeb65474_tournaments_info_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.8.2">coverage.py v7.8.2</a>,
-            created at 2025-06-03 19:07 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.6">coverage.py v7.10.6</a>,
+            created at 2025-09-16 19:21 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -99,21 +99,21 @@
     <p class="pln"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t">    <span class="com"># Exclude this list because they are not on hive engine.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t">    <span class="com"># Currently,  calculate value on hive engine because to be conservative lower values iso of internal SPL market.</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t">    <span class="nam">exclude_list</span> <span class="op">=</span> <span class="op">[</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t">        <span class="str">'BLDSTONE'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t">        <span class="str">'CREDITS'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t">        <span class="str">'DEC-B'</span><span class="op">,</span>  <span class="com"># has no value any more unable to get out of splinterlands</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t">        <span class="str">'GLADIUS'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">        <span class="str">'GOLD'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">        <span class="str">'GP'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t">        <span class="str">'GRAIN'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t">        <span class="str">'LEGENDARY'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t">        <span class="str">'MERITS'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t">        <span class="str">'TC'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t">        <span class="str">'PURCHASED_ENERGY'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t">        <span class="str">'PWRSTONE'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t">        <span class="str">'VOUCHER-TOTAL'</span>  <span class="com"># already done via VOUCHER and VOUCHER-G</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t">        <span class="str">'SPSP-OUT'</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t">    <span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t">        <span class="str">'BLDSTONE'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t">        <span class="str">'CREDITS'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t">        <span class="str">'DEC-B'</span><span class="op">,</span>  <span class="com"># has no value any more unable to get out of splinterlands</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t">        <span class="str">'GLADIUS'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">        <span class="str">'GOLD'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">        <span class="str">'GP'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t">        <span class="str">'GRAIN'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t">        <span class="str">'LEGENDARY'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t">        <span class="str">'MERITS'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t">        <span class="str">'TC'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t">        <span class="str">'PURCHASED_ENERGY'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t">        <span class="str">'PWRSTONE'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t">        <span class="str">'VOUCHER-TOTAL'</span>  <span class="com"># already done via VOUCHER and VOUCHER-G</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t">        <span class="str">'SPSP-OUT'</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t">    <span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t">    <span class="key">for</span> <span class="nam">token</span> <span class="key">in</span> <span class="nam">all_tokens</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">        <span class="key">if</span> <span class="nam">token</span> <span class="key">not</span> <span class="key">in</span> <span class="nam">exclude_list</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -145,8 +145,8 @@
     <p class="mis show_mis"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t">    <span class="nam">hive_in_dollar</span> <span class="op">=</span> <span class="nam">float</span><span class="op">(</span><span class="nam">spl</span><span class="op">.</span><span class="nam">get_prices</span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="str">'hive'</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t">    <span class="nam">all_tokens</span> <span class="op">=</span> <span class="nam">get_all_tokens</span><span class="op">(</span><span class="nam">account</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t">    <span class="nam">df</span> <span class="op">=</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">(</span><span class="op">{</span><span class="str">'date'</span><span class="op">:</span> <span class="nam">datetime</span><span class="op">.</span><span class="nam">today</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">strftime</span><span class="op">(</span><span class="str">'%Y-%m-%d'</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t">                       <span class="str">'account_name'</span><span class="op">:</span> <span class="nam">account</span><span class="op">}</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t">                      <span class="nam">index</span><span class="op">=</span><span class="op">[</span><span class="num">0</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t">                       <span class="str">'account_name'</span><span class="op">:</span> <span class="nam">account</span><span class="op">}</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t">                      <span class="nam">index</span><span class="op">=</span><span class="op">[</span><span class="num">0</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t">    <span class="nam">df</span> <span class="op">=</span> <span class="nam">calculate_prices</span><span class="op">(</span><span class="nam">df</span><span class="op">,</span> <span class="nam">all_tokens</span><span class="op">,</span> <span class="nam">hive_in_dollar</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t">    <span class="nam">df</span> <span class="op">=</span> <span class="nam">get_liquidity_pool</span><span class="op">(</span><span class="nam">df</span><span class="op">,</span> <span class="nam">account</span><span class="op">,</span> <span class="nam">hive_in_dollar</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t">    <span class="key">return</span> <span class="nam">df</span>&nbsp;</span><span class="r"></span></p>
@@ -188,8 +188,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_f1b38b22aeb65474_tournaments_info_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.8.2">coverage.py v7.8.2</a>,
-            created at 2025-06-03 19:07 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.6">coverage.py v7.10.6</a>,
+            created at 2025-09-16 19:21 +0000
         </p>
     </div>
 </footer>
