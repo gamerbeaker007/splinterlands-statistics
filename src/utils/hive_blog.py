@@ -64,7 +64,11 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
         last_season_modern_battles = last_season_modern_battles.iloc[0]
         modern_league = last_season_modern_battles.league.astype(int)
         modern_battles = int(last_season_modern_battles.battles)
-        modern_rank = int(last_season_modern_battles['rank'])
+        rank_value = last_season_modern_battles['rank']
+        if pd.isna(rank_value):
+            modern_rank = 0
+        else:
+            modern_rank = int(rank_value)
         modern_rating = int(last_season_modern_battles.rating)
         modern_league_name = Leagues(modern_league).name
         modern_max_rating = int(last_season_modern_battles.max_rating)
