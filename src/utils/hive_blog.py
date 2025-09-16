@@ -42,7 +42,11 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
         last_season_wild_battles = last_season_wild_battles.iloc[0]
         wild_league = last_season_wild_battles.league.astype(int)
         wild_battles = int(last_season_wild_battles.battles)
-        wild_rank = int(last_season_wild_battles['rank'])
+        rank_value = last_season_wild_battles['rank']
+        if pd.isna(rank_value):
+            wild_rank = 'NA'
+        else:
+            wild_rank = int(rank_value)
         wild_rating = int(last_season_wild_battles.rating)
         wild_league_name = Leagues(wild_league).name
         wild_max_rating = int(last_season_wild_battles.max_rating)
@@ -66,7 +70,7 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
         modern_battles = int(last_season_modern_battles.battles)
         rank_value = last_season_modern_battles['rank']
         if pd.isna(rank_value):
-            modern_rank = 0
+            modern_rank = 'NA'
         else:
             modern_rank = int(rank_value)
         modern_rating = int(last_season_modern_battles.rating)
