@@ -100,6 +100,8 @@ def get_icon_url(enum, name):
             return app.get_asset_url(os.path.join('icons', f'img_overlay_{name}.png'))
         elif name == Edition.conclave.name:
             return f'{prefix}icon-edition-{name}-arcana.svg'
+        elif name == Edition.conclave_reward.name:
+            return app.get_asset_url(os.path.join('icons', f'img_overlay_{name}.png'))
         else:
             return f'{prefix}icon-edition-{name}.svg'
 

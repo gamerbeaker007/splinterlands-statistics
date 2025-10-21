@@ -5,7 +5,6 @@ import pandas as pd
 
 from src.api import spl
 from src.configuration import config
-from src.static.static_values_enum import Edition
 from src.utils import collection_util, progress_util
 
 
@@ -68,13 +67,11 @@ def get_purchased_sold_cards(account_name, transactions):
             result = spl.get_market_transaction(row.values[0])
             purchases = pd.concat([purchases, pd.DataFrame(result['cards'])])
 
-        purchases['edition_name'] = purchases.apply(lambda r: (Edition(r.edition)).name, axis=1)
         purchases['card_name'] = purchases.apply(lambda r: config.card_details_df.loc[r.card_detail_id]['name'], axis=1)
         purchases['bcx'] = purchases.apply(lambda r: collection_util.get_bcx(r), axis=1)
 
     sold_cards = pd.DataFrame(get_sold_cards(account_name, potential_sell))
     if not sold_cards.empty:
-        sold_cards['edition_name'] = sold_cards.apply(lambda r: (Edition(r.edition)).name, axis=1)
         sold_cards['card_name'] = sold_cards.apply(lambda r: config.card_details_df.loc[r.card_detail_id]['name'],
                                                    axis=1)
         sold_cards['bcx'] = sold_cards.apply(lambda r: collection_util.get_bcx(r), axis=1)

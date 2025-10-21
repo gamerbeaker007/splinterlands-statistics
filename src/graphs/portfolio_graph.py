@@ -2,7 +2,7 @@ import plotly.colors as pc
 import plotly.express as px
 import plotly.graph_objects as go
 
-from src.static.static_values_enum import Edition
+from src.static.static_values_enum import edition_mapping
 
 DEFAULT_HEIGHT = 800
 
@@ -124,7 +124,7 @@ def get_editions_fig(editions_df, theme):
     color_palette = pc.qualitative.Plotly
     color_index = 0  # Initialize the index for cycling colors
 
-    for edition in Edition.list_names():
+    for edition in edition_mapping.keys():
         if str(edition) + '_bcx' in editions_df.columns.tolist():
             legend_group = edition
             current_color = color_palette[color_index]
@@ -135,7 +135,7 @@ def get_editions_fig(editions_df, theme):
                                             mode=mode,
                                             legendgroup=legend_group,
                                             line=dict(color=current_color),  # Set line color
-                                            name=str(edition))
+                                            name=str(edition_mapping.get(edition)))
             fig.add_trace(market_value_trace)
             mode = 'lines' if editions_df[str(edition) + '_bcx'].size > 1 else 'markers'
             bcx__trace = go.Scatter(x=editions_df.index,
@@ -144,7 +144,7 @@ def get_editions_fig(editions_df, theme):
                                     legendgroup=legend_group,
                                     showlegend=False,
                                     line=dict(color=current_color, dash='dash'),
-                                    name=str(edition) + ' bcx',
+                                    name=str(edition_mapping.get(edition)) + ' bcx',
                                     yaxis='y2')
             fig.add_trace(bcx__trace)
             color_index = (color_index + 1) % len(color_palette)  # Move to the next color

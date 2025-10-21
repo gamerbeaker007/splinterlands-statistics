@@ -3,12 +3,14 @@ import logging
 import pandas as pd
 
 from src.configuration import store, config
-from src.static.static_values_enum import Edition, Element, CardType, Rarity, ManaCap, MatchType, Format
+from src.static.static_values_enum import Element, CardType, Rarity, ManaCap, MatchType, Format, \
+    edition_img_mapping, edition_mapping
 
 
 def get_image_url_markdown(card_name, level, edition):
     base_card_url = 'https://images.hive.blog/100x0/https://d36mxiodymuqjm.cloudfront.net/cards_by_level/'
-    edition_name = Edition(edition).name
+    edition_name = edition_img_mapping.get(edition)
+
     markdown_prefix = "![" + str(card_name) + "]"
     card_name = str(card_name).replace(" ", "%20")
     card_url = str(base_card_url) + str(edition_name) + "/" + card_name + "_lv" + str(level) + ".png"
@@ -32,7 +34,9 @@ def get_art_url(card_name):
 
 def get_image_url(card_name, level, edition):
     base_card_url = 'https://d36mxiodymuqjm.cloudfront.net/cards_by_level/'
-    edition_name = Edition(edition).name
+    # edition_name = Edition(edition).name
+    edition_name = edition_img_mapping.get(edition)
+
     card_name = str(card_name).replace(" ", "%20")
     card_url = str(base_card_url) + str(edition_name) + "/" + card_name + "_lv" + str(level) + ".png"
     return str(card_url)
@@ -173,18 +177,19 @@ def filter_edition(input_df, filter_settings):
     if input_df.empty:
         return input_df
 
-    list_of_edition_values = []
-    for edition in Edition:
-        if edition.name in filter_settings:
-            active = filter_settings[edition.name]
-            if active:
-                list_of_edition_values.append(edition.value)
+    # Collect the edition values that are active in the filter
+    active_editions = [
+        edition_value
+        for edition_value, edition_name in edition_mapping.items()
+        if filter_settings.get(edition_name, False)
+    ]
 
-    # When no items are select or all items are selected do not filter
-    if len(list_of_edition_values) == 0 or len(list_of_edition_values) == len(Edition):
+    # If no editions are active, return the unfiltered DataFrame
+    if not active_editions:
         return input_df
-    else:
-        return input_df.loc[input_df.edition.isin(list_of_edition_values)]
+
+    # Filter the DataFrame based on active edition values
+    return input_df[input_df["edition"].isin(active_editions)]
 
 
 def filter_match_type(input_df, filter_settings):

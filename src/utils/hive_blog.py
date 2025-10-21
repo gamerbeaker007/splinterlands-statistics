@@ -2,7 +2,7 @@ import pandas as pd
 
 from src.static import static_values_enum
 from src.static.static_values_enum import Leagues, sps_icon_url, dec_icon_url, coins_icon_url, glint_icon_url, \
-    voucher_icon_url, merit_icon_url, wild_league_icon_url, modern_league_icon_url
+    voucher_icon_url, merit_icon_url, wild_league_icon_url, modern_league_icon_url, edition_img_mapping
 
 image_hive_blog_20_url = 'https://images.hive.blog/20x0/'
 image_hive_blog_150_url = 'https://images.hive.blog/150x0/'
@@ -357,9 +357,9 @@ def get_card_table(cards_df, print_count=False):
         for card_name in unique_card_list:
             temp = pd.concat([temp, pd.DataFrame({
                 'card_name': card_name,
+                'edition': str(cards_df[(cards_df['card_name'] == card_name)].edition.values[0]),
                 'quantity_regular': len(cards_df[(cards_df['card_name'] == card_name) & (~cards_df['gold'])]),
                 'quantity_gold': len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'])]),
-                'edition_name': str(cards_df[(cards_df['card_name'] == card_name)].edition_name.values[0]),
                 'bcx': str(cards_df[(cards_df['card_name'] == card_name) & (~cards_df['gold'])].bcx.sum()),
                 'bcx_gold': str(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'])].bcx.sum())
             }, index=[0])], ignore_index=True)
@@ -378,8 +378,9 @@ def get_card_table(cards_df, print_count=False):
         for index, card in temp.iterrows():
             if index > 0 and index % 5 == 0:
                 result += '\n'
+            edition_name = edition_img_mapping.get(int(float(card.edition)))
 
-            prefix = str(base_card_url) + str(card.edition_name) + '/' + str(card.card_name).replace(' ', '%20')
+            prefix = str(base_card_url) + str(edition_name) + '/' + str(card.card_name).replace(' ', '%20')
             count_str = ''
             gold_suffix = ''
             bcx_str = ''

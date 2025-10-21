@@ -142,6 +142,7 @@ class RatingLevel(ExtendedEnum):
     Champion = 5
 
 
+# @Deprecated Only to be used for now in filters
 class Edition(ExtendedEnum):
     alpha = 0
     beta = 1
@@ -157,6 +158,50 @@ class Edition(ExtendedEnum):
     soulboundrb = 13
     conclave = 14
     foundations = 15
+    foundationssb = 16
+    extra = 17
+    conclave_reward = 18
+
+
+edition_mapping = {
+    0: 'Alpha',
+    1: 'Beta',
+    2: 'Promo',
+    3: 'Reward',
+    4: 'Untamed',
+    5: 'Dice',
+    6: 'Gladius',
+    7: 'Chaos',
+    8: 'Rift',
+    10: 'Soulbound',
+    12: 'Rebellion',
+    13: 'Soulbound Rebellion',
+    14: 'Conclave Arcana',
+    15: 'Foundation',
+    16: 'Soulbound Foundation',
+    17: 'Conclave Extra',
+    18: 'Conclave Reward',
+}
+
+edition_img_mapping = {
+    0: 'alpha',
+    1: 'beta',
+    2: 'promo',
+    3: 'reward',
+    4: 'untamed',
+    5: 'dice',
+    6: 'gladius',
+    7: 'chaos',
+    8: 'rift',
+    10: 'soulbound',
+    12: 'rebellion',
+    13: 'soulboundrb',
+    14: 'conclave',
+    15: 'foundations',
+    16: 'foundations',
+    17: 'extra',
+    18: 'reward'
+}
 
 
 class Element(ExtendedEnum):

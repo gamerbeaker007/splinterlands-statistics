@@ -12,7 +12,7 @@ from src.pages.main_dash import app
 from src.pages.navigation_pages import nav_ids
 from src.pages.portfolio_pages import portfolio_deposit, portfolio_editions, portfolio_sps, portfolio_ids
 from src.static import static_values_enum
-from src.static.static_values_enum import Edition
+from src.static.static_values_enum import edition_mapping
 from src.utils import chart_util, store_util
 from src.utils.trace_logging import measure_duration
 
@@ -215,12 +215,13 @@ def display_click_data(filtered_portfolio_df, click_data):
             card_list_value = value_row.collection_list_value
             card_market_value = value_row.collection_market_value
         else:
+            edition_prefixes = tuple(f"{eid}_" for eid in edition_mapping.keys())
             card_list_value_columns = value_row.index[
-                value_row.index.str.startswith(tuple(list(Edition.list_names()))) &
+                value_row.index.str.startswith(edition_prefixes) &
                 value_row.index.str.endswith("list_value")
                 ]
             card_market_value_columns = value_row.index[
-                value_row.index.str.startswith(tuple(list(Edition.list_names()))) &
+                value_row.index.str.startswith(edition_prefixes) &
                 value_row.index.str.endswith("market_value")
                 ]
             card_list_value = value_row[card_list_value_columns].sum()

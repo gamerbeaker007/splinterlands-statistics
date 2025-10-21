@@ -11,37 +11,42 @@ store_util.update_season_end_dates()
 
 
 def migrate_data():
-    name_map = {
-        "Black Dragon": "Korjack",
-        "Void Dragon": "Voidmaw",
-        "Gem Meteor": "Etherite Construct",
+    edition_mapping = {
+        "alpha": 0,
+        "beta": 1,
+        "promo": 2,
+        "reward": 3,
+        "untamed": 4,
+        "dice": 5,
+        "gladius": 6,
+        "chaos": 7,
+        "rift": 8,
+        "soulbound": 10,
+        "rebellion": 12,
+        "soulboundrb": 13,
+        "conclave": 14,
+        "foundations": 15,
+        "foundationssb": 16,
     }
 
-    def needs_migration(df):
-        if df.empty:
-            return False
+    rename_map = {}
+    df = store.portfolio
+    for col in df.columns:
+        for name, eid in edition_mapping.items():
+            if col.startswith(f"{name}_"):
+                new_col = col.replace(f"{name}_", f"{eid}_", 1)
+                rename_map[col] = new_col
+                break
 
-        old_names_present = df['card_name'].isin(name_map.keys()).any()
-        fiend_present = df['card_name'].str.contains(r'\bFiend\b', regex=True).any()
-        silenced_summoners_present = df[['ruleset1', 'ruleset2', 'ruleset3']].isin(['Silenced Summoners']).any().any()
-
-        return old_names_present or fiend_present or silenced_summoners_present
-
-    def apply_migrations(df):
-        df['card_name'] = df['card_name'].replace(name_map)
-        df['card_name'] = df['card_name'].str.replace(r'\bFiend\b', 'Spawn', regex=True)
-
-        for col in ['ruleset1', 'ruleset2', 'ruleset3']:
-            df[col] = df[col].replace('Silenced Summoners', 'Silenced Archons')
-
-    if needs_migration(store.battle_big):
-        apply_migrations(store.battle_big)
-        store_util.save_stores()
-
-    if needs_migration(store.losing_big):
-        apply_migrations(store.losing_big)
-        store_util.save_stores()
-
+    if rename_map:
+        store.portfolio = df.rename(columns=rename_map)
+        print("Renamed columns:")
+        for old, new in rename_map.items():
+            print(f"  {old} -> {new}")
+    else:
+        print("No edition columns found to rename.")
+    store_util.save_stores()
+    
 
 def main():
     migrate_data()

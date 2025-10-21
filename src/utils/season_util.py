@@ -9,7 +9,6 @@ from dateutil.parser import isoparse
 from src import season_balances_info, market_info
 from src.api import hive
 from src.configuration import store, config
-from src.static.static_values_enum import Edition
 from src.utils import store_util, progress_util, hive_blog, tournaments_info
 
 
@@ -115,7 +114,6 @@ def get_last_season_reward_draws(transactions):
         df.index = range(len(df))
         not_na_index = df['card_detail_id'].notna()
         if not_na_index.any():  # Check if there are non-NaN values in 'card_detail_id'
-            df.loc[not_na_index, 'edition_name'] = df.loc[not_na_index, 'edition'].apply(lambda x: Edition(x).name)
             df.loc[not_na_index, 'bcx'] = df.loc[not_na_index, 'quantity']
             df.loc[not_na_index, 'card_name'] = df.loc[not_na_index, 'card_detail_id'].apply(
                 lambda x: config.card_details_df.loc[x, 'name'])
@@ -150,7 +148,6 @@ def get_last_season_league_rewards(transactions):
         df.index = range(len(df))
         not_na_index = df['card_detail_id'].notna()
         if not_na_index.any():  # Check if there are non-NaN values in 'card_detail_id'
-            df.loc[not_na_index, 'edition_name'] = df.loc[not_na_index, 'edition'].apply(lambda x: Edition(x).name)
             df.loc[not_na_index, 'bcx'] = df.loc[not_na_index, 'quantity']
             df.loc[not_na_index, 'card_name'] = df.loc[not_na_index, 'card_detail_id'].apply(
                 lambda x: config.card_details_df.loc[x, 'name'])
