@@ -4,7 +4,7 @@ import pandas as pd
 
 from src.configuration import store, config
 from src.static.static_values_enum import Element, CardType, Rarity, ManaCap, MatchType, Format, \
-    edition_img_mapping, edition_mapping
+    edition_img_mapping, Edition
 
 
 def get_image_url_markdown(card_name, level, edition):
@@ -177,19 +177,18 @@ def filter_edition(input_df, filter_settings):
     if input_df.empty:
         return input_df
 
-    # Collect the edition values that are active in the filter
-    active_editions = [
-        edition_value
-        for edition_value, edition_name in edition_mapping.items()
-        if filter_settings.get(edition_name, False)
-    ]
+    list_of_edition_values = []
+    for edition in Edition:
+        if edition.name in filter_settings:
+            active = filter_settings[edition.name]
+            if active:
+                list_of_edition_values.append(edition.value)
 
-    # If no editions are active, return the unfiltered DataFrame
-    if not active_editions:
+    # When no items are select or all items are selected do not filter
+    if len(list_of_edition_values) == 0 or len(list_of_edition_values) == len(Edition):
         return input_df
-
-    # Filter the DataFrame based on active edition values
-    return input_df[input_df["edition"].isin(active_editions)]
+    else:
+        return input_df.loc[input_df.edition.isin(list_of_edition_values)]
 
 
 def filter_match_type(input_df, filter_settings):
