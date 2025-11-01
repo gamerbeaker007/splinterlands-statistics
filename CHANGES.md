@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.27.0
+- Add new support of new editions (Conclave Arcana, Foundation)
+
+## 0.26.2
+- Quick Fix rank NaN
+
+
 ## 0.26.2
 
 - Add Foundation set
