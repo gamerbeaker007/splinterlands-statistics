@@ -154,11 +154,27 @@ def get_last_season_league_rewards(transactions):
     return df
 
 
+def rename_duplicate_card_detail_id(df):
+    cols = list(df.columns)
+    idxs = [i for i, c in enumerate(cols) if c == "card_detail_id"]
+    if len(idxs) <= 1:
+        return df
+
+    # Example rule: if 'skin' exists, the FIRST occurrence is skin-related
+    if 'skin' in df.columns:
+        cols[idxs[0]] = "card_detail_id_skin"
+
+    df.columns = cols
+    return df
+
+
 def extract_card_info(df, input_df):
     if 'card' in input_df.columns.tolist():
         # Expand 'card' column into multiple columns
         card_df = pd.json_normalize(input_df['card'])
         # Concatenate temp_df and card_df along columns axis
         input_df = pd.concat([input_df.drop(columns=['card']), card_df], axis=1)
-    df = pd.concat([df, input_df])
+
+    input_df = rename_duplicate_card_detail_id(input_df)
+    df = pd.concat([df, input_df], ignore_index=True)
     return df

@@ -181,6 +181,7 @@ edition_mapping = {
     16: 'Soulbound Foundation',
     17: 'Conclave Extra',
     18: 'Conclave Reward',
+    19: 'Land',
 }
 
 edition_img_mapping = {
@@ -200,7 +201,8 @@ edition_img_mapping = {
     15: 'foundations',
     16: 'foundations',
     17: 'extra',
-    18: 'reward'
+    18: 'reward',
+    19: 'land',
 }
 
 
