@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.27.2
+ - Add support for Escalation
+
 ## 0.27.1
  - Fix skin pull (causing a crash)
  - Add land card support (for portfolio value)
