@@ -161,6 +161,8 @@ class Edition(ExtendedEnum):
     foundationssb = 16
     extra = 17
     conclave_reward = 18
+    land = 19
+    escalation = 20
 
 
 edition_mapping = {
@@ -182,6 +184,7 @@ edition_mapping = {
     17: 'Conclave Extra',
     18: 'Conclave Reward',
     19: 'Land',
+    20: 'Escalation'
 }
 
 edition_img_mapping = {
@@ -203,6 +206,7 @@ edition_img_mapping = {
     17: 'extra',
     18: 'reward',
     19: 'land',
+    20: 'escalation'
 }
 
 
