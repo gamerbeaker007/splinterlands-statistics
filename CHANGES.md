@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.27.3
+ - Add survival bracket earnings to hive blog generation
+
+
 ## 0.27.2
  - Add support for Escalation
 

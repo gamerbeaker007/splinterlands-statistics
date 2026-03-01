@@ -257,6 +257,8 @@ def get_last_season_earnings_table(account, season_info_store, skip_zeros):
             earning_rows += cost_earning_row('SPS ranked battle (wild)', sps_icon, unclaimed_sps_df.wild, skip_zeros)
         if 'survival' in unclaimed_sps_df:
             earning_rows += cost_earning_row('SPS survival battle', sps_icon, unclaimed_sps_df.survival, skip_zeros)
+        if 'survival_bracket' in unclaimed_sps_df:
+            earning_rows += cost_earning_row('SPS survival battle', sps_icon, unclaimed_sps_df.survival_bracket, skip_zeros)
         if 'focus' in unclaimed_sps_df:
             earning_rows += cost_earning_row('SPS daily focus', sps_icon, unclaimed_sps_df.focus, skip_zeros)
         if 'season' in unclaimed_sps_df:
